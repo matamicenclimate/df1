@@ -1,0 +1,40 @@
+os: linux
+dist: bionic
+language: node_js
+node_js:
+  - lts/*
+env:
+  global:
+    - PROJECT_NAME=climatenft
+    - REPO_NAME=climate-nft-marketplace-app
+jobs:
+  include:
+    - stage: test
+      if: '(branch = develop AND (type = pull_request OR type = push))'
+      addons:
+        apt:
+          packages:
+            - python3
+            - python3-pip
+            - gcc
+            - g++
+            - make
+      before_script:
+        - npm install -g node-gyp
+      script:
+        - yarn test
+    - stage: build and push latest
+      if: '(branch = develop AND type = push)'
+      services:
+        - docker
+      before_script:
+        - cp ./compose/production/start ./start
+      script:
+        - VERSION=`node -p "require('./package.json').version"`
+        - IMAGE_ID=registry.dekaside.com/$PROJECT_NAME/$REPO_NAME
+        - docker build . -f ./compose/production/Dockerfile --tag $IMAGE_ID:latest --tag
+          $IMAGE_ID:$VERSION
+        - echo "$HARBOR_PASSWORD" | docker login registry.dekaside.com --username "$HARBOR_USERNAME"
+          --password-stdin
+        - docker push $IMAGE_ID:$VERSION
+        - docker push $IMAGE_ID:latest
