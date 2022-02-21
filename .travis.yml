@@ -45,7 +45,7 @@ jobs:
           --password-stdin
         - docker push $IMAGE_ID:$VERSION
         - docker push $IMAGE_ID:latest
-- stage: deploy
-    if: (branch = develop AND type = push)
-    script:
-    - curl -X POST "${SERVICE_WEBHOOK_STAGING}"
+    - stage: deploy
+      if: (branch = develop AND type = push)
+      script:
+      - curl -X POST "${SERVICE_WEBHOOK_STAGING}"
