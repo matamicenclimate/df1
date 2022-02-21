@@ -3,7 +3,7 @@ version: "3.3"
 services:
   business-frontend:
     image: registry.dekaside.com/climatenft/climate-nft-marketplace-app:latest
-    command: npm run build && npm start
+    command: sh -c "npm run build && npm start"
     networks:
       - climate-nft-marketplace
 
