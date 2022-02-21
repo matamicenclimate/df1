@@ -11,8 +11,7 @@ RUN npm install -g node-gyp
 
 COPY ./package*.json ./
 RUN npm install
-RUN npm run build
 
 COPY . .
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start-dev"]
