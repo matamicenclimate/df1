@@ -12,7 +12,7 @@ export type NftType = {
 };
 
 const fetchNfts = async () => {
-  const response = await fetch('http://127.0.0.1:8080/api/v1/nfts');
+  const response = await fetch('https://climate-nft-marketplace-api.staging.dekaside.com/api/v1/nfts');
   const result = await response.json();
   return result;
 };
