@@ -3,6 +3,14 @@ dist: bionic
 language: node_js
 node_js:
   - lts/*
+slack:
+    secure: noANMejrdV/TLJ2myGJW0f5/K7O1jxSd1AOiYzycgEYugAHtoO9OhyhCne0BlCbufAjbSLtMHgJi997Fk8QmXmIWRdpKHM2tO4LLckCcQ9I6SIUwLFv+dmjWbIr9atORrk4/9LcjO/vjWmeak+j2izHnr1OKEpHisPT7TbVeM6QQuf9c7aVTS9azMSmfdDbYw/ZKzBLsZzJ7jX6QB2P0ycWGqzb5oW0g+8GkHTNRK4+Z2tSUQ6SUk3KYkaZLMENpVcU2+Zrh3PuYVcWne3VzZ7NT695+HdDaLDfw62VeXwJDFE/ywQDHgKP9ms3vYzXvtqZK2o6oSKsx5cMxzV08L5ROvW2PRqPldadKXPvOC70DmfxBMFgLTOHFFsIQzFp93+bOt1Qd2U5yBlyZ8BIVhxpioC7y56tDAAS/OBqsIa0h0YZl+G/so5dIPzPioHL+oOfS4d9Bj9MTeQG/HMSy7CPJX4ou2JA4A25U7aWDI9S/AI+tLybkKvRsNrTEnUF6YtGuK3w06tLEwPbB7dYzYAewg+cIaIdUr1rEHc58akWHmNmhk9bXY3DJBMTPptZLUnd8sKGcdP5+PKwPGaAf3NqRRVZkE5gopNllpYBdyifYpqyOfiYa/BjqSJM/eueMrs+DvilzGQeG/TvVNQKxdXrLjnRy2+o2KeBZ1Rykw9g=
+    template:
+    - "*Project:* %{repository_name}"
+    - "*Build:* <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository_slug}@%{branch}"
+    - "*Duration:* %{duration}"
+    - "*Result:* %{result}"
+    - "*Message:* %{message}"
 env:
   global:
     - PROJECT_NAME=climatenft

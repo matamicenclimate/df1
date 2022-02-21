@@ -3,6 +3,5 @@
 set -o errexit
 set -o nounset
 
-npm run build
 npm start
 nginx -g "daemon off;"

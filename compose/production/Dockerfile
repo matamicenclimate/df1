@@ -1,19 +1,18 @@
-# pull official base image
-FROM node:16-alpine
+FROM node:14.18.3-alpine3.14
 
-# set working directory
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
-ENV PATH /node_modules/.bin:$PATH
+RUN apk add --no-cache python3 py3-pip gcc g++ make 
+RUN apk add --update \
+  git \
+  openssh-client \
+&& rm -rf /var/cache/apk/*
+RUN npm install -g node-gyp
 
-# install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
-RUN yarn install
+COPY ./package*.json ./
+RUN npm install
+RUN npm run build
 
-# add app
-COPY . ./
+COPY . .
 
-# start app
-CMD ["yarn", "start"]
+CMD ["npm", "start"]
