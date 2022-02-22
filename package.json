@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "npx http-server ./build --port 8081 --cors",
-    "start-dev": "craco start",
+    "dev": "craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
