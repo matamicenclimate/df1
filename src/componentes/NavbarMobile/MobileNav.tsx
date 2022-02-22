@@ -15,8 +15,6 @@ type MobileNavProps = {
 };
 
 const MobileNav = ({ open, handleClick }: MobileNavProps) => {
-  console.log('open from movileNav', open);
-
   return (
     <div
       className={`h-full w-4/5 flex flex-col fixed bg-custom-gray top-0 right-0 ease-in-out duration-300
@@ -47,7 +45,6 @@ const MobileNav = ({ open, handleClick }: MobileNavProps) => {
         <li className="p-7">
           <Button>Connect Wallet</Button>
         </li>
-        <li>{/* <ToggleMode /> */}</li>
       </ul>
     </div>
   );
