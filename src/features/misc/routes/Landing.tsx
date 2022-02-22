@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Card } from '@/componentes/Elements/Card/Card';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
+import { httpClient } from '@/lib/httpClient';
 
 export type NftType = {
   title?: string;
@@ -12,9 +13,8 @@ export type NftType = {
 };
 
 const fetchNfts = async () => {
-  const response = await fetch('https://climate-nft-marketplace-api.staging.dekaside.com/api/v1/nfts');
-  const result = await response.json();
-  return result;
+  const res = await httpClient.get('nfts');
+  return res.data;
 };
 
 export const Landing = () => {

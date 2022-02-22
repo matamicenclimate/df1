@@ -1,6 +1,7 @@
 import Axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-
 import storage from '@/utils/storage';
+
+const API_URL = process.env.REACT_APP_API_URL ?? '';
 
 function authRequestInterceptor(config: AxiosRequestConfig) {
   const token = storage.getToken();
@@ -14,7 +15,7 @@ function authRequestInterceptor(config: AxiosRequestConfig) {
 }
 
 export const httpClient = Axios.create({
-  //   baseURL: API_URL,
+  baseURL: API_URL,
 });
 
 httpClient.interceptors.request.use(authRequestInterceptor);
