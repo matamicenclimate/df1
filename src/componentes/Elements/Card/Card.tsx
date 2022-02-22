@@ -1,10 +1,10 @@
-import { NftType } from '../../../features/misc/routes/Landing';
-import { Spinner } from '../Spinner/Spinner';
+import { Nft } from '@/lib/api';
+// import { Spinner } from '../Spinner/Spinner';
 
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
 
 type CardProps = {
-  item: NftType;
+  item: Nft;
 };
 
 export const Card = ({ item }: CardProps) => {

@@ -5,20 +5,13 @@ import { Card } from '@/componentes/Elements/Card/Card';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { httpClient } from '@/lib/httpClient';
 
-export type NftType = {
-  title?: string;
-  description?: string;
-  image?: string;
-  artist?: string;
-};
-
 const fetchNfts = async () => {
   const res = await httpClient.get('nfts');
   return res.data;
 };
 
 export const Landing = () => {
-  const { data, isLoading, error } = useQuery<NftType[]>('nfts', fetchNfts);
+  const { data, isLoading, error } = useQuery('nfts', fetchNfts);
 
   if (isLoading) return <Spinner />;
   if (error) return <div>{`An error occurred ${error}`}</div>;
