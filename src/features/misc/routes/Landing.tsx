@@ -3,22 +3,15 @@ import { useQuery } from 'react-query';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Card } from '@/componentes/Elements/Card/Card';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
-
-export type NftType = {
-  title?: string;
-  description?: string;
-  image?: string;
-  artist?: string;
-};
+import { httpClient } from '@/lib/httpClient';
 
 const fetchNfts = async () => {
-  const response = await fetch('https://climate-nft-marketplace-api.staging.dekaside.com/api/v1/nfts');
-  const result = await response.json();
-  return result;
+  const res = await httpClient.get('nfts');
+  return res.data;
 };
 
 export const Landing = () => {
-  const { data, isLoading, error } = useQuery<NftType[]>('nfts', fetchNfts);
+  const { data, isLoading, error } = useQuery('nfts', fetchNfts);
 
   if (isLoading) return <Spinner />;
   if (error) return <div>{`An error occurred ${error}`}</div>;
