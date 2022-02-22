@@ -18,18 +18,3 @@ export const httpClient = Axios.create({
 });
 
 httpClient.interceptors.request.use(authRequestInterceptor);
-httpClient.interceptors.response.use(
-  (response) => {
-    return response.data;
-  },
-  (error) => {
-    const message = error.response?.data?.message || error.message;
-    // useNotificationStore.getState().addNotification({
-    //   type: 'error',
-    //   title: 'Error',
-    //   message,
-    // });
-
-    return Promise.reject(error);
-  }
-);
