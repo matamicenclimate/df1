@@ -29,7 +29,7 @@ export const Minter = () => {
         <div className="flex justify-center h-screen rounded w-full">
           <Form
             onSubmit={handleSubmit(formSubmitHandler)}
-            className="shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            className="rounded px-8 pt-6 pb-8 mb-4 md:max-h-[36rem] md:shadow-md"
           >
             <div className="mb-4">
               <label

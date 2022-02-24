@@ -2,10 +2,8 @@ import * as React from 'react';
 import { useAuth } from '@/lib/auth';
 import { Link } from 'react-router-dom';
 import { Button } from '@/componentes/Elements/Button/Button';
-import Hamburger from '../NavbarMobile/Hamburger';
 import { useWindowSize } from '@/hooks/useResize';
 import NavbarMobile from '../NavbarMobile/NavbarMobile';
-// import Navbar from '../Navbar/Navbar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
