@@ -23,12 +23,12 @@ const MobileNav = ({ open, handleClick }: MobileNavProps) => {
     >
       <ul className="text-2xl text-center text-custom-white">
         <li className="p-6">
-          <Link to="/explore" onClick={handleClick}>
+          <Link to="/" onClick={handleClick}>
             Explore
           </Link>
         </li>
         <li className="p-6">
-          <Link to="/explore" onClick={handleClick}>
+          <Link to="/mint" onClick={handleClick}>
             Mint NFT
           </Link>
         </li>

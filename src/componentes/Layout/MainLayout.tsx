@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useAuth } from '@/lib/auth';
 import { Link } from 'react-router-dom';
 import { Button } from '@/componentes/Elements/Button/Button';
-import Hamburger from '../NavbarMobile/Hamburger';
 import { useWindowSize } from '@/hooks/useResize';
 import NavbarMobile from '../NavbarMobile/NavbarMobile';
 
@@ -12,7 +11,7 @@ interface MainLayoutProps {
 
 export const Footer = () => {
   return (
-    <footer className="bg-custom-blue md:bg-custom-white">
+    <footer className="bg-custom-blue md:bg-custom-white w-full fixed bottom-0">
       <div className="p-4 flex justify-around text-custom-white md:text-black md:border">
         <Link to="/">Terms and Conditions</Link>
         <Link to="/">Privacy Policy</Link>
@@ -45,7 +44,7 @@ export const Navbar = () => {
         </Link>
       </div>
       <div>
-        <Link to="/">
+        <Link to="/mint">
           <h2 className="hover:font-bold">Mint</h2>
         </Link>
       </div>
@@ -77,7 +76,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className=" mx-auto min-h-screen flex flex-col">
       {width >= 768 ? <Navbar /> : <NavbarMobile />}
-      <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3">{children}</div>
+      <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3 mb-11">{children}</div>
       <Footer />
     </div>
   );
