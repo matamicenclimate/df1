@@ -1,13 +1,24 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { Link } from 'react-router-dom';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { useWindowSize } from '@/hooks/useResize';
 import NavbarMobile from '../NavbarMobile/NavbarMobile';
+import { AlgoWalletConnector } from '../Wallet/AlgoWalletConnector';
+import { SessionWallet } from 'algorand-session-wallet';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
+
+const ps = {
+  algod: {
+    server: 'https://testnet.algoexplorerapi.io',
+    port: 0,
+    token: '',
+    network: 'TestNet',
+  },
+};
 
 export const Footer = () => {
   return (
@@ -21,6 +32,20 @@ export const Footer = () => {
 };
 
 export const Navbar = () => {
+  const sw = new SessionWallet(ps.algod.network);
+
+  console.log('sw', sw);
+
+  const [sessionWallet, setSessionWallet] = useState(sw);
+  const [accounts, setAccounts] = useState(sw.accountList());
+  const [connected, setConnected] = useState(sw.connected());
+
+  function updateWallet(sw: SessionWallet) {
+    setSessionWallet(sw);
+    setAccounts(sw.accountList());
+    setConnected(sw.connected());
+  }
+
   const MenuLink = ({ text, action }: any) => {
     return <button onClick={action}>{text}</button>;
   };
@@ -49,7 +74,13 @@ export const Navbar = () => {
         </Link>
       </div>
       <div>
-        <Button>Connect Wallet</Button>
+        <AlgoWalletConnector
+          darkMode={false}
+          sessionWallet={sessionWallet}
+          accounts={accounts}
+          connected={connected}
+          updateWallet={updateWallet}
+        />
       </div>
 
       {/* <div className="flex gap-4">

@@ -13,6 +13,7 @@ type DialogProps = {
   acceptLabel?: string;
   onCancel?: () => void;
   cancelLabel?: string;
+  children?: React.ReactNode;
 };
 
 export const Dialog = ({
@@ -25,6 +26,7 @@ export const Dialog = ({
   acceptLabel,
   onCancel,
   cancelLabel,
+  children,
 }: DialogProps) => {
   const { t } = useTranslation();
   return (
@@ -35,18 +37,21 @@ export const Dialog = ({
     >
       {/* Use the overlay to style a dim backdrop for your dialog */}
       <HUIDialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-      <div className="relative bg-white rounded max-w-screen-sm w-full mx-auto p-4">
+      <div className="relative bg-white rounded max-w-sm w-full mx-auto p-4">
         <HUIDialog.Title className="text-xl">{title}</HUIDialog.Title>
         {subtitle ? <HUIDialog.Description>{subtitle}</HUIDialog.Description> : null}
 
         {claim ? <p>{claim} </p> : null}
+        {children}
         <div className="space-x-2 flex justify-end">
           <Button onClick={() => (onCancel ? onCancel() : setIsOpen(false))}>
             {cancelLabel ? cancelLabel : t('dialogs.base.cancel')}
           </Button>
-          <Button onClick={() => (onAccept ? onAccept() : setIsOpen(false))}>
-            {acceptLabel ? acceptLabel : t('dialogs.base.accept')}
-          </Button>
+          {onAccept && (
+            <Button onClick={() => (onAccept ? onAccept() : setIsOpen(false))}>
+              {acceptLabel ? acceptLabel : t('dialogs.base.accept')}
+            </Button>
+          )}
         </div>
       </div>
     </HUIDialog>
