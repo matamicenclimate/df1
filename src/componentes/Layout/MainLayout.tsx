@@ -107,7 +107,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className=" mx-auto min-h-screen flex flex-col">
       {width >= 768 ? <Navbar /> : <NavbarMobile />}
-      <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3 mb-11">{children}</div>
+      <div className="bg-custom-gray md:bg-custom-white md:mt-0 p-8 flex-1">{children}</div>
       <Footer />
     </div>
   );
