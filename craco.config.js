@@ -5,6 +5,13 @@ module.exports = {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+    configure: (conf) => {
+      conf.resolve.fallback = {
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+      };
+      return conf;
+    },
   },
   style: {
     postcssOptions: {
