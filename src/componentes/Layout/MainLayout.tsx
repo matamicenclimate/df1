@@ -57,7 +57,7 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="p-4 border flex gap-4 mb-4 justify-between items-center">
+    <div className="p-4 border flex gap-4 justify-between items-center">
       <div>
         <Link to="/">
           <h1 className="text-4xl font-bold">Climate NFT Marketplace</h1>
@@ -105,7 +105,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [width, height] = useWindowSize();
 
   return (
-    <div className=" mx-auto min-h-screen flex flex-col">
+    <div className="mx-auto min-h-screen flex flex-col">
       {width >= 768 ? <Navbar /> : <NavbarMobile />}
       <div className="bg-custom-gray md:bg-custom-white md:mt-0 p-8 flex-1">{children}</div>
       <Footer />
