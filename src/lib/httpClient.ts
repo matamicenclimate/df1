@@ -20,10 +20,20 @@ function authRequestInterceptor(config: AxiosRequestConfig) {
   return config;
 }
 
-type ApiFuture<K extends keyof Endpoints> = Promise<AxiosResponse<Endpoints[K]>>;
+type ApiFuture<V extends keyof Endpoints, K extends keyof Endpoints[V]> = Promise<
+  AxiosResponse<Endpoints[V][K]['response']>
+>;
 
-type HTTPClient = Omit<AxiosInstance, 'get'> & {
-  get<K extends keyof Endpoints>(resource: K, options?: AxiosRequestConfig): ApiFuture<K>;
+type HTTPClient = Omit<AxiosInstance, 'get' | 'post'> & {
+  get<K extends keyof Endpoints['get']>(
+    resource: K,
+    options?: AxiosRequestConfig
+  ): ApiFuture<'get', K>;
+  post<K extends keyof Endpoints['post']>(
+    resource: K,
+    data: Endpoints['post'][K]['body'],
+    options?: AxiosRequestConfig
+  ): ApiFuture<'post', K>;
 };
 
 export const httpClient = Axios.create({
