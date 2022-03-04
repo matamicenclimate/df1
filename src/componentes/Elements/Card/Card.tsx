@@ -1,4 +1,4 @@
-import { Nft } from '@/lib/api';
+import { Nft } from '@/lib/api/nfts';
 // import { Spinner } from '../Spinner/Spinner';
 
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
