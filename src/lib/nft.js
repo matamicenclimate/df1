@@ -41,7 +41,7 @@ async function createAsset(algodClient, account, metadat, wallet) {
   // Used to display asset units to user
   const unitName = 'andre';
   // Friendly name of the asset
-  const assetName = metadat.arc69.description;
+  const assetName = metadat.title;
   // Optional string pointing to a URL relating to the asset
   const url = metadat.url;
   const managerAddr = account; // OPTIONAL: FOR DEMO ONLY, USED TO DESTROY ASSET WITHIN
