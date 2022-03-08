@@ -8,7 +8,7 @@ export default interface Endpoints
     healthz: { response: { status: 'ok' } };
   };
   post: {
-    ipfs: { response: IPFSResponse; body: null };
+    ipfs: { response: IPFSResponse; body: FormData };
     '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
   };
 }
