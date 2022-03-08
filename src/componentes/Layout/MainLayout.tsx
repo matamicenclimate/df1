@@ -22,7 +22,7 @@ const ps = {
 
 export const Footer = () => {
   return (
-    <footer className="bg-custom-blue md:bg-custom-white w-full fixed bottom-0">
+    <footer className="bg-custom-blue md:bg-custom-white w-full bottom-0">
       <div className="p-4 flex justify-around text-custom-white md:text-black md:border">
         <Link to="/">Terms and Conditions</Link>
         <Link to="/">Privacy Policy</Link>
@@ -32,20 +32,6 @@ export const Footer = () => {
 };
 
 export const Navbar = () => {
-  const sw = new SessionWallet(ps.algod.network);
-
-  console.log('sw', sw);
-
-  const [sessionWallet, setSessionWallet] = useState(sw);
-  const [accounts, setAccounts] = useState(sw.accountList());
-  const [connected, setConnected] = useState(sw.connected());
-
-  function updateWallet(sw: SessionWallet) {
-    setSessionWallet(sw);
-    setAccounts(sw.accountList());
-    setConnected(sw.connected());
-  }
-
   const MenuLink = ({ text, action }: any) => {
     return <button onClick={action}>{text}</button>;
   };
@@ -57,7 +43,7 @@ export const Navbar = () => {
   };
 
   return (
-    <div className="p-4 border flex gap-4 justify-between items-center">
+    <div className="p-4 border flex gap-4 mb-4 justify-between items-center">
       <div>
         <Link to="/">
           <h1 className="text-4xl font-bold">Climate NFT Marketplace</h1>
@@ -75,11 +61,12 @@ export const Navbar = () => {
       </div>
       <div>
         <AlgoWalletConnector
-          darkMode={false}
-          sessionWallet={sessionWallet}
-          accounts={accounts}
-          connected={connected}
-          updateWallet={updateWallet}
+          isNavbar
+          // darkMode={false}
+          // sessionWallet={sessionWallet}
+          // accounts={accounts}
+          // connected={connected}
+          // updateWallet={updateWallet}
         />
       </div>
 
@@ -105,9 +92,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [width, height] = useWindowSize();
 
   return (
-    <div className="mx-auto min-h-screen flex flex-col">
-      {width >= 768 ? <Navbar /> : <NavbarMobile />}
-      <div className="bg-custom-gray md:bg-custom-white md:mt-0 p-8 flex-1">{children}</div>
+    <div className=" mx-auto min-h-screen flex flex-col">
+      {width >= 600 ? <Navbar /> : <NavbarMobile />}
+      <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3 mb-11">{children}</div>
       <Footer />
     </div>
   );
