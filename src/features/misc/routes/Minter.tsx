@@ -1,36 +1,114 @@
+import { useEffect, useState } from 'react';
+import algosdk from 'algosdk';
 import { Button } from '@/componentes/Elements/Button/Button';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Form } from '@/componentes/Form/Form';
-import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Wallet } from 'algorand-session-wallet';
+import { httpClient } from '@/lib/httpClient';
+import { Dialog } from '@/componentes/Dialog/Dialog';
+import { createNFT } from '@/lib/nft';
+import { MinterProps, NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
+import { AlgoWalletConnector } from '@/componentes/Wallet/AlgoWalletConnector';
+import { ListFormat } from 'typescript';
 
-type NftMintType = {
-  file: string;
-  title: string;
-  artist: string;
-  description: string;
-  cause: string;
-};
+export const Minter = ({ wallet, account }: MinterProps) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  // const [selectedImage, setSelectedImage] = useState<File>();
+  // console.log('selectedImage from minter', selectedImage);
 
-export const Minter = () => {
+  const [loading, setLoading] = useState(false);
+
+  const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
+  const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
+  const [transaction, setTransaction] = useState<assetInfoType | undefined>();
+
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<NftMintType>();
+  } = useForm<NFTMetadataBackend>();
 
-  const formSubmitHandler: SubmitHandler<NftMintType> = (data: NftMintType) => {
-    console.log('data', data);
+  function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
+    // setLoading(true);
+
+    const server = 'https://testnet.algoexplorerapi.io';
+    const port = 0;
+    const token = '';
+
+    const algodClient = new algosdk.Algodv2(token, server, port);
+
+    return createNFT(algodClient, account, metadat, wallet).then((result) => {
+      setTransaction(result);
+    });
+  }
+
+  const getNFTMetadata = async (data: NFTMetadataBackend) => {
+    const filelist: any = data.file;
+    const oneFile: File = filelist[0];
+    console.log('oneFile', oneFile);
+    const dataString = { ...data, file: undefined };
+
+    const form = new FormData();
+    form.append('data', JSON.stringify(dataString));
+    form.append('file', oneFile, oneFile.name);
+
+    const res = await httpClient.post('ipfs', form);
+
+    console.log('res.data', res.data);
+    setMetadataNFT(res.data as metadataNFTType);
+  };
+
+  useEffect(() => {
+    if (dataToPost) {
+      getNFTMetadata(dataToPost);
+    }
+  }, [dataToPost]);
+
+  useEffect(() => {
+    if (metadataNFT && wallet && account) {
+      mintNFT(metadataNFT, wallet, account);
+    }
+  }, [metadataNFT]);
+
+  const checkIfAccount = () => {
+    if (account === undefined || account === '') {
+      setIsOpen(true);
+      return false;
+    }
+    return true;
+  };
+
+  const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = (data: NFTMetadataBackend) => {
+    if (checkIfAccount()) {
+      setDataToPost(data);
+    }
   };
 
   return (
     <div>
       <MainLayout>
-        <div className="flex justify-center rounded w-full">
+        {transaction && (
+          <div className="text-center">
+            <h2 className="font-bold text-2xl">Your Transaction and Asset</h2>
+            <h2 className="font-bold cursor-pointer hover:text-gray-600">
+              <a href={`https://testnet.algoexplorer.io/tx/${transaction.transactionId}`}>
+                Transaction ID: {transaction.transactionId}
+              </a>
+            </h2>
+            <h2 className="font-bold cursor-pointer hover:text-gray-600">
+              Asset ID:{' '}
+              <a href={`https://testnet.algoexplorer.io/asset/${transaction.assetID}`}>
+                {transaction.assetID}
+              </a>
+            </h2>
+          </div>
+        )}
+        <div className="flex justify-center h-screen rounded m-auto">
           <Form
             onSubmit={handleSubmit(formSubmitHandler)}
-            className="rounded px-8 pt-6 pb-8 mb-4 md:max-h-[36rem] md:shadow-md"
+            className="rounded px-8 pt-6 pb-8 mb-4 md:max-h-[40rem]"
           >
             <div className="mb-4">
               <label
@@ -45,9 +123,9 @@ export const Minter = () => {
                 type="file"
                 {...register('file', { required: true })}
               />
-              {errors.file && <span className="text-red-500">This filed is required</span>}
+              {errors?.file && <span className="text-red-500">This filed is required</span>}
             </div>
-            <div className="mb-6">
+            <div>
               <label
                 className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
                 htmlFor="title"
@@ -75,9 +153,9 @@ export const Minter = () => {
                 id="artist"
                 type="text"
                 placeholder="Artist.."
-                {...register('artist', { required: true })}
+                {...register('author', { required: true })}
               />
-              {errors.artist && <span className="text-red-500">This filed is required</span>}
+              {errors?.author && <span className="text-red-500">This filed is required</span>}
             </div>
             <div>
               <label
@@ -94,7 +172,7 @@ export const Minter = () => {
               />
               {errors.description && <span className="text-red-500">This filed is required</span>}
             </div>
-            <div>
+            {/* <div>
               <label
                 className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
                 htmlFor="cause"
@@ -105,12 +183,20 @@ export const Minter = () => {
                 className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="cause"
                 placeholder="Cause.."
+                // value={meta.cause}
                 {...register('cause', { required: true })}
               />
               {errors.description && <span className="text-red-500">This filed is required</span>}
-            </div>
+            </div> */}
             <Button type="submit">Mint Nft</Button>
           </Form>
+
+          {/* {isOpen && !account && ( */}
+          {isOpen && (
+            <Dialog isOpen={isOpen} setIsOpen={setIsOpen} title="Please connect your wallet">
+              {/* <AlgoWalletConnector isNavbar /> */}
+            </Dialog>
+          )}
         </div>
       </MainLayout>
     </div>
