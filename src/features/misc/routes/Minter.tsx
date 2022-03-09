@@ -18,6 +18,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   // console.log('selectedImage from minter', selectedImage);
   const [uploadingIPFS, setUploadingToIPFS] = useState(false);
   const [uploadingToBlock, setUploadingToBlock] = useState(false);
+  const [imageURL, setImageURL] = useState<string>();
 
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
@@ -37,6 +38,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
 
     const algodClient = new algosdk.Algodv2(token, server, port);
     setUploadingToBlock(true);
+    setImageURL(metadat.image_url);
 
     return createNFT(algodClient, account, metadat, wallet).then((result) => {
       setTransaction(result);
@@ -113,6 +115,11 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 {transaction.assetID}
               </a>
             </h2>
+            {imageURL && (
+              <div className="flex justify-center">
+                <img src={imageURL} />
+              </div>
+            )}
           </div>
         )}
         {uploadingIPFS && (
