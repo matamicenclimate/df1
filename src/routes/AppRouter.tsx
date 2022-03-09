@@ -20,14 +20,15 @@ export const AppRouter = () => {
     { path: '/', element: <Landing /> },
     {
       path: '/mint',
-      element: userWalletContext?.userWallet?.wallet ? (
-        <Minter
-          wallet={userWalletContext?.userWallet?.wallet}
-          account={userWalletContext?.userWallet?.account}
-        />
-      ) : (
-        <ConnectWallet />
-      ),
+      element:
+        userWalletContext?.userWallet?.account === '' ? (
+          <ConnectWallet />
+        ) : (
+          <Minter
+            wallet={userWalletContext?.userWallet?.wallet}
+            account={userWalletContext?.userWallet?.account}
+          />
+        ),
     },
   ];
 
