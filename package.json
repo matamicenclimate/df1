@@ -16,6 +16,7 @@
     "@types/react-dom": "^17.0.11",
     "algorand-session-wallet": "^1.6.1",
     "axios": "^0.25.0",
+    "buffer": "^6.0.3",
     "clsx": "^1.1.1",
     "i18next": "^21.6.11",
     "magic-sdk": "^8.0.1",
