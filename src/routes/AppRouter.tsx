@@ -5,26 +5,15 @@ import { Landing } from '@/features/misc/routes/Landing';
 import { Minter } from '@/features/misc/routes/Minter';
 import { useAuth } from '@/lib/auth';
 
-import { useContext } from 'react';
-import { UserWalletContext } from '@/context/UserContext';
-
 export const AppRouter = () => {
-  const auth = useAuth();
-  const userWalletContext = useContext(UserWalletContext);
-  // const { user, setUser } = userContext
-
-  console.log('this is user context from appRouter', userWalletContext);
-
+  // We're not using magiclink at the moment, but it may be needed soon.
+  // Do not remove.
+  const auth = { user: false } || useAuth();
   const commonRoutes = [
     { path: '/', element: <Landing /> },
     {
       path: '/mint',
-      element: (
-        <Minter
-          wallet={userWalletContext?.userWallet?.wallet}
-          account={userWalletContext?.userWallet?.account}
-        />
-      ),
+      element: <Minter />,
     },
   ];
 

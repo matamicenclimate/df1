@@ -7,7 +7,6 @@ import { RegisterCredentialsDTO, registerWithEmailAndPassword } from '@/features
 import { AuthUser, UserResponse } from '@/features/auth/types';
 import { magiclink } from './magiclink';
 import { getUser } from '@/features/auth/api/getUser';
-import { MainLayout } from '@/componentes/Layout/MainLayout';
 
 async function handleUserResponse(data: UserResponse) {
   const { jwt, user } = data;
@@ -16,6 +15,8 @@ async function handleUserResponse(data: UserResponse) {
 }
 
 async function loadUser(): Promise<AuthUser | null> {
+  return null; // Override for now the use of magic link.
+
   const isLoggedIn = await magiclink.user.isLoggedIn();
   console.log({ isLoggedIn });
 
