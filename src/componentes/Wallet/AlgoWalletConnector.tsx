@@ -4,6 +4,7 @@ import { Button } from '../Elements/Button/Button';
 import { Dialog } from '../Dialog/Dialog';
 import { UserWalletContext } from '@/context/UserContext';
 import { Dropdown } from '../Dropdown/Dropdown';
+import useWallet from '@/hooks/useWallet';
 
 const ps = {
   algod: {
@@ -24,6 +25,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   const [sessionWallet, setSessionWallet] = useState(sw);
   const [accts, setAccounts] = useState(sw.accountList());
   const [connected, setConnected] = useState(sw.connected());
+  const [wallet, setWallet, discardWallet] = useWallet();
 
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
@@ -52,6 +54,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
     if (sessionWallet.connected()) return;
     await sessionWallet.connect();
     updateWallet(sessionWallet);
+    setWallet(sessionWallet.wallet);
   };
 
   const handleSelectedWallet = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -60,6 +63,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
 
     if (!(choice in allowedWallets)) {
       sessionWallet.disconnect();
+      discardWallet();
       return setIsOpen(false);
     }
     const sw = new SessionWallet(sessionWallet.network, sessionWallet.permissionCallback, choice);

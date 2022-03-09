@@ -8,14 +8,17 @@ import { Wallet } from 'algorand-session-wallet';
 import { httpClient } from '@/lib/httpClient';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { createNFT } from '@/lib/nft';
-import { MinterProps, NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
+import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
 import { AlgoWalletConnector } from '@/componentes/Wallet/AlgoWalletConnector';
 import { ListFormat } from 'typescript';
+import useWallet from '@/hooks/useWallet';
 
-export const Minter = ({ wallet, account }: MinterProps) => {
+export const Minter = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // const [selectedImage, setSelectedImage] = useState<File>();
   // console.log('selectedImage from minter', selectedImage);
+  const [wallet] = useWallet();
+  const account = wallet.map((w) => w.accounts[0]);
 
   const [loading, setLoading] = useState(false);
 
@@ -57,7 +60,14 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     const res = await httpClient.post('ipfs', form);
 
     console.log('res.data', res.data);
-    setMetadataNFT(res.data as metadataNFTType);
+    const meta: metadataNFTType = {
+      ...res.data,
+      arc69: {
+        ...res.data.arc69,
+        properties: { ...res.data.arc69.properties, standard: 'unknown' },
+      },
+    };
+    setMetadataNFT(meta);
   };
 
   useEffect(() => {
@@ -67,13 +77,13 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   }, [dataToPost]);
 
   useEffect(() => {
-    if (metadataNFT && wallet && account) {
-      mintNFT(metadataNFT, wallet, account);
+    if (metadataNFT && wallet.isDefined() && account.isDefined()) {
+      mintNFT(metadataNFT, wallet.value, account.value);
     }
   }, [metadataNFT]);
 
   const checkIfAccount = () => {
-    if (account === undefined || account === '') {
+    if (account.isEmpty()) {
       setIsOpen(true);
       return false;
     }

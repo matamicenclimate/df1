@@ -6,6 +6,7 @@
     "@craco/craco": "^6.4.3",
     "@headlessui/react": "^1.4.3",
     "@heroicons/react": "^1.0.6",
+    "@octantis/option": "^1.2.0",
     "@tailwindcss/typography": "^0.5.2",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
