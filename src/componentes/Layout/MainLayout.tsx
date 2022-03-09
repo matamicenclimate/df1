@@ -22,8 +22,8 @@ const ps = {
 
 export const Footer = () => {
   return (
-    <footer className="bg-custom-blue md:bg-custom-white w-full bottom-0">
-      <div className="p-4 flex justify-around text-custom-white md:text-black md:border">
+    <footer className="absolute bottom-0 h-12 bg-custom-blue md:bg-custom-white w-full ">
+      <div className="p-3 flex justify-around text-custom-white md:text-black md:border">
         <Link to="/">Terms and Conditions</Link>
         <Link to="/">Privacy Policy</Link>
       </div>
@@ -60,14 +60,7 @@ export const Navbar = () => {
         </Link>
       </div>
       <div>
-        <AlgoWalletConnector
-          isNavbar
-          // darkMode={false}
-          // sessionWallet={sessionWallet}
-          // accounts={accounts}
-          // connected={connected}
-          // updateWallet={updateWallet}
-        />
+        <AlgoWalletConnector isNavbar />
       </div>
 
       {/* <div className="flex gap-4">
@@ -92,9 +85,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [width, height] = useWindowSize();
 
   return (
-    <div className=" mx-auto min-h-screen flex flex-col">
-      {width >= 600 ? <Navbar /> : <NavbarMobile />}
-      <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3 mb-11">{children}</div>
+    <div className="relative mx-auto min-h-screen flex flex-col bg-custom-gray md:bg-custom-white">
+      {width >= 768 ? <Navbar /> : <NavbarMobile />}
+      {/* <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3 mb-11 ">{children}</div> */}
+      <div className="mt-14 bg-custom-gray text-white md:text-black md:bg-custom-white  md:mt-3 pb-12 ">
+        {children}
+      </div>
       <Footer />
     </div>
   );

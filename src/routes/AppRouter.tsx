@@ -7,11 +7,12 @@ import { useAuth } from '@/lib/auth';
 
 import { useContext } from 'react';
 import { UserWalletContext } from '@/context/UserContext';
+import { AlgoWalletConnector } from '@/componentes/Wallet/AlgoWalletConnector';
+import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
 
 export const AppRouter = () => {
   const auth = useAuth();
   const userWalletContext = useContext(UserWalletContext);
-  // const { user, setUser } = userContext
 
   console.log('this is user context from appRouter', userWalletContext);
 
@@ -19,11 +20,13 @@ export const AppRouter = () => {
     { path: '/', element: <Landing /> },
     {
       path: '/mint',
-      element: (
+      element: userWalletContext?.userWallet?.wallet ? (
         <Minter
           wallet={userWalletContext?.userWallet?.wallet}
           account={userWalletContext?.userWallet?.account}
         />
+      ) : (
+        <ConnectWallet />
       ),
     },
   ];
