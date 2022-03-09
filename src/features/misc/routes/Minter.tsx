@@ -151,7 +151,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 type="file"
                 {...register('file', { required: true })}
               />
-              {errors?.file && <span className="text-red-500">This filed is required</span>}
+              {errors?.file && <span className="text-red-500">This field is required</span>}
             </div>
             <div>
               <label
@@ -167,7 +167,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 placeholder="Title.."
                 {...register('title', { required: true })}
               />
-              {errors.title && <span className="text-red-500">This filed is required</span>}
+              {errors.title && <span className="text-red-500">This field is required</span>}
             </div>
             <div>
               <label
@@ -183,7 +183,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 placeholder="Artist.."
                 {...register('author', { required: true })}
               />
-              {errors?.author && <span className="text-red-500">This filed is required</span>}
+              {errors?.author && <span className="text-red-500">This field is required</span>}
             </div>
             <div>
               <label
@@ -198,7 +198,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 placeholder="Description.."
                 {...register('description', { required: true })}
               />
-              {errors.description && <span className="text-red-500">This filed is required</span>}
+              {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
             {/* <div>
               <label
@@ -214,7 +214,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 // value={meta.cause}
                 {...register('cause', { required: true })}
               />
-              {errors.description && <span className="text-red-500">This filed is required</span>}
+              {errors.description && <span className="text-red-500">This field is required</span>}
             </div> */}
             <Button type="submit">Mint Nft</Button>
           </Form>
