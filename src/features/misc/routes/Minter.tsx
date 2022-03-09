@@ -10,14 +10,14 @@ import { Dialog } from '@/componentes/Dialog/Dialog';
 import { createNFT } from '@/lib/nft';
 import { MinterProps, NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
 import { AlgoWalletConnector } from '@/componentes/Wallet/AlgoWalletConnector';
-import { ListFormat } from 'typescript';
+import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 
 export const Minter = ({ wallet, account }: MinterProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // const [selectedImage, setSelectedImage] = useState<File>();
   // console.log('selectedImage from minter', selectedImage);
-
-  const [loading, setLoading] = useState(false);
+  const [uploadingIPFS, setUploadingToIPFS] = useState(false);
+  const [uploadingToBlock, setUploadingToBlock] = useState(false);
 
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
@@ -31,16 +31,16 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   } = useForm<NFTMetadataBackend>();
 
   function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
-    // setLoading(true);
-
     const server = 'https://testnet.algoexplorerapi.io';
     const port = 0;
     const token = '';
 
     const algodClient = new algosdk.Algodv2(token, server, port);
+    setUploadingToBlock(true);
 
     return createNFT(algodClient, account, metadat, wallet).then((result) => {
       setTransaction(result);
+      setUploadingToBlock(false);
     });
   }
 
@@ -58,10 +58,12 @@ export const Minter = ({ wallet, account }: MinterProps) => {
 
     console.log('res.data', res.data);
     setMetadataNFT(res.data as metadataNFTType);
+    setUploadingToIPFS(false);
   };
 
   useEffect(() => {
     if (dataToPost) {
+      setUploadingToIPFS(true);
       getNFTMetadata(dataToPost);
     }
   }, [dataToPost]);
@@ -86,6 +88,14 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     }
   };
 
+  // if (account === undefined || account === '') {
+  //   return (
+  //     <Dialog closeButton isOpen={isOpen} setIsOpen={setIsOpen} title="Please connect your wallet">
+  //       {/* <AlgoWalletConnector isNavbar /> */}
+  //     </Dialog>
+  //   );
+  // }
+
   return (
     <div>
       <MainLayout>
@@ -104,6 +114,24 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               </a>
             </h2>
           </div>
+        )}
+        {uploadingIPFS && (
+          <Dialog isOpen={uploadingIPFS} setIsOpen={setIsOpen} title={'Uploading file to IPFS...'}>
+            <div className="flex justify-center mt-3">
+              <Spinner size="lg" />
+            </div>
+          </Dialog>
+        )}
+        {uploadingToBlock && (
+          <Dialog
+            isOpen={uploadingToBlock}
+            setIsOpen={setIsOpen}
+            title={'Uploading transaction to Algorand blockchain...'}
+          >
+            <div className="flex justify-center mt-3">
+              <Spinner size="lg" />
+            </div>
+          </Dialog>
         )}
         <div className="flex justify-center h-screen rounded m-auto">
           <Form
@@ -193,7 +221,12 @@ export const Minter = ({ wallet, account }: MinterProps) => {
 
           {/* {isOpen && !account && ( */}
           {isOpen && (
-            <Dialog isOpen={isOpen} setIsOpen={setIsOpen} title="Please connect your wallet">
+            <Dialog
+              closeButton
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              title="Please connect your wallet"
+            >
               {/* <AlgoWalletConnector isNavbar /> */}
             </Dialog>
           )}
