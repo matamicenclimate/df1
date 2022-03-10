@@ -1,9 +1,5 @@
-export interface Nft {
-  title?: string;
-  description?: string;
-  image?: string;
-  artist?: string;
-}
+import { IPFSResponse } from './ipfs';
+import { Nft } from './nfts';
 
 export default interface Endpoints
   extends Record<string, Record<string, { response: any; body?: any }>> {
@@ -12,7 +8,7 @@ export default interface Endpoints
     healthz: { response: { status: 'ok' } };
   };
   post: {
-    ipfs: { response: unknown; body: FormData };
+    ipfs: { response: IPFSResponse; body: FormData };
     '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
   };
 }

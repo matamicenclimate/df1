@@ -3,7 +3,7 @@ import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Card } from '@/componentes/Elements/Card/Card';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { httpClient } from '@/lib/httpClient';
-import { Nft } from '@/lib/api';
+import { Nft } from '@/lib/api/nfts';
 
 const fetchNfts = async () => {
   const res = await httpClient.get('nfts');
