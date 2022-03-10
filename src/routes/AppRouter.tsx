@@ -4,16 +4,21 @@ import { publicRoutes } from './public';
 import { Landing } from '@/features/misc/routes/Landing';
 import { Minter } from '@/features/misc/routes/Minter';
 import { useAuth } from '@/lib/auth';
+import useWallet from '@/hooks/useWallet';
+import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
 
 export const AppRouter = () => {
   // We're not using magiclink at the moment, but it may be needed soon.
   // Do not remove.
   const auth = { user: false } || useAuth();
+  const [wallet] = useWallet();
   const commonRoutes = [
     { path: '/', element: <Landing /> },
     {
       path: '/mint',
-      element: <Minter />,
+      element: wallet
+        .map(() => <Minter key="mint-or-connect" />)
+        .getOrElse(<ConnectWallet key="mint-or-connect" />),
     },
   ];
 
