@@ -54,7 +54,6 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
     if (sessionWallet.connected()) return;
     await sessionWallet.connect();
     updateWallet(sessionWallet);
-    setWallet(sessionWallet.wallet);
   };
 
   const handleSelectedWallet = async (event: MouseEvent<HTMLButtonElement>) => {
@@ -63,7 +62,6 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
 
     if (!(choice in allowedWallets)) {
       sessionWallet.disconnect();
-      discardWallet();
       return setIsOpen(false);
     }
     const sw = new SessionWallet(sessionWallet.network, sessionWallet.permissionCallback, choice);
@@ -71,7 +69,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
       sw.disconnect();
       // showErrorToaster("Couldn't connect to wallet")
     }
-
+    setWallet(sw.wallet);
     updateWallet(sw);
     setIsOpen(false);
   };
@@ -79,6 +77,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   const disconnectWallet = () => {
     sessionWallet.disconnect();
     updateWallet(new SessionWallet(sessionWallet.network, sessionWallet.permissionCallback));
+    discardWallet();
   };
 
   return (
