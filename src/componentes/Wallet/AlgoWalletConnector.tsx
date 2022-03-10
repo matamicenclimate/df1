@@ -1,10 +1,10 @@
 import React, { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
-import { Button } from '../Elements/Button/Button';
-import { Dialog } from '../Dialog/Dialog';
+import { Button } from '@/componentes/Elements/Button/Button';
+import { Dialog } from '@/componentes/Dialog/Dialog';
 import { UserWalletContext } from '@/context/UserContext';
-import { Dropdown } from '../Dropdown/Dropdown';
 import useWallet from '@/hooks/useWallet';
+import { Dropdown } from '@/componentes/Dropdown/Dropdown';
 
 const ps = {
   algod: {
@@ -110,7 +110,14 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
       )}
 
       {isOpen && (
-        <Dialog isOpen={isOpen} setIsOpen={setIsOpen} title="Select Wallet" subtitle="" claim="">
+        <Dialog
+          closeButton
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          title="Select Wallet"
+          subtitle=""
+          claim=""
+        >
           <div className="flex flex-col space-between w-80 m-auto my-5 items-center">
             <div className="m-5 w-60 shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:text hover:bg-gray-100">
               <button

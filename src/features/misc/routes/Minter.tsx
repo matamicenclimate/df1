@@ -9,9 +9,8 @@ import { httpClient } from '@/lib/httpClient';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { createNFT } from '@/lib/nft';
 import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
-import { AlgoWalletConnector } from '@/componentes/Wallet/AlgoWalletConnector';
-import { ListFormat } from 'typescript';
 import useWallet from '@/hooks/useWallet';
+import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 
 export const Minter = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -20,7 +19,9 @@ export const Minter = () => {
   const [wallet] = useWallet();
   const account = wallet.map((w) => w.accounts[0]);
 
-  const [loading, setLoading] = useState(false);
+  const [uploadingIPFS, setUploadingToIPFS] = useState(false);
+  const [uploadingToBlock, setUploadingToBlock] = useState(false);
+  const [imageURL, setImageURL] = useState<string>();
 
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
@@ -34,16 +35,17 @@ export const Minter = () => {
   } = useForm<NFTMetadataBackend>();
 
   function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
-    // setLoading(true);
-
     const server = 'https://testnet.algoexplorerapi.io';
     const port = 0;
     const token = '';
 
     const algodClient = new algosdk.Algodv2(token, server, port);
+    setUploadingToBlock(true);
+    setImageURL(metadat.image_url);
 
     return createNFT(algodClient, account, metadat, wallet).then((result) => {
       setTransaction(result);
+      setUploadingToBlock(false);
     });
   }
 
@@ -68,10 +70,12 @@ export const Minter = () => {
       },
     };
     setMetadataNFT(meta);
+    setUploadingToIPFS(false);
   };
 
   useEffect(() => {
     if (dataToPost) {
+      setUploadingToIPFS(true);
       getNFTMetadata(dataToPost);
     }
   }, [dataToPost]);
@@ -96,6 +100,14 @@ export const Minter = () => {
     }
   };
 
+  // if (account === undefined || account === '') {
+  //   return (
+  //     <Dialog closeButton isOpen={isOpen} setIsOpen={setIsOpen} title="Please connect your wallet">
+  //       {/* <AlgoWalletConnector isNavbar /> */}
+  //     </Dialog>
+  //   );
+  // }
+
   return (
     <div>
       <MainLayout>
@@ -113,7 +125,30 @@ export const Minter = () => {
                 {transaction.assetID}
               </a>
             </h2>
+            {imageURL && (
+              <div className="flex justify-center">
+                <img src={imageURL} />
+              </div>
+            )}
           </div>
+        )}
+        {uploadingIPFS && (
+          <Dialog isOpen={uploadingIPFS} setIsOpen={setIsOpen} title={'Uploading file to IPFS...'}>
+            <div className="flex justify-center mt-3">
+              <Spinner size="lg" />
+            </div>
+          </Dialog>
+        )}
+        {uploadingToBlock && (
+          <Dialog
+            isOpen={uploadingToBlock}
+            setIsOpen={setIsOpen}
+            title={'Uploading transaction to Algorand blockchain...'}
+          >
+            <div className="flex justify-center mt-3">
+              <Spinner size="lg" />
+            </div>
+          </Dialog>
         )}
         <div className="flex justify-center h-screen rounded m-auto">
           <Form
@@ -133,7 +168,7 @@ export const Minter = () => {
                 type="file"
                 {...register('file', { required: true })}
               />
-              {errors?.file && <span className="text-red-500">This filed is required</span>}
+              {errors?.file && <span className="text-red-500">This field is required</span>}
             </div>
             <div>
               <label
@@ -149,7 +184,7 @@ export const Minter = () => {
                 placeholder="Title.."
                 {...register('title', { required: true })}
               />
-              {errors.title && <span className="text-red-500">This filed is required</span>}
+              {errors.title && <span className="text-red-500">This field is required</span>}
             </div>
             <div>
               <label
@@ -165,7 +200,7 @@ export const Minter = () => {
                 placeholder="Artist.."
                 {...register('author', { required: true })}
               />
-              {errors?.author && <span className="text-red-500">This filed is required</span>}
+              {errors?.author && <span className="text-red-500">This field is required</span>}
             </div>
             <div>
               <label
@@ -180,7 +215,7 @@ export const Minter = () => {
                 placeholder="Description.."
                 {...register('description', { required: true })}
               />
-              {errors.description && <span className="text-red-500">This filed is required</span>}
+              {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
             {/* <div>
               <label
@@ -196,14 +231,19 @@ export const Minter = () => {
                 // value={meta.cause}
                 {...register('cause', { required: true })}
               />
-              {errors.description && <span className="text-red-500">This filed is required</span>}
+              {errors.description && <span className="text-red-500">This field is required</span>}
             </div> */}
             <Button type="submit">Mint Nft</Button>
           </Form>
 
           {/* {isOpen && !account && ( */}
           {isOpen && (
-            <Dialog isOpen={isOpen} setIsOpen={setIsOpen} title="Please connect your wallet">
+            <Dialog
+              closeButton
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              title="Please connect your wallet"
+            >
               {/* <AlgoWalletConnector isNavbar /> */}
             </Dialog>
           )}
