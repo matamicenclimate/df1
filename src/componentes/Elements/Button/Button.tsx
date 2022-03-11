@@ -11,6 +11,7 @@ const sizes = {
 const variants = {
   light: 'text-white bg-secondary',
   primary: 'text-white bg-blue-600',
+  delete: 'text-white bg-red-800',
 };
 
 const hover = {
@@ -19,7 +20,7 @@ const hover = {
 };
 
 type ButtonProps = {
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   type?: 'submit';
   size?: keyof typeof sizes;
