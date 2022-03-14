@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import algosdk from 'algosdk';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
@@ -14,11 +14,7 @@ import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { useQuery } from 'react-query';
 import { Cause } from '@/lib/api/ipfs';
-
-const fetchCauses = async () => {
-  const res = await httpClientCauses.get('causes');
-  return res.data;
-};
+import { CauseContext } from '@/context/CauseContext';
 
 export const Minter = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -33,7 +29,9 @@ export const Minter = () => {
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
   const [transaction, setTransaction] = useState<assetInfoType | undefined>();
-  const { data, isLoading, error } = useQuery<Cause[]>('causes', fetchCauses);
+
+  const causeContext = useContext(CauseContext);
+  const data = causeContext?.data;
 
   const {
     register,
@@ -90,10 +88,6 @@ export const Minter = () => {
     setMetadataNFT(res.data as metadataNFTType);
     setUploadingToIPFS(false);
   };
-
-  useEffect(() => {
-    fetchCauses;
-  }, []);
 
   useEffect(() => {
     if (dataToPost) {

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider } from '@/lib/auth';
 import { UserContextProvider } from '@/context/UserContext';
+import { CauseContextProvider } from '@/context/CauseContext';
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <QueryClientProvider client={queryClient}>
         <UserContextProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <CauseContextProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </CauseContextProvider>
         </UserContextProvider>
       </QueryClientProvider>
     </ErrorBoundary>
