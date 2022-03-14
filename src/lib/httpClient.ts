@@ -5,7 +5,7 @@ import Axios, {
   AxiosResponse,
 } from 'axios';
 import storage from '@/utils/storage';
-import Endpoints from './api';
+import Endpoints from '@/lib/api';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 
