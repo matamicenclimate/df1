@@ -5,13 +5,20 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Wallet } from 'algorand-session-wallet';
-import { httpClient } from '@/lib/httpClient';
+import { httpClient, httpClientCauses } from '@/lib/httpClient';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { createNFT } from '@/lib/nft';
 import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
 import useWallet from '@/hooks/useWallet';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
+import { useQuery } from 'react-query';
+import { Cause } from '@/lib/api/ipfs';
+
+const fetchCauses = async () => {
+  const res = await httpClientCauses.get('causes');
+  return res.data;
+};
 
 export const Minter = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -26,6 +33,7 @@ export const Minter = () => {
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
   const [transaction, setTransaction] = useState<assetInfoType | undefined>();
+  const { data, isLoading, error } = useQuery<Cause[]>('causes', fetchCauses);
 
   const {
     register,
@@ -84,6 +92,10 @@ export const Minter = () => {
   };
 
   useEffect(() => {
+    fetchCauses;
+  }, []);
+
+  useEffect(() => {
     if (dataToPost) {
       setUploadingToIPFS(true);
       getNFTMetadata(dataToPost);
@@ -129,7 +141,7 @@ export const Minter = () => {
             </h2>
             {imageURL && (
               <div className="flex justify-center">
-                <img src={imageURL} />
+                <img className="w-40 h-40" src={imageURL} />
               </div>
             )}
           </div>
@@ -219,38 +231,44 @@ export const Minter = () => {
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
-            <div>
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="cause"
-              >
-                Cause
-              </label>
-              <input
-                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                id="cause"
-                placeholder="Cause.."
-                {...register('properties.cause', { required: true })}
-              />
-              {errors.description && <span className="text-red-500">This field is required</span>}
-            </div>
-            <div>
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="title"
-              >
-                Percentage
-              </label>
-              <input
-                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                id="percentage"
-                type="text"
-                placeholder="Percentage.."
-                {...register('properties.percentage', { required: true })}
-              />
-              {errors.properties?.percentage && (
-                <span className="text-red-500">This field is required</span>
-              )}
+            <div className="flex w-full">
+              <div className="w-3/4">
+                <label
+                  className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="cause"
+                >
+                  Cause
+                </label>
+                <select
+                  className="w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-gray-500 rounded py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                  {...register('properties.cause', { required: true })}
+                >
+                  <option value="">Select...</option>
+                  {data && data?.map((cause) => <option key={cause.id}>{cause.title}</option>)}
+                </select>
+                {errors.properties?.cause && (
+                  <span className="text-red-500">You should select a cause</span>
+                )}
+              </div>
+              <div className="ml-2">
+                <label
+                  className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="title"
+                >
+                  Percentage
+                </label>
+                <input
+                  className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                  id="percentage"
+                  type="number"
+                  placeholder="Percentage.."
+                  defaultValue={30}
+                  {...register('properties.percentage', { required: true, min: 30, max: 99 })}
+                />
+                {errors.properties?.percentage && (
+                  <span className="text-red-500">Percentage should be 30% or above</span>
+                )}
+              </div>
             </div>
             <div>
               <Controller

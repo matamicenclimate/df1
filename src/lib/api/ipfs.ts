@@ -20,3 +20,13 @@ export interface File {
   type: string;
   size: number;
 }
+
+export interface Cause {
+  id: string;
+  title: string;
+  description: string;
+  wallet: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}

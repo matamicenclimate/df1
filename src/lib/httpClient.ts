@@ -5,9 +5,10 @@ import Axios, {
   AxiosResponse,
 } from 'axios';
 import storage from '@/utils/storage';
-import Endpoints from '@/lib/api';
+import Endpoints from './api';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
+const API_URL_CAUSES = process.env.REACT_APP_API_URL_CAUSES ?? '';
 
 function authRequestInterceptor(config: AxiosRequestConfig) {
   const token = storage.getToken();
@@ -38,6 +39,10 @@ type HTTPClient = Omit<AxiosInstance, 'get' | 'post'> & {
 
 export const httpClient = Axios.create({
   baseURL: API_URL,
+}) as HTTPClient;
+
+export const httpClientCauses = Axios.create({
+  baseURL: API_URL_CAUSES,
 }) as HTTPClient;
 
 httpClient.interceptors.request.use(authRequestInterceptor);

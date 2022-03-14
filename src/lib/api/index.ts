@@ -1,4 +1,4 @@
-import { IPFSResponse } from './ipfs';
+import { Cause, IPFSResponse } from './ipfs';
 import { Nft } from './nfts';
 
 export default interface Endpoints
@@ -6,6 +6,7 @@ export default interface Endpoints
   get: {
     nfts: { response: Nft[] };
     healthz: { response: { status: 'ok' } };
+    causes: { response: Cause[] };
   };
   post: {
     ipfs: { response: IPFSResponse; body: FormData };
