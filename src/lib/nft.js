@@ -38,8 +38,6 @@ async function createAsset(algodClient, account, metadat, wallet) {
   // Throughout the example these will be re-used.
 
   const defaultFrozen = false;
-  // Used to display asset units to user
-  const unitName = metadat.title;
   // Friendly name of the asset
   const assetName = metadat.title;
   // Optional string pointing to a URL relating to the asset
@@ -68,7 +66,6 @@ async function createAsset(algodClient, account, metadat, wallet) {
     total: total,
     decimals: decimals,
     assetName: assetName,
-    unitName: unitName,
     assetURL: url,
     assetMetadataHash: metadataHash,
     defaultFrozen,

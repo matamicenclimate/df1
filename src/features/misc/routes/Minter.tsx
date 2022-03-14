@@ -11,6 +11,7 @@ import { createNFT } from '@/lib/nft';
 import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
 import useWallet from '@/hooks/useWallet';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
+import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 
 export const Minter = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -22,7 +23,6 @@ export const Minter = () => {
   const [uploadingIPFS, setUploadingToIPFS] = useState(false);
   const [uploadingToBlock, setUploadingToBlock] = useState(false);
   const [imageURL, setImageURL] = useState<string>();
-
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
   const [transaction, setTransaction] = useState<assetInfoType | undefined>();
@@ -53,23 +53,33 @@ export const Minter = () => {
     const filelist: any = data.file;
     const oneFile: File = filelist[0];
     console.log('oneFile', oneFile);
-    const dataString = { ...data, file: undefined };
+
+    const attribute = data.properties?.attributes?.reduce(
+      (acc: Record<string, any>, curr: InputGeneratorType['inputList'][0]) => {
+        acc[curr.trait_type] = curr.value;
+        return acc;
+      },
+      {}
+    );
+
+    delete data.properties.attributes;
+
+    const dataString = {
+      ...data,
+      properties: { ...data.properties, ...attribute },
+      file: undefined,
+    };
 
     const form = new FormData();
     form.append('data', JSON.stringify(dataString));
     form.append('file', oneFile, oneFile.name);
 
+    // selectedImage && form.append('file', selectedImage as File);
+
     const res = await httpClient.post('ipfs', form);
 
     console.log('res.data', res.data);
-    const meta: metadataNFTType = {
-      ...res.data,
-      arc69: {
-        ...res.data.arc69,
-        properties: { ...res.data.arc69.properties, standard: 'unknown' },
-      },
-    };
-    setMetadataNFT(meta);
+    setMetadataNFT(res.data as metadataNFTType);
     setUploadingToIPFS(false);
   };
 
@@ -99,14 +109,6 @@ export const Minter = () => {
       setDataToPost(data);
     }
   };
-
-  // if (account === undefined || account === '') {
-  //   return (
-  //     <Dialog closeButton isOpen={isOpen} setIsOpen={setIsOpen} title="Please connect your wallet">
-  //       {/* <AlgoWalletConnector isNavbar /> */}
-  //     </Dialog>
-  //   );
-  // }
 
   return (
     <div>
@@ -217,7 +219,7 @@ export const Minter = () => {
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
-            {/* <div>
+            <div>
               <label
                 className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
                 htmlFor="cause"
@@ -228,25 +230,42 @@ export const Minter = () => {
                 className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="cause"
                 placeholder="Cause.."
-                // value={meta.cause}
-                {...register('cause', { required: true })}
+                {...register('properties.cause', { required: true })}
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
-            </div> */}
+            </div>
+            <div>
+              <label
+                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
+                htmlFor="title"
+              >
+                Percentage
+              </label>
+              <input
+                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="percentage"
+                type="text"
+                placeholder="Percentage.."
+                {...register('properties.percentage', { required: true })}
+              />
+              {errors.properties?.percentage && (
+                <span className="text-red-500">This field is required</span>
+              )}
+            </div>
+            <div>
+              <Controller
+                control={control}
+                name="properties.attributes"
+                render={({ field: { value, onChange } }) => (
+                  <InputGenerator
+                    inputList={value ?? [{ trait_type: '', value: '' }]}
+                    setInputList={onChange}
+                  />
+                )}
+              />
+            </div>
             <Button type="submit">Mint Nft</Button>
           </Form>
-
-          {/* {isOpen && !account && ( */}
-          {isOpen && (
-            <Dialog
-              closeButton
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              title="Please connect your wallet"
-            >
-              {/* <AlgoWalletConnector isNavbar /> */}
-            </Dialog>
-          )}
         </div>
       </MainLayout>
     </div>

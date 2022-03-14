@@ -17,7 +17,6 @@ export type metadataNFTType = {
         type: string;
         size: number;
       };
-      standard: string;
     };
   };
   image_url: string;
@@ -30,6 +29,7 @@ export type NFTMetadataBackend = {
   description: string;
   author: string;
   file: string | File;
+  properties: Record<string, any>;
 };
 
 export type MinterProps = {
