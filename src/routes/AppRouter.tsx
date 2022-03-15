@@ -6,6 +6,7 @@ import { Minter } from '@/features/misc/routes/Minter';
 import { useAuth } from '@/lib/auth';
 import useWallet from '@/hooks/useWallet';
 import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
+import { Cause } from '@/features/misc/routes/Cause';
 
 export const AppRouter = () => {
   // We're not using magiclink at the moment, but it may be needed soon.
@@ -19,6 +20,10 @@ export const AppRouter = () => {
       element: wallet
         .map(() => <Minter key="mint-or-connect" />)
         .getOrElse(<ConnectWallet key="mint-or-connect" />),
+    },
+    {
+      path: '/cause',
+      element: <Cause />,
     },
   ];
 

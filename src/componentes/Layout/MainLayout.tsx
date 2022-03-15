@@ -60,6 +60,11 @@ export const Navbar = () => {
         </Link>
       </div>
       <div>
+        <Link to="/cause">
+          <h2 className="hover:font-bold">Cause</h2>
+        </Link>
+      </div>
+      <div>
         <AlgoWalletConnector isNavbar />
       </div>
 
