@@ -2,8 +2,7 @@ import React, { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Dialog } from '@/componentes/Dialog/Dialog';
-import { UserWalletContext } from '@/context/UserContext';
-import useWallet from '@/hooks/useWallet';
+import { WalletContext } from '@/context/WalletContext';
 import { Dropdown } from '@/componentes/Dropdown/Dropdown';
 
 const ps = {
@@ -25,11 +24,10 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   const [sessionWallet, setSessionWallet] = useState(sw);
   const [accts, setAccounts] = useState(sw.accountList());
   const [connected, setConnected] = useState(sw.connected());
-  const [wallet, setWallet, discardWallet] = useWallet();
 
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
-  const userWalletContext = useContext(UserWalletContext);
+  const userWalletContext = useContext(WalletContext);
 
   function handleContextWalletAcct(sw: SessionWallet) {
     return userWalletContext?.setUserWallet({
@@ -69,7 +67,6 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
       sw.disconnect();
       // showErrorToaster("Couldn't connect to wallet")
     }
-    setWallet(sw.wallet);
     updateWallet(sw);
     setIsOpen(false);
   };
@@ -77,7 +74,6 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   const disconnectWallet = () => {
     sessionWallet.disconnect();
     updateWallet(new SessionWallet(sessionWallet.network, sessionWallet.permissionCallback));
-    discardWallet();
   };
 
   return (
