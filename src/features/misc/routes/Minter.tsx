@@ -5,23 +5,23 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Wallet } from 'algorand-session-wallet';
-import { httpClient, httpClientCauses } from '@/lib/httpClient';
+import { httpClient } from '@/lib/httpClient';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { createNFT } from '@/lib/nft';
 import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
-import useWallet from '@/hooks/useWallet';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
-import { useQuery } from 'react-query';
-import { Cause } from '@/lib/api/ipfs';
 import { CauseContext } from '@/context/CauseContext';
 
-export const Minter = () => {
+export type MinterProps = {
+  wallet: Wallet | undefined;
+  account: string | undefined;
+};
+
+export const Minter = ({ wallet, account }: MinterProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // const [selectedImage, setSelectedImage] = useState<File>();
   // console.log('selectedImage from minter', selectedImage);
-  const [wallet] = useWallet();
-  const account = wallet.map((w) => w.accounts[0]);
 
   const [uploadingIPFS, setUploadingToIPFS] = useState(false);
   const [uploadingToBlock, setUploadingToBlock] = useState(false);
@@ -75,7 +75,7 @@ export const Minter = () => {
       properties: { ...data.properties, ...attribute },
       file: undefined,
     };
-
+    console.log('dataStringdataStringdataString', dataString);
     const form = new FormData();
     form.append('data', JSON.stringify(dataString));
     form.append('file', oneFile, oneFile.name);
@@ -97,23 +97,14 @@ export const Minter = () => {
   }, [dataToPost]);
 
   useEffect(() => {
-    if (metadataNFT && wallet.isDefined() && account.isDefined()) {
-      mintNFT(metadataNFT, wallet.value, account.value);
+    // if (metadataNFT && wallet.isDefined() && account.isDefined()) {
+    if (metadataNFT && wallet && account) {
+      mintNFT(metadataNFT, wallet, account);
     }
   }, [metadataNFT]);
 
-  const checkIfAccount = () => {
-    if (account.isEmpty()) {
-      setIsOpen(true);
-      return false;
-    }
-    return true;
-  };
-
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = (data: NFTMetadataBackend) => {
-    if (checkIfAccount()) {
-      setDataToPost(data);
-    }
+    setDataToPost(data);
   };
 
   return (
@@ -224,6 +215,22 @@ export const Minter = () => {
                 {...register('description', { required: true })}
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
+            </div>
+            <div>
+              <label
+                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
+                htmlFor="description"
+              >
+                Price
+              </label>
+              <input
+                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                id="price"
+                type="number"
+                placeholder="Set a price for your asset.."
+                {...register('price', { required: true })}
+              />
+              {errors.price && <span className="text-red-500">This field is required</span>}
             </div>
             <div className="flex w-full">
               <div className="w-3/4">

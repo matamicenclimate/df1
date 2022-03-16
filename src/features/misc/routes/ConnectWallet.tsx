@@ -2,9 +2,8 @@ import React, { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Dialog } from '@/componentes/Dialog/Dialog';
-import { UserWalletContext } from '@/context/UserContext';
+import { WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
-import useWallet from '@/hooks/useWallet';
 
 const ps = {
   algod: {
@@ -22,9 +21,8 @@ export const ConnectWallet = () => {
   const [connected, setConnected] = useState(sw.connected());
 
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
-  const [wallet, setWallet, discardWallet] = useWallet();
 
-  const userWalletContext = useContext(UserWalletContext);
+  const userWalletContext = useContext(WalletContext);
 
   function handleContextWalletAcct(sw: SessionWallet) {
     return userWalletContext?.setUserWallet({
@@ -63,7 +61,6 @@ export const ConnectWallet = () => {
       sw.disconnect();
       // showErrorToaster("Couldn't connect to wallet")
     }
-    setWallet(sw.wallet);
     updateWallet(sw);
   };
 

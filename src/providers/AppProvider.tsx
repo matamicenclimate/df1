@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 // import { AuthProvider } from '@/context/auth-context';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider } from '@/lib/auth';
-import { UserContextProvider } from '@/context/UserContext';
+import { UserContextProvider } from '@/context/WalletContext';
 import { CauseContextProvider } from '@/context/CauseContext';
 
 const queryClient = new QueryClient();

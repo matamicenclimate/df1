@@ -29,6 +29,7 @@ export type NFTMetadataBackend = {
   description: string;
   author: string;
   file: string | File;
+  price: number;
   properties: Record<string, any>;
 };
 
