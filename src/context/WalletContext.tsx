@@ -20,5 +20,9 @@ export const WalletContext = createContext<WalletContextType | null>(null);
 export const UserContextProvider = ({ children }: WalletContextProviderProps) => {
   const [userWallet, setUserWallet] = useState<UserWallet | null>(null);
 
-  return <WalletContext.Provider value={{ userWallet, setUserWallet }}></WalletContext.Provider>;
+  return (
+    <WalletContext.Provider value={{ userWallet, setUserWallet }}>
+      {children}
+    </WalletContext.Provider>
+  );
 };
