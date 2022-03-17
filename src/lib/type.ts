@@ -24,13 +24,20 @@ export type metadataNFTType = {
   url: string;
 };
 
+export type CauseInfo = {
+  cause: string;
+  causePercentage: number;
+  price: number;
+};
+
+type Properties = Record<string, any> & CauseInfo;
+
 export type NFTMetadataBackend = {
   title: string;
   description: string;
   author: string;
   file: string | File;
-  price: number;
-  properties: Record<string, any>;
+  properties: Properties;
 };
 
 export type MinterProps = {
