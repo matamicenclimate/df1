@@ -7,7 +7,8 @@ import { Dropdown } from '@/componentes/Dropdown/Dropdown';
 
 const ps = {
   algod: {
-    server: 'https://testnet.algoexplorerapi.io',
+    // server: 'https://testnet.algoexplorerapi.io',
+    server: 'https://algoindexer.testnet.algoexplorerapi.io',
     port: 0,
     token: '',
     network: 'TestNet',

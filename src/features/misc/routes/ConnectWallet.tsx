@@ -4,10 +4,12 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
+import { setupClient } from '@/lib/algorand';
 
 const ps = {
   algod: {
-    server: 'https://testnet.algoexplorerapi.io',
+    // server: 'https://testnet.algoexplorerapi.io',
+    server: 'https://algoindexer.testnet.algoexplorerapi.io',
     port: 0,
     token: '',
     network: 'TestNet',

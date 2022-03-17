@@ -14,13 +14,17 @@ async function createAsset(algodClient, account, metadat, wallet) {
   console.log('algodClient', algodClient);
   console.log('metadatFromMinter', metadat);
   console.log('walletwalletwalletwalletwalletwalletwalletwalletv', wallet);
+  console.log('accountaccountaccountaccount', account);
   console.log('==> CREATE ASSET');
+  //Check algorand node status
+  let status = await algodClient.status().do();
+  console.log('statusstatusstatusstatus', status);
   //Check account balance
   const accountInfo = await algodClient.accountInformation(account).do();
   console.log('accountInfo', accountInfo);
 
   const startingAmount = accountInfo.amount;
-  console.log('User account balance: %d microAlgos', startingAmount);
+  console.log('User account balance: microAlgos', startingAmount);
 
   // Construct the transaction
   const params = await algodClient.getTransactionParams().do();
@@ -42,7 +46,8 @@ async function createAsset(algodClient, account, metadat, wallet) {
   const assetName = metadat.title;
   // Optional string pointing to a URL relating to the asset
   const url = metadat.url;
-  const managerAddr = account; // OPTIONAL: FOR DEMO ONLY, USED TO DESTROY ASSET WITHIN
+  const managerAddr = 'ILHMK67WCDOW3RHYZWTYPOVSXJOIETARELRLATUSVXV2TTTYIN47X4GE3E'; // OPTIONAL: FOR DEMO ONLY, USED TO DESTROY ASSET WITHIN
+  // const managerAddr = account;
   const reserveAddr = account;
   const freezeAddr = account;
   const clawbackAddr = account;
@@ -77,6 +82,14 @@ async function createAsset(algodClient, account, metadat, wallet) {
   });
   console.log('txn', txn);
 
+  // let rawSignedTxn = txn.signTxn(recoveredAccount2.sk);
+  // let rawSignedTxn = await wallet.signTxn([txn]);
+  // let ctx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+  // // Wait for confirmation
+  // let confirmedTxn = await algosdk.waitForConfirmation(algodClient, ctx.txId, 4);
+  // //Get the completed Transaction
+  // console.log('Transaction ' + ctx.txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
+
   const [s_create_txn] = await wallet.signTxn([txn]);
   console.log('[s_create_txn]', [s_create_txn]);
 
@@ -104,8 +117,9 @@ async function createAsset(algodClient, account, metadat, wallet) {
   return assetInfo;
 }
 
-async function destroyAsset(algodClient, account, assetID) {
-  console.log('');
+export async function destroyAsset(algodClient, account, assetID) {
+  console.log('account', account);
+  console.log('assetID', assetID);
   console.log('==> DESTROY ASSET');
   // All of the created assets should now be back in the creators
   // Account so we can delete the asset.

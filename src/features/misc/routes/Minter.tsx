@@ -12,6 +12,8 @@ import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
+import { setupClient } from '@/lib/algorand';
+import { DeleteAsset } from '@/componentes/DeleteAsset/DeleteAsset';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
@@ -40,12 +42,11 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
 
-  function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
-    const server = 'https://testnet.algoexplorerapi.io';
-    const port = 0;
-    const token = '';
+  async function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
+    const algodClient = await setupClient();
+    console.log('algodClient from Minter', algodClient);
 
-    const algodClient = new algosdk.Algodv2(token, server, port);
+    // const algodClient = new algosdk.Algodv2(token, server, port);
     setUploadingToBlock(true);
     setImageURL(metadat.image_url);
 
@@ -61,6 +62,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     console.log('oneFile', oneFile);
 
     const attribute = data.properties?.attributes?.reduce(
+      // (acc: Record<string, any>, curr: InputGeneratorType['inputList'][0]) => {
       (acc: Record<string, any>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
         return acc;
@@ -75,6 +77,8 @@ export const Minter = ({ wallet, account }: MinterProps) => {
       properties: { ...data.properties, ...attribute },
       file: undefined,
     };
+    dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
+    dataString.properties.price = Number(dataString.properties.price);
     console.log('dataStringdataStringdataString', dataString);
     const form = new FormData();
     form.append('data', JSON.stringify(dataString));
@@ -110,6 +114,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   return (
     <div>
       <MainLayout>
+        <DeleteAsset account={account} />
         {transaction && (
           <div className="text-center">
             <h2 className="font-bold text-2xl">Your Transaction and Asset</h2>
@@ -228,9 +233,11 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 id="price"
                 type="number"
                 placeholder="Set a price for your asset.."
-                {...register('price', { required: true })}
+                {...register('properties.price', { required: true })}
               />
-              {errors.price && <span className="text-red-500">This field is required</span>}
+              {errors.properties?.price && (
+                <span className="text-red-500">This field is required</span>
+              )}
             </div>
             <div className="flex w-full">
               <div className="w-3/4">
@@ -254,7 +261,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               <div className="ml-2">
                 <label
                   className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="title"
+                  htmlFor="percentage"
                 >
                   Percentage
                 </label>
@@ -264,9 +271,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   type="number"
                   placeholder="Percentage.."
                   defaultValue={30}
-                  {...register('properties.percentage', { required: true, min: 30, max: 99 })}
+                  {...register('properties.causePercentage', { required: true, min: 30, max: 99 })}
                 />
-                {errors.properties?.percentage && (
+                {errors.properties?.causePercentage && (
                   <span className="text-red-500">Percentage should be 30% or above</span>
                 )}
               </div>
