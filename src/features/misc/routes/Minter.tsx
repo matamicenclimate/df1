@@ -14,6 +14,8 @@ import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator
 import { CauseContext } from '@/context/CauseContext';
 import { setupClient } from '@/lib/algorand';
 import { DeleteAsset } from '@/componentes/DeleteAsset/DeleteAsset';
+import Container from 'typedi';
+import OptInService from '@common/src/services/OptInService';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
@@ -51,6 +53,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     setImageURL(metadat.image_url);
 
     return createNFT(algodClient, account, metadat, wallet).then((result) => {
+      const opt = Container.get(OptInService);
       setTransaction(result);
       setUploadingToBlock(false);
     });

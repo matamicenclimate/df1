@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
 
