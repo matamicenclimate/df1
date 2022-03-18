@@ -14,8 +14,6 @@ import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator
 import { CauseContext } from '@/context/CauseContext';
 import { setupClient } from '@/lib/algorand';
 import { DeleteAsset } from '@/componentes/DeleteAsset/DeleteAsset';
-import Container from 'typedi';
-import OptInService from '@common/src/services/OptInService';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
@@ -53,7 +51,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     setImageURL(metadat.image_url);
 
     const result = await createNFT(algodClient, account, metadat, wallet);
-    const opt = Container.get(OptInService);
     setTransaction(result);
     setUploadingToBlock(false);
     if (result == null) {
@@ -61,7 +58,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
       );
     }
-    const optResult = await opt.optInAssetByID(result.assetID);
+    const optResult = await httpClient.post(`opt-in/${result.assetID}` as 'opt-in/', '');
     console.info('Asset opted-in:', optResult);
   }
 
