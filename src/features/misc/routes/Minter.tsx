@@ -52,11 +52,17 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     setUploadingToBlock(true);
     setImageURL(metadat.image_url);
 
-    return createNFT(algodClient, account, metadat, wallet).then((result) => {
-      const opt = Container.get(OptInService);
-      setTransaction(result);
-      setUploadingToBlock(false);
-    });
+    const result = await createNFT(algodClient, account, metadat, wallet);
+    const opt = Container.get(OptInService);
+    setTransaction(result);
+    setUploadingToBlock(false);
+    if (result == null) {
+      return console.warn(
+        "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
+      );
+    }
+    const optResult = await opt.optInAssetByID(result.assetID);
+    console.info('Asset opted-in:', optResult);
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {
