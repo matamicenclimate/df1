@@ -18,7 +18,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true
     },
-    "include": ["src"],
+    "include": ["src", "climate-nft-common/src"],
     "exclude": ["node_modules"],
     "extends": "./tsconfig.paths.json"
 }
