@@ -46,8 +46,8 @@ async function createAsset(algodClient, account, metadat, wallet) {
   const assetName = metadat.title;
   // Optional string pointing to a URL relating to the asset
   const url = metadat.url;
-  const managerAddr = 'ILHMK67WCDOW3RHYZWTYPOVSXJOIETARELRLATUSVXV2TTTYIN47X4GE3E'; // OPTIONAL: FOR DEMO ONLY, USED TO DESTROY ASSET WITHIN
-  // const managerAddr = account;
+  // const managerAddr = 'ILHMK67WCDOW3RHYZWTYPOVSXJOIETARELRLATUSVXV2TTTYIN47X4GE3E'; // OPTIONAL: FOR DEMO ONLY, USED TO DESTROY ASSET WITHIN
+  const managerAddr = account;
   const reserveAddr = account;
   const freezeAddr = account;
   const clawbackAddr = account;
@@ -117,43 +117,45 @@ async function createAsset(algodClient, account, metadat, wallet) {
   return assetInfo;
 }
 
-export async function destroyAsset(algodClient, account, assetID) {
+export async function destroyAsset(algodClient, account, assetID, wallet) {
   console.log('account', account);
+  console.log('algodClient', algodClient);
   console.log('assetID', assetID);
+  console.log('assetID', typeof assetID);
   console.log('==> DESTROY ASSET');
+  const assetNumber = Number(assetID);
   // All of the created assets should now be back in the creators
   // Account so we can delete the asset.
   // If this is not the case the asset deletion will fail
   const params = await algodClient.getTransactionParams().do();
-  // Comment out the next two lines to use suggested fee
-  // params.fee = 1000;
-  // params.flatFee = true;
-  // The address for the from field must be the manager account
   const addr = account;
-  // if all assets are held by the asset creator,
-  // the asset creator can sign and issue "txn" to remove the asset from the ledger.
   const txn = algosdk.makeAssetDestroyTxnWithSuggestedParamsFromObject({
     from: addr,
     note: undefined,
-    assetIndex: assetID,
+    assetIndex: assetNumber,
     suggestedParams: params,
   });
-  // The transaction must be signed by the manager which
-  // is currently set to account
-  // const rawSignedTxn = txn.signTxn(alice.sk);
-  const rawSignedTxn = txn.signTxn(account.sk);
-  const tx = await algodClient.sendRawTransaction(rawSignedTxn).do();
-  // Wait for confirmation
-  const confirmedTxn = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
-  //Get the completed Transaction
-  console.log('Transaction ' + tx.txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
+  console.log('txn', txn);
+
+  const [s_create_txn] = await wallet.signTxn([txn]);
+  console.log('[s_create_txn]', [s_create_txn]);
+
+  const { txId } = await algodClient
+    .sendRawTransaction(
+      [s_create_txn].map((t) => {
+        return t.blob;
+      })
+    )
+    .do();
+  const confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 10);
+  console.log('Transaction ' + txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
   // The account3 and account1 should no longer contain the asset as it has been destroyed
   console.log('Asset ID: ' + assetID);
   console.log('AccountAddr = ' + account);
   await printCreatedAsset(algodClient, account, assetID);
   await printAssetHolding(algodClient, account, assetID);
 
-  return;
+  // return;
 }
 
 // Function used to print created asset for account and assetid
@@ -203,6 +205,7 @@ export async function createNFT(algodClient, account, metadat, wallet) {
     // await destroyAsset(algodClient, account, assetID);
     return assetID;
   } catch (err) {
+    // return err.message;
     console.log('err', err);
   }
   // process.exit();

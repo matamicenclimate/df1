@@ -11,3 +11,15 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace, Poppins;
 }
+
+.active {
+  border-bottom: 2px solid #00f;
+}
+.active:hover {
+  border-bottom: 4px solid #00f;
+  font-weight: bold;
+}
+
+li {
+  list-style-type: none;
+}

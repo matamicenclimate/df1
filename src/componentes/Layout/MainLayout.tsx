@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { useAuth } from '@/lib/auth';
-import { Link } from 'react-router-dom';
-import { Button } from '@/componentes/Elements/Button/Button';
+import { Link, useLocation } from 'react-router-dom';
 import { useWindowSize } from '@/hooks/useResize';
 import NavbarMobile from '../NavbarMobile/NavbarMobile';
 import { AlgoWalletConnector } from '../Wallet/AlgoWalletConnector';
-import { SessionWallet } from 'algorand-session-wallet';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -23,41 +20,45 @@ export const Footer = () => {
 };
 
 export const Navbar = () => {
-  const MenuLink = ({ text, action }: any) => {
-    return <button onClick={action}>{text}</button>;
-  };
+  const location = useLocation();
+  const { pathname } = location;
+  const splitLocation = pathname.split('/');
 
-  const auth = useAuth();
-
-  const handleLogout = () => {
-    auth.logout();
-  };
+  // const auth = useAuth();
+  // const handleLogout = () => {
+  //   auth.logout();
+  // };
 
   return (
-    <div className="p-4 border flex gap-4 mb-4 justify-between items-center">
-      <div>
+    <nav className="p-4 border flex gap-4 mb-4 justify-between items-center">
+      <li>
         <Link to="/">
-          <h1 className="text-4xl font-bold">Climate NFT Marketplace</h1>
+          <h1 className="text-2xl font-bold">Climate NFT Marketplace</h1>
         </Link>
-      </div>
-      <div>
+      </li>
+      <li className={splitLocation[1] === '' ? 'active' : ''}>
         <Link to="/">
           <h2 className="hover:font-bold">Explore</h2>
         </Link>
-      </div>
-      <div>
+      </li>
+      <li className={splitLocation[1] === 'mint' ? 'active' : ''}>
         <Link to="/mint">
           <h2 className="hover:font-bold">Mint</h2>
         </Link>
-      </div>
-      <div>
+      </li>
+      <li className={splitLocation[1] === 'cause' ? 'active' : ''}>
         <Link to="/cause">
           <h2 className="hover:font-bold">Cause</h2>
         </Link>
-      </div>
-      <div>
+      </li>
+      <li className={splitLocation[1] === 'admin' ? 'active' : ''}>
+        <Link to="/admin">
+          <h2 className="hover:font-bold">Admin</h2>
+        </Link>
+      </li>
+      <li>
         <AlgoWalletConnector isNavbar />
-      </div>
+      </li>
 
       {/* <div className="flex gap-4">
         {auth.user && (
@@ -73,7 +74,7 @@ export const Navbar = () => {
           </>
         )}
       </div> */}
-    </div>
+    </nav>
   );
 };
 
@@ -83,8 +84,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="relative mx-auto min-h-screen flex flex-col bg-custom-gray md:bg-custom-white">
       {width >= 768 ? <Navbar /> : <NavbarMobile />}
-      {/* <div className="mt-14 bg-custom-gray md:bg-custom-white md:mt-3 mb-11 ">{children}</div> */}
-      <div className="mt-14 bg-custom-gray text-white md:text-black md:bg-custom-white  md:mt-3 pb-12 ">
+      <div className="mt-14 bg-custom-gray text-white md:text-black md:bg-custom-white  md:mt-3 pb-12 mb-12">
         {children}
       </div>
       <Footer />
