@@ -50,10 +50,16 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     setUploadingToBlock(true);
     setImageURL(metadat.image_url);
 
-    return createNFT(algodClient, account, metadat, wallet).then((result) => {
-      setTransaction(result);
-      setUploadingToBlock(false);
-    });
+    const result = await createNFT(algodClient, account, metadat, wallet);
+    setTransaction(result);
+    setUploadingToBlock(false);
+    if (result == null) {
+      return console.warn(
+        "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
+      );
+    }
+    const optResult = await httpClient.post(`opt-in/${result.assetID}` as 'opt-in/', '');
+    console.info('Asset opted-in:', optResult);
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {

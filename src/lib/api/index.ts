@@ -9,6 +9,7 @@ export default interface Endpoints
     causes: { response: Cause[] };
   };
   post: {
+    'opt-in/': { response: Record<string, any>; body: '' };
     ipfs: { response: IPFSResponse; body: FormData };
     '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
   };
