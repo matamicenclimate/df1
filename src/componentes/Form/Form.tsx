@@ -5,7 +5,7 @@ interface FormProps {
   defaultValues?: any;
   children: React.ReactElement[];
   onSubmit: (data: any) => void;
-  className: string;
+  className?: string;
 }
 export const Form = ({ defaultValues, children, onSubmit, className }: FormProps) => {
   const methods = useForm({ defaultValues });

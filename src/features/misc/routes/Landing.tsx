@@ -12,16 +12,19 @@ const fetchNfts = async () => {
 
 export const Landing = () => {
   const { data, isLoading, error } = useQuery<Nft[]>('nfts', fetchNfts);
-
-  if (isLoading) return <Spinner />;
   if (error) return <div>{`An error occurred ${error}`}</div>;
-
   return (
     <MainLayout>
       <div className="flex justify-center">
         <div className="p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-            {data && data.map((nft, i) => <Card key={i} nft={nft} />)}
+          <div>
+            {isLoading ? (
+              <Spinner size="lg" />
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+                {data && data.map((nft, i) => <Card key={i} nft={nft} />)}
+              </div>
+            )}
           </div>
         </div>
       </div>
