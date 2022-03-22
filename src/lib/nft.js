@@ -73,6 +73,7 @@ async function createAsset(algodClient, account, metadat, wallet) {
     assetName: assetName,
     assetURL: url,
     assetMetadataHash: metadataHash,
+    note: algosdk.encodeObj(metadat),
     defaultFrozen,
     freeze: freezeAddr,
     manager: managerAddr,
