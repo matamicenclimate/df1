@@ -1,13 +1,13 @@
 import { Button } from '@/componentes/Elements/Button/Button';
 
-export type InputGeneratorType = {
+export type InputGeneratorType<T = unknown> = {
   inputList: {
     trait_type: string;
     value: string;
   }[];
   setInputList: React.Dispatch<React.SetStateAction<InputGeneratorType['inputList']>>;
-  value?: any;
-  onChange?: any;
+  value?: T;
+  onChange?: (t: T) => void;
 };
 
 export const InputGenerator = ({ inputList, setInputList }: InputGeneratorType) => {

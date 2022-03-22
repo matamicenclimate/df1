@@ -48,7 +48,7 @@ async function loginFn(data: LoginCredentialsDTO): Promise<AuthUser> {
 
 async function registerFn(data: RegisterCredentialsDTO) {
   const response = await registerWithEmailAndPassword(data);
-  const user = await handleUserResponse(response);
+  const user = await handleUserResponse(response as UserResponse);
   return user;
 }
 

@@ -36,7 +36,7 @@ export type NFTMetadataBackend = {
   title: string;
   description: string;
   author: string;
-  file: string | File;
+  file: FileList;
   properties: Properties;
 };
 

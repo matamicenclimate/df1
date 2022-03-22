@@ -12,10 +12,10 @@ export const Login = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState<boolean>(true);
 
-  const handleLogin = async (data: Record<string, any>) => {
+  const handleLogin = async (data: Record<string, unknown>) => {
     console.log(data);
 
-    await auth.login({ email: data.email });
+    await auth.login({ email: data.email as string });
   };
 
   return (
@@ -23,8 +23,8 @@ export const Login = () => {
       ola k ase
       <Form onSubmit={handleLogin} className="flex flex-col">
         <label htmlFor="email">{t('login.heading')}</label>
-        <Input name="email" type="email" />
-
+        {/* ??? */}
+        {/* <Input name="email" type="email" /> */}
         <Button type="submit">hasme login</Button>
       </Form>
       <Dialog

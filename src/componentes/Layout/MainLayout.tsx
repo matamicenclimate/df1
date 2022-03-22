@@ -1,4 +1,4 @@
-import { useAuth } from '@/lib/auth';
+// import { useAuth } from '@/lib/auth';
 import { Link, useLocation } from 'react-router-dom';
 import { useWindowSize } from '@/hooks/useResize';
 import NavbarMobile from '../NavbarMobile/NavbarMobile';
@@ -79,7 +79,7 @@ export const Navbar = () => {
 };
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  const [width, height] = useWindowSize();
+  const [width] = useWindowSize();
 
   return (
     <div className="relative mx-auto min-h-screen flex flex-col bg-custom-gray md:bg-custom-white">

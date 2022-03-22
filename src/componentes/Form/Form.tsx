@@ -2,9 +2,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 interface FormProps {
-  defaultValues?: any;
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  defaultValues?: Record<string, any>;
   children: React.ReactElement[];
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Record<string, unknown>) => Promise<void>;
   className?: string;
 }
 export const Form = ({ defaultValues, children, onSubmit, className }: FormProps) => {

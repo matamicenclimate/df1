@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Dialog as HUIDialog } from '@headlessui/react';
 import { Button } from '../Elements/Button/Button';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +25,7 @@ export const Dialog = ({
   onAccept,
   acceptLabel,
   onCancel,
-  cancelLabel,
+  // cancelLabel,
   closeButton,
   children,
 }: DialogProps) => {

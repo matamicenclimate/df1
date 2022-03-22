@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import algosdk from 'algosdk';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Form } from '@/componentes/Form/Form';
@@ -20,7 +19,7 @@ export type MinterProps = {
 };
 
 export const Minter = ({ wallet, account }: MinterProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [, setIsOpen] = useState<boolean>(false);
   // const [selectedImage, setSelectedImage] = useState<File>();
   // console.log('selectedImage from minter', selectedImage);
 
@@ -62,13 +61,13 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {
-    const filelist: any = data.file;
-    const oneFile: File = filelist[0];
+    const filelist = data.file;
+    const oneFile = filelist[0];
     console.log('oneFile', oneFile);
 
     const attribute = data.properties?.attributes?.reduce(
       // (acc: Record<string, any>, curr: InputGeneratorType['inputList'][0]) => {
-      (acc: Record<string, any>, curr: InputGeneratorType['inputList'][0]) => {
+      (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
         return acc;
       },
@@ -160,7 +159,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         )}
         <div className="flex justify-center h-screen rounded m-auto">
           <Form
-            onSubmit={handleSubmit(formSubmitHandler)}
+            onSubmit={handleSubmit(formSubmitHandler) as () => Promise<void>}
             className="rounded px-8 pt-6 pb-8 mb-4 md:max-h-[40rem]"
           >
             <div className="mb-4">

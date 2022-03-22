@@ -16,7 +16,7 @@ export const DeleteAsset = ({ account, wallet }: DeleteAssetProps) => {
   const [inputValue, setInputValue] = useState<string | undefined>('');
   const [deletingAsset, setDeletingAsset] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [, setIsOpen] = useState<boolean>(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.currentTarget.value;

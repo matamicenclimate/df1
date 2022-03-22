@@ -1,10 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
-import { Button } from '@/componentes/Elements/Button/Button';
-import { Dialog } from '@/componentes/Dialog/Dialog';
 import { WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
-import { setupClient } from '@/lib/algorand';
 
 const ps = {
   algod: {
@@ -19,10 +17,10 @@ const ps = {
 export const ConnectWallet = () => {
   const sw = new SessionWallet(ps.algod.network);
   const [sessionWallet, setSessionWallet] = useState(sw);
-  const [accts, setAccounts] = useState(sw.accountList());
-  const [connected, setConnected] = useState(sw.connected());
+  const [, setAccounts] = useState(sw.accountList());
+  const [, setConnected] = useState(sw.connected());
 
-  const [optionSelected, setOptionSelected] = useState<string | undefined>();
+  const [optionSelected] = useState<string | undefined>();
 
   const userWalletContext = useContext(WalletContext);
 

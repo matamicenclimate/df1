@@ -4,6 +4,6 @@ export type RegisterCredentialsDTO = {
   email: string;
 };
 
-export const registerWithEmailAndPassword = (data: RegisterCredentialsDTO): Promise<any> => {
+export const registerWithEmailAndPassword = (data: RegisterCredentialsDTO): Promise<unknown> => {
   return httpClient.post('/auth/register', data);
 };
