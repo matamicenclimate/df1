@@ -9,6 +9,7 @@ import { Cause } from '@/features/misc/routes/Cause';
 import { useContext } from 'react';
 import { WalletContext } from '@/context/WalletContext';
 import { Admin } from '@/features/misc/routes/Admin';
+import { NftDetail } from '@/features/misc/routes/NftDetail';
 
 export const AppRouter = () => {
   // We're not using magiclink at the moment, but it may be needed soon.
@@ -46,6 +47,10 @@ export const AppRouter = () => {
             account={walletContext?.userWallet?.account}
           />
         ),
+    },
+    {
+      path: '/nft/:id',
+      element: <NftDetail />,
     },
   ];
 
