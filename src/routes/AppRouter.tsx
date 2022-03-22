@@ -49,7 +49,7 @@ export const AppRouter = () => {
         ),
     },
     {
-      path: '/nft/:id',
+      path: '/nft/:ipnft',
       element: <NftDetail />,
     },
   ];
