@@ -3,16 +3,16 @@ dist: bionic
 language: node_js
 node_js:
   - lts/*
-  
+
 notifications:
   slack:
     secure: khWN80suyIyPB7nrxAHyyxYape3kxWIXqbCj6IAgpIXLAtmyKdoEcMflvQ5SGjTRFPkV2HSnqOUKIkNsQg62NVRxBZYk0b8iwjhJfsdFi0AGhdy8D5HaxWN3+MzaZ5fgBqpYWpvGF2OiN7096JW8NVAZbpBFDYcGkL9IkGLwraGpTaK5p5E8N+kOSJURVYx6dYEFPKaWcAprAYHxtgTJv4cfyVghPhlaCEEEk1zhIsIOt1UM5ViYvmQl/cxGRJYMJDRlQstVT06Yghp4SxPjILz7mONocKMlQuTvXnmDIVNazwjHhPLn18Z0/O7rcPQL602RuDy/bNy1OKCLvqobtlXKxkQhaGd+YT7FgN9dUvVMFBpo17GFCcEzNDKhU7dical2TO6DS8IpL7C6t8eWRmdvfmU8Ss9d3WBz+DwEHbu/xowMMJnwGLPtSPUBwkLJKjzLP1h32ETHJt+uS1K5rTGkhcRP7+x/ojNTpZUPc1eS64y4tJYXdF4Ioc1hj2OBNpEHac17CrDiJC9F2cLw4VeIU2kB9tJdFPhJfiHOsd/citHtt1FTWYn8mBN1yVmh1ZTC8LWx9z+pDKMEzmpCNd0qkH4CWmInS3/jv1RnHKO+BAntqWaiUF4EIdUcUAuzczcWryruyWomzxtTkyiiWW/kDek6315NVzxwf24MZKA=
     template:
-    - "*Project:* %{repository_name}"
-    - "*Build:* <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository_slug}@%{branch}"
-    - "*Duration:* %{duration}"
-    - "*Result:* %{result}"
-    - "*Message:* %{message}"
+      - '*Project:* %{repository_name}'
+      - '*Build:* <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository_slug}@%{branch}'
+      - '*Duration:* %{duration}'
+      - '*Result:* %{result}'
+      - '*Message:* %{message}'
 env:
   global:
     - PROJECT_NAME=climatenft
@@ -38,6 +38,7 @@ jobs:
       services:
         - docker
       script:
+        - npm run build
         - VERSION=`node -p "require('./package.json').version"`
         - IMAGE_ID=registry.dekaside.com/$PROJECT_NAME/$REPO_NAME
         - docker build . -f ./compose/production/Dockerfile --tag $IMAGE_ID:latest --tag
@@ -49,4 +50,4 @@ jobs:
     - stage: deploy
       if: (branch = develop AND type = push)
       script:
-      - curl -X POST "${SERVICE_WEBHOOK_STAGING}"
+        - curl -X POST "${SERVICE_WEBHOOK_STAGING}"
