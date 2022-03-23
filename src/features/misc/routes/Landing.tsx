@@ -3,22 +3,16 @@ import { Link } from 'react-router-dom';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Card } from '@/componentes/Elements/Card/Card';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
-import { httpClient, httpClientMockNfts } from '@/lib/httpClient';
-import { Nft, NFTListed } from '@/lib/api/nfts';
+import { httpClient } from '@/lib/httpClient';
+import { NFTListed } from '@/lib/api/nfts';
 
-// const fetchNfts = async () => {
-//   const res = await httpClient.get('nfts');
-//   return res.data;
-// };
-
-const mockNftsFetch = async () => {
-  // MOCKING RESPONSE FROM SERVER, CHECK mockNft.json as sample
-  const res = await httpClientMockNfts.get('/api/v1/nfts.json');
+const fetchNfts = async () => {
+  const res = await httpClient.get('nfts');
   return res.data;
 };
 
 export const Landing = () => {
-  const { data, isLoading, error } = useQuery<NFTListed[]>('nfts', mockNftsFetch, {
+  const { data, isLoading, error } = useQuery<NFTListed[]>('nfts', fetchNfts, {
     refetchOnMount: false,
   });
   if (error) return <div>{`An error occurred ${error}`}</div>;

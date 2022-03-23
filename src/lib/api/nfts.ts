@@ -14,6 +14,8 @@ export interface NFTListed {
     mime_type: string;
     properties: {
       artist: string;
+      cause: string;
+      causePercentage: number;
       file: {
         name: string;
         type: string;
