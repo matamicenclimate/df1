@@ -5,8 +5,5 @@ WORKDIR /app
 RUN npm install -g serve
 
 COPY ./build .
-COPY ./package.json .
-COPY ./tsconfig.json .
-COPY ./node_modules/ .
 
-CMD ["serve", "-s", "build"]
+CMD ["serve", "-s", "."]

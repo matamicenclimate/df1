@@ -38,7 +38,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npx http-server ./build --port 8081 --cors",
+    "start": "npx http-server ./build --port 3000 --cors",
     "dev": "craco start",
     "build": "craco build",
     "test": "craco test",
