@@ -19,6 +19,6 @@
         "experimentalDecorators": true
     },
     "include": ["src", "climate-nft-common/src"],
-    "exclude": ["node_modules"],
+    "exclude": ["node_modules", "*.teal"],
     "extends": "./tsconfig.paths.json"
 }
