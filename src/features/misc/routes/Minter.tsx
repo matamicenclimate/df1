@@ -12,6 +12,8 @@ import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
 import { setupClient } from '@/lib/algorand';
+import { compileAuctionApproval, compileAuctionClearState } from '@/lib/contracts';
+import algosdk from 'algosdk';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
@@ -40,6 +42,45 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
 
+  function toBytes(target: number | string, length: number, order: 'big' | 'little'): Uint8Array {
+    const buffer = new ArrayBuffer(length);
+    const array = new Uint8Array(buffer);
+    const view = new DataView(buffer);
+    if (typeof target === 'number') {
+      // if (Number.isInteger(target)) {
+      //   if (target < 0) {
+      //   }
+      // }
+      view.setInt32(length - 4, target, order === 'little');
+    }
+    return array;
+  }
+
+  async function createAuction(assetId: number) {
+    if (account == null) {
+      throw new Error(`Don't mess with me`);
+    }
+    const approval = await compileAuctionApproval();
+    const clear = await compileAuctionClearState();
+    const args: Uint8Array[] = [
+      algosdk.decodeAddress(account).publicKey,
+      toBytes(assetId, 8, 'big'),
+    ];
+    const params = await setupClient().getTransactionParams().do();
+    const txn = await algosdk.makeApplicationCreateTxn(
+      account,
+      params,
+      algosdk.OnApplicationComplete.NoOpOC,
+      approval,
+      clear,
+      0,
+      0,
+      7,
+      2,
+      args
+    );
+  }
+
   async function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
     const algodClient = await setupClient();
     console.log('algodClient from Minter', algodClient);
@@ -49,6 +90,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     setImageURL(metadat.image_url);
 
     const result = await createNFT(algodClient, account, metadat, wallet);
+    // Enable the auction
+    const auctionResult = await createAuction(result?.assetID);
+
     setTransaction(result);
     setUploadingToBlock(false);
     if (result == null) {
@@ -118,6 +162,21 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   return (
     <div>
       <MainLayout>
+        <Button
+          onClick={() => {
+            const assetId = 8563786;
+            console.log(assetId);
+            const b = new ArrayBuffer(8);
+            const o = new Uint8Array(b);
+            const v = new DataView(b);
+            v.setUint32(0, assetId);
+            console.log('RAW', o);
+            console.log('TO_BYTES', toBytes(assetId, 8, 'big'));
+            throw 'Bye';
+          }}
+        >
+          DO THE THING
+        </Button>
         {transaction && (
           <div className="text-center">
             <h2 className="font-bold text-2xl">Your Transaction and Asset</h2>
