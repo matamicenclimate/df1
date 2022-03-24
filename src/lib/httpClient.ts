@@ -46,7 +46,7 @@ export const httpClientCauses = Axios.create({
 }) as HTTPClient;
 
 export const httpClientMockNfts = Axios.create({
-  baseURL: 'http://127.0.0.1:8080',
+  baseURL: API_URL,
 }) as HTTPClient;
 
 httpClient.interceptors.request.use(authRequestInterceptor);

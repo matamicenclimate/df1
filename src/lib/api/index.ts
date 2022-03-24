@@ -7,7 +7,7 @@ export default interface Endpoints
     nfts: { response: NFTListed[] };
     healthz: { response: { status: 'ok' } };
     causes: { response: Cause[] };
-    '/api/v1/nfts.json': { response: NFTListed[] };
+    '/api/v1/nfts': { response: NFTListed[] };
   };
   post: {
     'opt-in/': { response: Record<string, any>; body: '' };
