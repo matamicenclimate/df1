@@ -10,7 +10,7 @@ const sizes = {
 
 const variants = {
   light: 'text-white bg-secondary',
-  primary: 'text-white bg-blue-600',
+  primary: 'text-climate-white bg-climate-blue',
   delete: 'text-white bg-red-800',
 };
 

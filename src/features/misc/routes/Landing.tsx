@@ -23,20 +23,18 @@ export const Landing = () => {
     <MainLayout>
       <div className="flex justify-center">
         <div className="p-4">
-          <div>
-            {isLoading ? (
-              <Spinner size="lg" />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-                {data &&
-                  data.map((nft, i) => (
-                    <Link key={i} to={`/nft/${nft.ipnft}`}>
-                      <Card key={i} nft={nft} />
-                    </Link>
-                  ))}
-              </div>
-            )}
-          </div>
+          {isLoading ? (
+            <Spinner size="lg" />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-4">
+              {data &&
+                data.map((nft, i) => (
+                  <Link key={i} to={`/nft/${nft.ipnft}`}>
+                    <Card key={i} nft={nft} />
+                  </Link>
+                ))}
+            </div>
+          )}
         </div>
       </div>
     </MainLayout>

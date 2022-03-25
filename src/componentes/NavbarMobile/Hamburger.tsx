@@ -11,7 +11,7 @@ const Hamburger = () => {
       {open ? (
         <>
           <div
-            className="inline after:content-['\00d7'] after:text-4xl text-custom-white bg-custom-blue fixed top-1 right-9"
+            className="inline after:content-['\00d7'] after:text-4xl fixed top-1 right-9"
             open={open}
             onClick={() => setOpen(!open)}
           ></div>
@@ -23,9 +23,9 @@ const Hamburger = () => {
             // open={open}
             onClick={() => setOpen(!open)}
           >
-            <span className="rounded block w-8 h-0.5 bg-custom-white"></span>
-            <span className="rounded block w-8 h-0.5 bg-custom-white"></span>
-            <span className="rounded block w-5 h-0.5 bg-custom-white"></span>
+            <span className="rounded block w-8 h-0.5 bg-black"></span>
+            <span className="rounded block w-8 h-0.5 bg-black"></span>
+            <span className="rounded block w-5 h-0.5 bg-black"></span>
           </div>
         </>
       )}
