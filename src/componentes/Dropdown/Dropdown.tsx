@@ -1,12 +1,12 @@
 import React from 'react';
 
-type Dropdown3Props = {
+type DropdownProps = {
   defaultValue?: string;
   accts: string[];
   setOptionSelected: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
-export const Dropdown = ({ defaultValue, accts, setOptionSelected }: Dropdown3Props) => {
+export const Dropdown = ({ accts, setOptionSelected }: DropdownProps) => {
   const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     setOptionSelected(value);
