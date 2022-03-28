@@ -2,9 +2,14 @@ import { setupClient } from '../algorand';
 import auctionApproval from './auction_approval.teal';
 import auctionClearState from './auction_clear_state.teal';
 
+export interface CompileResult {
+  hash: string;
+  result: string;
+}
+
 async function compile(source: string) {
-  const bytecode: string = await setupClient().compile(source).do();
-  return new Uint8Array(Buffer.from(bytecode, 'base64'));
+  const bytecode: CompileResult = await setupClient().compile(source).do();
+  return new Uint8Array(Buffer.from(bytecode.result, 'base64'));
 }
 
 export async function compileAuctionApproval() {

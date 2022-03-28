@@ -10,7 +10,11 @@ export type metadataNFTType = {
     description: string;
     external_url: string;
     mime_type: string;
-    properties: {
+    properties: Record<string, unknown> & {
+      cause: string;
+      causePercentage: number;
+      date: Date;
+      price: number;
       artist: string;
       file: {
         name: string;
@@ -38,6 +42,9 @@ export type NFTMetadataBackend = {
   author: string;
   file: FileList;
   properties: Properties;
+  image_url: string;
+  ipnft: string;
+  url: string;
 };
 
 export type MinterProps = {

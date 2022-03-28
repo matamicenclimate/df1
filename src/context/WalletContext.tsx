@@ -1,4 +1,4 @@
-import { useState, createContext } from 'react';
+import { useState, createContext, useEffect } from 'react';
 import { Wallet } from 'algorand-session-wallet';
 
 export type UserWallet = {

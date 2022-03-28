@@ -1,23 +1,17 @@
-import algosdk, { Transaction } from 'algosdk';
-import { sha256 } from 'js-sha256';
+import algosdk from 'algosdk';
+import * as DigestProvider from '@common/src/services/DigestProvider';
+import { NFTMetadataBackend } from './type';
 
-export function mdhash(md) {
-  const hash = sha256.create();
-  hash.update(JSON.stringify(md));
-  console.log('md', md);
-  console.log('	hash.update(JSON.stringify(md));', hash.update(JSON.stringify(md)));
+const mdhash = DigestProvider.get();
 
-  return new Uint8Array(hash.digest());
-}
-
-async function createAsset(algodClient, account, metadat, wallet) {
+async function createAsset(algodClient: any, account: any, metadat: any, wallet: any) {
   console.log('algodClient', algodClient);
   console.log('metadatFromMinter', metadat);
   console.log('walletwalletwalletwalletwalletwalletwalletwalletv', wallet);
   console.log('accountaccountaccountaccount', account);
   console.log('==> CREATE ASSET');
   //Check algorand node status
-  let status = await algodClient.status().do();
+  const status = await algodClient.status().do();
   console.log('statusstatusstatusstatus', status);
   //Check account balance
   const accountInfo = await algodClient.accountInformation(account).do();
@@ -63,7 +57,7 @@ async function createAsset(algodClient, account, metadat, wallet) {
   const decimals = 0;
   const total = 1; // how many of this asset there will be
 
-  const metadataHash = mdhash(metadat);
+  const metadataHash = mdhash.digest(metadat);
   console.log('metadataHash', metadataHash);
 
   const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
@@ -83,11 +77,11 @@ async function createAsset(algodClient, account, metadat, wallet) {
   });
   console.log('txn', txn);
 
-  // let rawSignedTxn = txn.signTxn(recoveredAccount2.sk);
-  // let rawSignedTxn = await wallet.signTxn([txn]);
-  // let ctx = await algodClient.sendRawTransaction(rawSignedTxn).do();
+  // const rawSignedTxn = txn.signTxn(recoveredAccount2.sk);
+  // const rawSignedTxn = await wallet.signTxn([txn]);
+  // const ctx = await algodClient.sendRawTransaction(rawSignedTxn).do();
   // // Wait for confirmation
-  // let confirmedTxn = await algosdk.waitForConfirmation(algodClient, ctx.txId, 4);
+  // const confirmedTxn = await algosdk.waitForConfirmation(algodClient, ctx.txId, 4);
   // //Get the completed Transaction
   // console.log('Transaction ' + ctx.txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
 
@@ -101,10 +95,9 @@ async function createAsset(algodClient, account, metadat, wallet) {
       })
     )
     .do();
-  let assetID = null;
   const confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 10);
   console.log('Transaction ' + txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
-  assetID = confirmedTxn['asset-index'];
+  const assetID = confirmedTxn['asset-index'];
   console.log('AssetID = ' + assetID);
 
   await printCreatedAsset(algodClient, account, assetID);
@@ -118,7 +111,7 @@ async function createAsset(algodClient, account, metadat, wallet) {
   return assetInfo;
 }
 
-export async function destroyAsset(algodClient, account, assetID, wallet) {
+export async function destroyAsset(algodClient: any, account: any, assetID: any, wallet: any) {
   console.log('account', account);
   console.log('algodClient', algodClient);
   console.log('assetID', assetID);
@@ -160,42 +153,42 @@ export async function destroyAsset(algodClient, account, assetID, wallet) {
 }
 
 // Function used to print created asset for account and assetid
-const printCreatedAsset = async function (algodClient, account, assetid) {
+const printCreatedAsset = async function (algodClient: any, account: any, assetid: any) {
   // note: if you have an indexer instance available it is easier to just use this
-  //     let accountInfo = await indexerClient.searchAccounts()
+  //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
   // and in the loop below use this to extract the asset for a particular account
   // accountInfo['accounts'][idx][account]);
-  let accountInfo = await algodClient.accountInformation(account).do();
+  const accountInfo = await algodClient.accountInformation(account).do();
   for (let idx = 0; idx < accountInfo['created-assets'].length; idx++) {
-    let scrutinizedAsset = accountInfo['created-assets'][idx];
+    const scrutinizedAsset = accountInfo['created-assets'][idx];
     if (scrutinizedAsset['index'] == assetid) {
       console.log('AssetID = ' + scrutinizedAsset['index']);
-      let myparms = JSON.stringify(scrutinizedAsset['params'], undefined, 2);
+      const myparms = JSON.stringify(scrutinizedAsset['params'], undefined, 2);
       console.log('parms = ' + myparms);
       break;
     }
   }
 };
 // Function used to print asset holding for account and assetid
-const printAssetHolding = async function (algodClient, account, assetid) {
+const printAssetHolding = async function (algodClient: any, account: any, assetid: any) {
   // note: if you have an indexer instance available it is easier to just use this
-  //     let accountInfo = await indexerClient.searchAccounts()
+  //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
   // and in the loop below use this to extract the asset for a particular account
   // accountInfo['accounts'][idx][account]);
-  let accountInfo = await algodClient.accountInformation(account).do();
+  const accountInfo = await algodClient.accountInformation(account).do();
   for (let idx = 0; idx < accountInfo['assets'].length; idx++) {
-    let scrutinizedAsset = accountInfo['assets'][idx];
+    const scrutinizedAsset = accountInfo['assets'][idx];
     if (scrutinizedAsset['asset-id'] == assetid) {
-      let myassetholding = JSON.stringify(scrutinizedAsset, undefined, 2);
+      const myassetholding = JSON.stringify(scrutinizedAsset, undefined, 2);
       console.log('assetholdinginfo = ' + myassetholding);
       break;
     }
   }
 };
 
-export async function createNFT(algodClient, account, metadat, wallet) {
+export async function createNFT(algodClient: any, account: any, metadat: any, wallet: any) {
   try {
     // Connect your client
     // const algodClient = new algosdk.Algodv2(token, server, port);

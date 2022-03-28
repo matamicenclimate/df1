@@ -7,19 +7,41 @@ import { Wallet } from 'algorand-session-wallet';
 import { httpClient } from '@/lib/httpClient';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { createNFT } from '@/lib/nft';
-import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
+import { NFTMetadataBackend, assetInfoType, metadataNFTType } from '@/lib/type';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
 import { setupClient } from '@/lib/algorand';
-import { compileAuctionApproval, compileAuctionClearState } from '@/lib/contracts';
 import algosdk from 'algosdk';
 import '@/lib/binary/extension';
+import * as TransactionSigner from '@common/src/services/TransactionSigner';
+import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
+import { some } from '@octantis/option';
+import Container from 'typedi';
+import { AuctionLogic } from '@common/src/services/AuctionLogic';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
   account: string | undefined;
 };
+
+// export function isNFTMetadataBackendType(data: NFTMetadataBackend | metadataNFTType): data is NFTMetadataBackend {
+//   return typeof (data as {arc69?: unknown}).arc69 === 'object'
+// }
+
+// export function ensureNFTMetaIsomorphism(data: NFTMetadataBackend | metadataNFTType): metadataNFTType {
+//   if (isNFTMetadataBackendType(data)) {
+//     return {
+//       arc69: {
+//         description: data.description,
+//         external_url: data.url,
+//         mime_type: data.
+//       },
+//       image_url: data.image_url
+//     }
+//   }
+//   return data
+// }
 
 export const Minter = ({ wallet, account }: MinterProps) => {
   const [, setIsOpen] = useState<boolean>(false);
@@ -43,42 +65,15 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
 
-  async function createAuction(assetId: number) {
-    if (account == null) {
-      throw new Error(`Don't mess with me`);
-    }
-    const approval = await compileAuctionApproval();
-    const clear = await compileAuctionClearState();
-    const args: Uint8Array[] = [
-      algosdk.decodeAddress(account).publicKey,
-      assetId.toBytes(8, 'big'),
-    ];
-    const params = await setupClient().getTransactionParams().do();
-    const txn = await algosdk.makeApplicationCreateTxn(
-      account,
-      params,
-      algosdk.OnApplicationComplete.NoOpOC,
-      approval,
-      clear,
-      0,
-      0,
-      7,
-      2,
-      args
-    );
-  }
-
-  async function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
+  async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
     const algodClient = await setupClient();
     console.log('algodClient from Minter', algodClient);
 
     // const algodClient = new algosdk.Algodv2(token, server, port);
     setUploadingToBlock(true);
-    setImageURL(metadat.image_url);
+    setImageURL(meta.image_url);
 
-    const result = await createNFT(algodClient, account, metadat, wallet);
-    // Enable the auction
-    const auctionResult = await createAuction(result?.assetID);
+    const result = await createNFT(algodClient, account, meta, wallet);
 
     setTransaction(result);
     setUploadingToBlock(false);
@@ -87,8 +82,15 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
       );
     }
-    const optResult = await httpClient.post(`opt-in/${result.assetID}` as 'opt-in/', '');
+    const optResult = await httpClient.post('opt-in', {
+      assetId: result.assetID,
+    });
     console.info('Asset opted-in:', optResult);
+    const transfer = await Container.get(AuctionLogic).makeTransferToApp(
+      optResult.data.applicationId,
+      result.assetID
+    );
+    console.info('Asset transfer to app:', transfer);
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {
@@ -124,7 +126,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     const res = await httpClient.post('ipfs', form);
 
     console.log('res.data', res.data);
-    setMetadataNFT(res.data as metadataNFTType);
+    setMetadataNFT(res.data);
     setUploadingToIPFS(false);
   };
 
@@ -137,6 +139,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
 
   useEffect(() => {
     // if (metadataNFT && wallet.isDefined() && account.isDefined()) {
+    if (wallet != null) {
+      (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
+    }
     if (metadataNFT && wallet && account) {
       mintNFT(metadataNFT, wallet, account);
     }

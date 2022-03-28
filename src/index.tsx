@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import './service/impl';
 import { Buffer } from 'buffer';
 window.Buffer = Buffer;
 

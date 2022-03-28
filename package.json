@@ -1,6 +1,6 @@
 {
   "name": "react-deka-starter",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
@@ -78,6 +78,7 @@
     "postcss-preset-env": "^7.3.1",
     "prettier": "2.5.1",
     "raw-loader": "^4.0.2",
+    "react-app-alias": "^2.1.0",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.0.23"
   },

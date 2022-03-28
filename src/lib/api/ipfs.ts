@@ -1,9 +1,6 @@
-export interface IPFSResponse {
-  ipnft: string;
-  url: string;
-  arc69: Arc69;
-  image_url: string;
-}
+import { metadataNFTType } from '../type';
+
+export interface IPFSResponse extends metadataNFTType {}
 export interface Arc69 {
   standard: string;
   description: string;
