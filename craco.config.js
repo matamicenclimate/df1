@@ -1,7 +1,6 @@
 // const { writeFileSync } = require('fs');
 // const { format } = require('prettier');
 const path = require('path');
-const cp = require('child_process');
 const fs = require('fs');
 const prettier = require('prettier');
 const { CracoAliasPlugin } = require('react-app-alias');
@@ -48,11 +47,6 @@ module.exports = {
     },
     /** @param {import('./webpack.conf')} conf */
     configure: (conf) => {
-      console.log('Compiling smart contract IR...');
-      cp.execSync(`python auction/contracts.py`, {
-        cwd: 'contracts',
-      });
-      console.log('Done! Output to src/lib/contracts');
       conf.resolve.fallback = {
         crypto: require.resolve('crypto-browserify'),
         stream: require.resolve('stream-browserify'),

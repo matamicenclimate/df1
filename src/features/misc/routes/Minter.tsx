@@ -12,8 +12,6 @@ import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
 import { setupClient } from '@/lib/algorand';
-import algosdk from 'algosdk';
-import '@/lib/binary/extension';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
 import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
 import { some } from '@octantis/option';
