@@ -91,3 +91,28 @@
     opacity: 0;
   }
 }
+
+fieldset {
+  margin: 0 0 1em 0;
+  padding: 0 1.5em 0 1.5em;
+  border: 1px solid #d5d5dc;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.focused {
+  color: #50b5ff;
+  border: 1px solid #50b5ff;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.focused legend {
+  color: #50b5ff;
+}
+
+fieldset legend {
+  font-weight: bold;
+  color: #000;
+  padding: 0 0.5em;
+}
