@@ -10,7 +10,7 @@ export default interface Endpoints
     '/api/v1/nfts': { response: NFTListed[] };
   };
   post: {
-    'opt-in': { response: { applicationId: number }; body: { assetId: number } };
+    'opt-in': { response: { appIndex: number }; body: { assetId: number } };
     ipfs: { response: IPFSResponse; body: FormData };
     '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
   };

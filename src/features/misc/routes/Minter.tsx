@@ -85,7 +85,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     });
     console.info('Asset opted-in:', optResult);
     const transfer = await Container.get(AuctionLogic).makeTransferToApp(
-      optResult.data.applicationId,
+      optResult.data.appIndex,
       result.assetID
     );
     console.info('Asset transfer to app:', transfer);
