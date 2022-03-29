@@ -8,7 +8,6 @@ import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
 import { Cause } from '@/features/misc/routes/Cause';
 import { useContext } from 'react';
 import { WalletContext } from '@/context/WalletContext';
-import { Admin } from '@/features/misc/routes/Admin';
 import { NftDetail } from '@/features/misc/routes/NftDetail';
 
 export const AppRouter = () => {
@@ -35,18 +34,6 @@ export const AppRouter = () => {
     {
       path: '/cause',
       element: <Cause />,
-    },
-    {
-      path: '/admin',
-      element:
-        walletContext?.userWallet?.account === '' ? (
-          <ConnectWallet />
-        ) : (
-          <Admin
-            wallet={walletContext?.userWallet?.wallet}
-            account={walletContext?.userWallet?.account}
-          />
-        ),
     },
     {
       path: '/nft/:ipnft',

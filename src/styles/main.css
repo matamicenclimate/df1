@@ -1,22 +1,24 @@
 @import 'tailwind.css';
+@import 'fonts.css';
 
-body {
+/* body {
   margin: 0;
   font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace, Poppins;
+body {
+  margin: 0;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 }
 
 .active {
-  border-bottom: 2px solid #00f;
+  border-bottom: 2px solid #003a6c;
 }
 .active:hover {
-  border-bottom: 4px solid #00f;
+  border-bottom: 4px solid #003a6c;
   font-weight: bold;
 }
 

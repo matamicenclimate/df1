@@ -97,7 +97,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     console.log('oneFile', oneFile);
 
     const attribute = data.properties?.attributes?.reduce(
-      // (acc: Record<string, any>, curr: InputGeneratorType['inputList'][0]) => {
       (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
         return acc;
@@ -152,27 +151,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   return (
     <div>
       <MainLayout>
-        {transaction && (
-          <div className="text-center">
-            <h2 className="font-bold text-2xl">Your Transaction and Asset</h2>
-            <h2 className="font-bold cursor-pointer hover:text-gray-600">
-              <a href={`https://testnet.algoexplorer.io/tx/${transaction.transactionId}`}>
-                Transaction ID: {transaction.transactionId}
-              </a>
-            </h2>
-            <h2 className="font-bold cursor-pointer hover:text-gray-600">
-              Asset ID:{' '}
-              <a href={`https://testnet.algoexplorer.io/asset/${transaction.assetID}`}>
-                {transaction.assetID}
-              </a>
-            </h2>
-            {imageURL && (
-              <div className="flex justify-center">
-                <img className="w-40 h-40" src={imageURL} />
-              </div>
-            )}
-          </div>
-        )}
         {uploadingIPFS && (
           <Dialog isOpen={uploadingIPFS} setIsOpen={setIsOpen} title={'Uploading file to IPFS...'}>
             <div className="flex justify-center mt-3">
@@ -327,7 +305,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 )}
               />
             </div>
-            <Button type="submit">Mint Nft</Button>
+            <Button variant="primary" type="submit">
+              Mint Nft
+            </Button>
           </Form>
         </div>
       </MainLayout>

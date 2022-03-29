@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'Roboto';
+  src: local('Roboto'), url(./fonts/Roboto/Roboto-Regular.ttf) format('ttf');
+}
+
+@font-face {
+  font-family: Roboto-Regular;
+  src: local(Roboto-Regular), url(./fonts/Roboto/Roboto-Regular.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: SourceSansPro;
+  src: local(SourceSansPro-Regular),
+    url(./fonts/Source-Sans-Pro/SourceSansPro-Regular.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: SourceSansPro;
+  src: local(SourceSansPro-SemiBold),
+    url(./fonts/Source-Sans-Pro/SourceSansPro-SemiBold.ttf) format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+@font-face {
+  font-family: DINNextLTPro;
+  src: local(DINNextLTPro-Regular),
+    url(./fonts/DIN-Next-Pro/DINNextLTPro-Regular.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+}
+
+.font-SourceSansPro {
+  font-family: SourceSansPro;
+}
+
+.font-DINNextLTPro {
+  font-family: DINNextLTPro;
+}
