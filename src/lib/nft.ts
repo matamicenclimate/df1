@@ -1,10 +1,22 @@
 import algosdk from 'algosdk';
 import * as DigestProvider from '@common/src/services/DigestProvider';
-import { NFTMetadataBackend } from './type';
+import { metadataNFTType, NFTMetadataBackend } from './type';
+import { Wallet } from 'algorand-session-wallet';
+import { none, option, some } from '@octantis/option';
 
 const mdhash = DigestProvider.get();
 
-async function createAsset(algodClient: any, account: any, metadat: any, wallet: any) {
+export interface AssetInfo {
+  transactionId: number;
+  assetID: number;
+}
+
+async function createAsset(
+  algodClient: algosdk.Algodv2,
+  account: string,
+  metadat: any,
+  wallet: any
+) {
   console.log('algodClient', algodClient);
   console.log('metadatFromMinter', metadat);
   console.log('walletwalletwalletwalletwalletwalletwalletwalletv', wallet);
@@ -103,7 +115,7 @@ async function createAsset(algodClient: any, account: any, metadat: any, wallet:
   await printCreatedAsset(algodClient, account, assetID);
   await printAssetHolding(algodClient, account, assetID);
 
-  const assetInfo = {
+  const assetInfo: AssetInfo = {
     transactionId: txId,
     assetID: assetID,
   };
@@ -188,19 +200,20 @@ const printAssetHolding = async function (algodClient: any, account: any, asseti
   }
 };
 
-export async function createNFT(algodClient: any, account: any, metadat: any, wallet: any) {
+/**
+ * Starts the creation of an asset.
+ */
+export async function createNFT(
+  algodClient: algosdk.Algodv2,
+  account: string,
+  metadat: metadataNFTType,
+  wallet: Wallet
+): Promise<option<AssetInfo>> {
   try {
-    // Connect your client
-    // const algodClient = new algosdk.Algodv2(token, server, port);
-    // CREATE ASSET
-    const assetID = await createAsset(algodClient, account, metadat, wallet);
-    console.log('assetId line 220', assetID);
-    // DESTROY ASSET
-    // await destroyAsset(algodClient, account, assetID);
-    return assetID;
+    const info = await createAsset(algodClient, account, metadat, wallet);
+    return some(info);
   } catch (err) {
-    // return err.message;
-    console.log('err', err);
+    console.log('Failed to process NFT creation!', err);
+    return none();
   }
-  // process.exit();
 }
