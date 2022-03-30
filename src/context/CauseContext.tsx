@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 import { httpClientCauses } from '@/lib/httpClient';
 import { useQuery } from 'react-query';
-import { Cause } from '@/lib/api/ipfs';
+import { Cause } from '@/lib/api/causes';
 
 export type CauseContextType = {
   data: Cause[] | undefined;

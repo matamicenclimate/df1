@@ -66,16 +66,13 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
     const algodClient = await setupClient();
     console.log('algodClient from Minter', algodClient);
-
     // const algodClient = new algosdk.Algodv2(token, server, port);
     setUploadingToBlock(true);
     setImageURL(meta.image_url);
-
     const result = await createNFT(algodClient, account, meta, wallet);
-
-    setTransaction(result);
-    setUploadingToBlock(false);
     if (result == null) {
+      setTransaction(result);
+      setUploadingToBlock(false);
       return console.warn(
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
       );
@@ -84,11 +81,13 @@ export const Minter = ({ wallet, account }: MinterProps) => {
       assetId: result.assetID,
     });
     console.info('Asset opted-in:', optResult);
-    const transfer = await Container.get(AuctionLogic).makeTransferToApp(
-      optResult.data.appIndex,
-      result.assetID
-    );
+    const als = Container.get(AuctionLogic);
+    console.log('ALS=', als);
+    const transfer = await als.makeTransferToApp(optResult.data.appIndex, result.assetID);
     console.info('Asset transfer to app:', transfer);
+    // Do not unlock till' finished.
+    setTransaction(result);
+    setUploadingToBlock(false);
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {

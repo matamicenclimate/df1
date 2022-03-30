@@ -5,7 +5,7 @@ import Axios, {
   AxiosResponse,
 } from 'axios';
 import storage from '@/utils/storage';
-import Endpoints from './api';
+import { Endpoints, CausesAPI, CoreAPI } from './api';
 
 const API_URL = process.env.REACT_APP_API_URL ?? '';
 const API_URL_CAUSES = process.env.REACT_APP_API_URL_CAUSES ?? '';
@@ -21,32 +21,29 @@ function authRequestInterceptor(config: AxiosRequestConfig) {
   return config;
 }
 
-type ApiFuture<V extends keyof Endpoints, K extends keyof Endpoints[V]> = Promise<
-  AxiosResponse<Endpoints[V][K]['response']>
+type ApiFuture<A extends Endpoints, V extends keyof A, K extends keyof A[V]> = Promise<
+  AxiosResponse<A[V][K]['response']>
 >;
 
-type HTTPClient = Omit<AxiosInstance, 'get' | 'post'> & {
-  get<K extends keyof Endpoints['get']>(
+type HTTPClient<T extends Endpoints> = Omit<AxiosInstance, 'get' | 'post'> & {
+  get<K extends keyof T['get']>(resource: K, options?: AxiosRequestConfig): ApiFuture<T, 'get', K>;
+  post<K extends keyof T['post']>(
     resource: K,
+    data: T['post'][K]['body'],
     options?: AxiosRequestConfig
-  ): ApiFuture<'get', K>;
-  post<K extends keyof Endpoints['post']>(
-    resource: K,
-    data: Endpoints['post'][K]['body'],
-    options?: AxiosRequestConfig
-  ): ApiFuture<'post', K>;
+  ): ApiFuture<T, 'post', K>;
 };
 
 export const httpClient = Axios.create({
-  baseURL: API_URL,
-}) as HTTPClient;
+  baseURL: 'http://localhost:8000/api/v1', //API_URL,
+}) as HTTPClient<CoreAPI>;
 
 export const httpClientCauses = Axios.create({
   baseURL: API_URL_CAUSES,
-}) as HTTPClient;
+}) as HTTPClient<CausesAPI>;
 
 export const httpClientMockNfts = Axios.create({
   baseURL: API_URL,
-}) as HTTPClient;
+}) as HTTPClient<CoreAPI>;
 
 httpClient.interceptors.request.use(authRequestInterceptor);
