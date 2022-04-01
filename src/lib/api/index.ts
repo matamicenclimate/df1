@@ -13,7 +13,8 @@ export interface CoreAPI extends Endpoints {
     healthz: { response: { status: 'ok' } };
   };
   post: {
-    'opt-in': { response: { appIndex: number }; body: { assetId: number } };
+    'opt-in': { response: { targetAccount: string }; body: { assetId: number } };
+    'create-auction': { response: { appIndex: number }; body: { assetId: number } };
     ipfs: { response: IPFSResponse; body: FormData };
     '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
   };

@@ -72,6 +72,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-react": "^7.28.0",
+    "handlebars": "^4.7.7",
     "postcss": "^8.4.6",
     "postcss-import": "^14.0.2",
     "postcss-nesting": "^10.1.2",

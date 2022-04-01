@@ -3,8 +3,11 @@ import * as DigestProvider from '@common/src/services/DigestProvider';
 import { metadataNFTType, NFTMetadataBackend } from './type';
 import { Wallet } from 'algorand-session-wallet';
 import { none, option, some } from '@octantis/option';
+import Container from 'typedi';
+import ProcessDialog from '@/service/ProcessDialog';
 
 const mdhash = DigestProvider.get();
+const dialog = Container.get(ProcessDialog);
 
 export interface AssetInfo {
   transactionId: number;
@@ -17,15 +20,12 @@ async function createAsset(
   metadat: any,
   wallet: any
 ) {
-  console.log('algodClient', algodClient);
-  console.log('metadatFromMinter', metadat);
-  console.log('walletwalletwalletwalletwalletwalletwalletwalletv', wallet);
-  console.log('accountaccountaccountaccount', account);
-  console.log('==> CREATE ASSET');
+  dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
   const status = await algodClient.status().do();
   console.log('statusstatusstatusstatus', status);
   //Check account balance
+  dialog.message = 'Retrieving account information...';
   const accountInfo = await algodClient.accountInformation(account).do();
   console.log('accountInfo', accountInfo);
 
@@ -72,6 +72,7 @@ async function createAsset(
   const metadataHash = mdhash.digest(metadat);
   console.log('metadataHash', metadataHash);
 
+  dialog.message = 'Sending NFT data...';
   const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
     from: account,
     total: total,
@@ -100,6 +101,7 @@ async function createAsset(
   const [s_create_txn] = await wallet.signTxn([txn]);
   console.log('[s_create_txn]', [s_create_txn]);
 
+  dialog.message = 'Sending NFT data...';
   const { txId } = await algodClient
     .sendRawTransaction(
       [s_create_txn].map((t) => {
@@ -107,6 +109,8 @@ async function createAsset(
       })
     )
     .do();
+
+  dialog.message = 'Waiting for confirmation...';
   const confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 10);
   console.log('Transaction ' + txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
   const assetID = confirmedTxn['asset-index'];
@@ -143,9 +147,13 @@ export async function destroyAsset(algodClient: any, account: any, assetID: any,
   });
   console.log('txn', txn);
 
+  dialog.subtitle = 'Waiting for user confirmation';
+  dialog.highlight = true;
   const [s_create_txn] = await wallet.signTxn([txn]);
   console.log('[s_create_txn]', [s_create_txn]);
 
+  dialog.subtitle = '';
+  dialog.highlight = false;
   const { txId } = await algodClient
     .sendRawTransaction(
       [s_create_txn].map((t) => {

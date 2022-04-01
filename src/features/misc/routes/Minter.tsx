@@ -5,10 +5,8 @@ import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Wallet } from 'algorand-session-wallet';
 import { httpClient } from '@/lib/httpClient';
-import { Dialog } from '@/componentes/Dialog/Dialog';
-import { createNFT } from '@/lib/nft';
-import { NFTMetadataBackend, assetInfoType, metadataNFTType } from '@/lib/type';
-import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
+import { AssetInfo, createNFT } from '@/lib/nft';
+import { NFTMetadataBackend, metadataNFTType } from '@/lib/type';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
 import { client } from '@/lib/algorand';
@@ -30,7 +28,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   const [imageURL, setImageURL] = useState<string>();
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
-  const [transaction, setTransaction] = useState<assetInfoType | undefined>();
+  const [transaction, setTransaction] = useState<AssetInfo | undefined>();
 
   const causeContext = useContext(CauseContext);
   const data = causeContext?.data;
@@ -50,16 +48,22 @@ export const Minter = ({ wallet, account }: MinterProps) => {
       setImageURL(meta.image_url);
       const result = await createNFT(algodClient, account, meta, wallet);
       if (result.isDefined()) {
+        setTransaction(result.value);
         this.message = 'Opting in...';
         const optResult = await httpClient.post('opt-in', {
           assetId: result.value.assetID,
         });
         console.info('Asset opted-in:', optResult);
-        const transfer = await Container.get(AuctionLogic).makeTransferToApp(
-          optResult.data.appIndex,
+        const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
+          optResult.data.targetAccount,
           result.value.assetID
         );
         console.info('Asset transfer to app:', transfer);
+        const tx = await httpClient.post('create-auction', {
+          assetId: result.value.assetID,
+        });
+        console.info('Creation!', tx);
+        return;
       }
       return console.warn(
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."

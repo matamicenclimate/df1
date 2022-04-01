@@ -1,17 +1,18 @@
+import unit from '@/lib/unit';
 import React from 'react';
 import { Service } from 'typedi';
-
-export function unit() {
-  // Nothing
-  return;
-}
 
 @Service()
 export default class ProcessDialog {
   setOpen: React.Dispatch<boolean> = unit;
   setMessage: React.Dispatch<string> = unit;
   setTitle: React.Dispatch<string> = unit;
+  setSubtitle: React.Dispatch<string> = unit;
+  setRed: React.Dispatch<boolean> = unit;
 
+  /**
+   * Shows the dialog.
+   */
   start() {
     this.setOpen(true);
   }
@@ -23,12 +24,20 @@ export default class ProcessDialog {
     this.setOpen(false);
   }
 
+  set highlight(value: boolean) {
+    this.setRed(value);
+  }
+
   /**
    * Setting this property will cause an update to the underlying dialog
    * container.
    */
   set message(value: string) {
     this.setMessage(value);
+  }
+
+  set subtitle(value: string) {
+    this.setSubtitle(value);
   }
 
   /**
