@@ -38,6 +38,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "install-python-deps": "cd contracts && pip install -r requirements.txt",
     "start": "npx http-server ./build --port 3000 --cors",
     "dev": "craco start",
     "build": "craco build",
