@@ -136,23 +136,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         <div className="flex justify-center h-screen rounded m-auto">
           <Form
             onSubmit={handleSubmit(formSubmitHandler) as () => Promise<void>}
-            className="rounded px-8 pt-6 pb-8 mb-4 md:max-h-[40rem]"
+            className="rounded px-8 pt-6 pb-8 mb-4 min-w-[800px]"
           >
-            <div className="mb-4">
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="file"
-              >
-                Select File
-              </label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-custom-white md:text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="file"
-                type="file"
-                {...register('file', { required: true })}
-              />
-              {errors?.file && <span className="text-red-500">This field is required</span>}
-            </div>
+            <h6 className="font-dinpro font-normal text-base">Basic Info</h6>
             <div>
               <label
                 className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
@@ -161,7 +147,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 Title
               </label>
               <input
-                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="border border-climate-border rounded-xl p-3"
                 id="title"
                 type="text"
                 placeholder="Title.."
@@ -268,6 +254,21 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   />
                 )}
               />
+            </div>
+            <div>
+              <div className="flex justify-between">
+                <h6>Upload resources</h6>
+                <p>You can mint jpg, gif, mov, mp4, cad, pdf</p>
+              </div>
+              <div className="mb-4">
+                <input
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-custom-white md:text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="file"
+                  type="file"
+                  {...register('file', { required: true })}
+                />
+                {errors?.file && <span className="text-red-500">This field is required</span>}
+              </div>
             </div>
             <Button variant="primary" type="submit">
               Mint Nft

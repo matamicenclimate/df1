@@ -12,7 +12,7 @@ module.exports = {
         'climate-gray': '#696974',
         'climate-gray-artist': '#92929D',
         'climate-gray-light': '#B5B5BE',
-
+        'climate-border': '#E2E2EA',
         'custom-white': '#F8FAFC',
         'custom-gray': '#37383D',
       },
