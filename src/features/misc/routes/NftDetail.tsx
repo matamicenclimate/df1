@@ -15,10 +15,23 @@ import { TransactionOperation } from '@common/src/services/TransactionOperation'
 import '@common/src/lib/binary/extension';
 import { WalletContext } from '@/context/WalletContext';
 
+interface SmartContractState {
+  end: number;
+  nft_id: number;
+  bid_account: Uint8Array;
+  bid_amount: number;
+  num_bids: number;
+  min_bid_inc: number;
+  reserve_amount: number;
+  start: number;
+  seller: Uint8Array;
+}
+
 export const NftDetail = () => {
   const { ipnft } = useParams();
   const [error, setError] = useState<Error>();
   const [data, setData] = useState<NFTListed[]>();
+  const [smartContractState, setSmartContractState] = useState<option<SmartContractState>>(none());
   const wallet = useContext(WalletContext);
 
   useEffect(() => {
@@ -77,34 +90,51 @@ export const NftDetail = () => {
     return account.reduce((a, b) => a + b, 0) === 0;
   }
 
+  const appIndex = 82134588;
+  useEffect(() => {
+    updateSmartContractData();
+    const interval = setInterval(() => {
+      updateSmartContractData();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Debugging effect.
+  useEffect(() => {
+    for (const state of smartContractState) {
+      console.info('Current smart contract state:', state);
+    }
+  }, [smartContractState]);
+
+  async function updateSmartContractData() {
+    const state = (await getGlobalState(appIndex)) as unknown as SmartContractState;
+    setSmartContractState(some(state));
+    return state;
+  }
+
   // Test: Place a bid!
   async function doPlaceABid() {
     const dialog = Container.get(ProcessDialog);
     const op = Container.get(TransactionOperation);
-    const appIndex = 81106228;
     const appAddr = algosdk.getApplicationAddress(appIndex);
-    const state = (await getGlobalState(appIndex)) as {
-      end: number;
-      nft_id: number;
-      bid_account: Uint8Array;
-      min_bid_inc: number;
-      reserve_amount: number;
-      start: number;
-      seller: Uint8Array;
-    };
     let previousBid: option<string> = none();
+    const state = await updateSmartContractData();
     if (!isZeroAccount(state.bid_account)) {
       previousBid = some(algosdk.encodeAddress(state.bid_account));
     }
     console.info('Previous bidder:', previousBid.getOrElse('<none>'));
+    const minRequired = state.bid_amount + 10;
     let bidAmount = 0;
-    while (bidAmount < 10 || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
-      const result = prompt('Enter a bid amount (At leeast 10!):', '10');
+    while (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
+      const result = prompt(
+        `Enter a bid amount (At least ${minRequired}!):`,
+        minRequired.toString()
+      );
       if (result === null) {
         return alert('Aborting the bidding process');
       }
       bidAmount = Number(result);
-      if (bidAmount < 10 || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
+      if (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
         alert('Please enter a valid amount and try again!');
       }
     }
@@ -144,6 +174,7 @@ export const NftDetail = () => {
       try {
         await algosdk.waitForConfirmation(client(), txId, 10);
         this.message = `Done!`;
+        await updateSmartContractData();
       } catch {
         this.message = `FATAL! Could not send your transaction.`;
         await new Promise((r) => setTimeout(r, 1000));
@@ -193,7 +224,13 @@ export const NftDetail = () => {
             onClick={doPlaceABid}
           >
             <span>
-              Buy for <strong>{nftSelected?.arc69?.properties?.price}</strong>{' '}
+              Place a new bid{' '}
+              <strong>
+                {smartContractState.fold(
+                  nftSelected?.arc69?.properties?.price,
+                  (state) => state.bid_amount
+                )}
+              </strong>{' '}
             </span>
             <img className="w-4 h-4 self-center ml-1" src={algoLogoWhite} alt="algologowhite" />
           </Button>

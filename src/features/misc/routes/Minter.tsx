@@ -76,7 +76,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     const oneFile = filelist[0];
     console.log('oneFile', oneFile);
 
-    const attribute = data.properties?.attributes?.reduce(
+    const attribute = data.properties?.attributes?.reduce?.(
       (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
         return acc;
