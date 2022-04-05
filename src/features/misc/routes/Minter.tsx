@@ -5,30 +5,30 @@ import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Wallet } from 'algorand-session-wallet';
 import { httpClient } from '@/lib/httpClient';
-import { Dialog } from '@/componentes/Dialog/Dialog';
-import { createNFT } from '@/lib/nft';
-import { NFTMetadataBackend, metadataNFTType, assetInfoType } from '@/lib/type';
-import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
+import { AssetInfo, createNFT } from '@/lib/nft';
+import { NFTMetadataBackend, metadataNFTType } from '@/lib/type';
 import { InputGenerator, InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
-import { setupClient } from '@/lib/algorand';
+import { client } from '@/lib/algorand';
+import * as TransactionSigner from '@common/src/services/TransactionSigner';
+import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
+import { some } from '@octantis/option';
+import Container from 'typedi';
+import { AuctionLogic } from '@common/src/services/AuctionLogic';
+import ProcessDialog from '@/service/ProcessDialog';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
   account: string | undefined;
 };
 
-export const Minter = ({ wallet, account }: MinterProps) => {
-  const [, setIsOpen] = useState<boolean>(false);
-  // const [selectedImage, setSelectedImage] = useState<File>();
-  // console.log('selectedImage from minter', selectedImage);
+const dialog = Container.get(ProcessDialog);
 
-  const [uploadingIPFS, setUploadingToIPFS] = useState(false);
-  const [uploadingToBlock, setUploadingToBlock] = useState(false);
+export const Minter = ({ wallet, account }: MinterProps) => {
   const [imageURL, setImageURL] = useState<string>();
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
-  const [transaction, setTransaction] = useState<assetInfoType | undefined>();
+  const [transaction, setTransaction] = useState<AssetInfo | undefined>();
 
   const causeContext = useContext(CauseContext);
   const data = causeContext?.data;
@@ -40,24 +40,35 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
 
-  async function mintNFT(metadat: metadataNFTType, wallet: Wallet, account: string) {
-    const algodClient = await setupClient();
-    console.log('algodClient from Minter', algodClient);
-
-    // const algodClient = new algosdk.Algodv2(token, server, port);
-    setUploadingToBlock(true);
-    setImageURL(metadat.image_url);
-
-    const result = await createNFT(algodClient, account, metadat, wallet);
-    setTransaction(result);
-    setUploadingToBlock(false);
-    if (result == null) {
+  async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
+    const algodClient = client();
+    await dialog.process(async function () {
+      this.title = 'Uploading to blockchain';
+      this.message = 'Creating the NFT data...';
+      setImageURL(meta.image_url);
+      const result = await createNFT(algodClient, account, meta, wallet);
+      if (result.isDefined()) {
+        setTransaction(result.value);
+        this.message = 'Opting in...';
+        const optResult = await httpClient.post('opt-in', {
+          assetId: result.value.assetID,
+        });
+        console.info('Asset opted-in:', optResult);
+        const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
+          optResult.data.targetAccount,
+          result.value.assetID
+        );
+        console.info('Asset transfer to app:', transfer);
+        const tx = await httpClient.post('create-auction', {
+          assetId: result.value.assetID,
+        });
+        console.info('Creation!', tx);
+        return;
+      }
       return console.warn(
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
       );
-    }
-    const optResult = await httpClient.post(`opt-in/${result.assetID}` as 'opt-in/', '');
-    console.info('Asset opted-in:', optResult);
+    });
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {
@@ -65,7 +76,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     const oneFile = filelist[0];
     console.log('oneFile', oneFile);
 
-    const attribute = data.properties?.attributes?.reduce(
+    const attribute = data.properties?.attributes?.reduce?.(
       (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
         return acc;
@@ -92,18 +103,24 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     const res = await httpClient.post('ipfs', form);
 
     console.log('res.data', res.data);
-    setMetadataNFT(res.data as metadataNFTType);
-    setUploadingToIPFS(false);
+    setMetadataNFT(res.data);
+    dialog.stop();
   };
 
   useEffect(() => {
     if (dataToPost) {
-      setUploadingToIPFS(true);
+      dialog.message = 'Uploading NFT to IPFS...';
+      dialog.title = 'Preparing NFT';
+      dialog.start();
       getNFTMetadata(dataToPost);
     }
   }, [dataToPost]);
 
   useEffect(() => {
+    // if (metadataNFT && wallet.isDefined() && account.isDefined()) {
+    if (wallet != null) {
+      (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
+    }
     if (metadataNFT && wallet && account) {
       mintNFT(metadataNFT, wallet, account);
     }
@@ -116,25 +133,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   return (
     <div>
       <MainLayout>
-        {uploadingIPFS && (
-          <Dialog isOpen={uploadingIPFS} setIsOpen={setIsOpen} title={'Uploading file to IPFS...'}>
-            <div className="flex justify-center mt-3">
-              <Spinner size="lg" />
-            </div>
-          </Dialog>
-        )}
-        {uploadingToBlock && (
-          <Dialog
-            isOpen={uploadingToBlock}
-            setIsOpen={setIsOpen}
-            title={'Uploading transaction to Algorand blockchain...'}
-          >
-            <div className="flex justify-center mt-3">
-              <Spinner size="lg" />
-            </div>
-          </Dialog>
-        )}
-        <div className="flex justify-center h-screen rounded m-auto ">
+        <div className="flex justify-center h-screen rounded m-auto">
           <Form
             onSubmit={handleSubmit(formSubmitHandler) as () => Promise<void>}
             className="rounded px-8 pt-6 pb-8 mb-4 min-w-[800px]"

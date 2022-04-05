@@ -5,6 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider } from '@/lib/auth';
 import { UserContextProvider } from '@/context/WalletContext';
 import { CauseContextProvider } from '@/context/CauseContext';
+import { DialogProvider } from './DialogProvider';
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       <QueryClientProvider client={queryClient}>
         <UserContextProvider>
           <CauseContextProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+              <DialogProvider>{children}</DialogProvider>
+            </AuthProvider>
           </CauseContextProvider>
         </UserContextProvider>
       </QueryClientProvider>

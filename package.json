@@ -1,6 +1,6 @@
 {
   "name": "react-deka-starter",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
@@ -38,6 +38,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "postinstall": "cd contracts && pip install -r requirements.txt",
     "start": "npx http-server ./build --port 3000 --cors",
     "dev": "craco start",
     "build": "craco build",
@@ -71,11 +72,14 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-react": "^7.28.0",
+    "handlebars": "^4.7.7",
     "postcss": "^8.4.6",
     "postcss-import": "^14.0.2",
     "postcss-nesting": "^10.1.2",
     "postcss-preset-env": "^7.3.1",
     "prettier": "2.5.1",
+    "raw-loader": "^4.0.2",
+    "react-app-alias": "^2.1.0",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.0.23"
   },
