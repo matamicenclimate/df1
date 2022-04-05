@@ -56,7 +56,8 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         console.info('Asset opted-in:', optResult);
         const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
           optResult.data.targetAccount,
-          result.value.assetID
+          result.value.assetID,
+          new Uint8Array()
         );
         console.info('Asset transfer to app:', transfer);
         const tx = await httpClient.post('create-auction', {

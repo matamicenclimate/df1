@@ -13,6 +13,7 @@ export interface NFTListed {
     external_url: string;
     mime_type: string;
     properties: {
+      app_id?: number;
       artist: string;
       cause: string;
       causePercentage: number;
@@ -25,6 +26,7 @@ export interface NFTListed {
       price: number;
     };
   };
+  id: number;
   image_url: string;
   ipnft: string;
   url: string;

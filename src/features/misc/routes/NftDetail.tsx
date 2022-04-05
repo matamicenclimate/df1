@@ -15,6 +15,30 @@ import { TransactionOperation } from '@common/src/services/TransactionOperation'
 import '@common/src/lib/binary/extension';
 import { WalletContext } from '@/context/WalletContext';
 
+type Entry = {
+  key: string;
+  value: { bytes: string; type: 1 | 2; uint: number };
+};
+
+function assertArray<T>(value: T): unknown[] {
+  if (value instanceof Array) return value as unknown as unknown[];
+  throw new Error('Not an array!');
+}
+
+export async function getGlobalState(appId: number): Promise<SmartContractState> {
+  const result = await client().getApplicationByID(appId).do();
+  const state = assertArray(result.params['global-state']) as Entry[];
+  return state.reduce<Record<string, unknown>>((prev, curr: Entry) => {
+    const key = Buffer.from(curr.key, 'base64').toString();
+    if (curr.value.type === 1) {
+      prev[key] = Buffer.from(curr.value.bytes, 'base64');
+    } else if (curr.value.type === 2) {
+      prev[key] = curr.value.uint;
+    }
+    return prev;
+  }, {}) as unknown as SmartContractState;
+}
+
 interface SmartContractState {
   end: number;
   nft_id: number;
@@ -30,24 +54,38 @@ interface SmartContractState {
 export const NftDetail = () => {
   const { ipnft } = useParams();
   const [error, setError] = useState<Error>();
-  const [data, setData] = useState<NFTListed[]>();
+  const [data, setData] = useState<NFTListed>();
   const [smartContractState, setSmartContractState] = useState<option<SmartContractState>>(none());
+  const [appIndex, setAppIndex] = useState(0);
   const wallet = useContext(WalletContext);
 
   useEffect(() => {
     fetchNfts();
   }, [ipnft]);
 
+  useEffect(() => {
+    updateSmartContractData();
+    const interval = setInterval(() => {
+      updateSmartContractData();
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Debugging effect.
+  // useEffect(() => {
+  //   for (const state of smartContractState) {
+  //     console.info('Current smart contract state:', state);
+  //   }
+  // }, [smartContractState]);
+
   const fetchNfts = async () => {
     try {
       const res = await httpClient.get('nfts');
-      setData(res.data);
+      setData(res.data?.find((nft) => nft.ipnft === ipnft));
     } catch (err: any) {
       setError(err.message);
     }
   };
-
-  const nftSelected = data?.find((nft) => nft.ipnft === ipnft);
 
   const checkIfVideo = (imageUrl: string) => {
     if (imageUrl.endsWith('.mp4')) {
@@ -59,30 +97,6 @@ export const NftDetail = () => {
     return imageUrl;
   };
 
-  function assertArray<T>(value: T): unknown[] {
-    if (value instanceof Array) return value as unknown as unknown[];
-    throw new Error('Not an array!');
-  }
-
-  type Entry = {
-    key: string;
-    value: { bytes: string; type: 1 | 2; uint: number };
-  };
-
-  async function getGlobalState(appId: number): Promise<Record<string, unknown>> {
-    const result = await client().getApplicationByID(appId).do();
-    const state = assertArray(result.params['global-state']) as Entry[];
-    return state.reduce<Record<string, unknown>>((prev, curr: Entry) => {
-      const key = Buffer.from(curr.key, 'base64').toString();
-      if (curr.value.type === 1) {
-        prev[key] = Buffer.from(curr.value.bytes, 'base64');
-      } else if (curr.value.type === 2) {
-        prev[key] = curr.value.uint;
-      }
-      return prev;
-    }, {});
-  }
-
   /**
    * Returns true if the passed array is all-zero.
    */
@@ -90,24 +104,14 @@ export const NftDetail = () => {
     return account.reduce((a, b) => a + b, 0) === 0;
   }
 
-  const appIndex = 82134588;
-  useEffect(() => {
-    updateSmartContractData();
-    const interval = setInterval(() => {
-      updateSmartContractData();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Debugging effect.
-  useEffect(() => {
-    for (const state of smartContractState) {
-      console.info('Current smart contract state:', state);
-    }
-  }, [smartContractState]);
-
   async function updateSmartContractData() {
-    const state = (await getGlobalState(appIndex)) as unknown as SmartContractState;
+    const nftSelected = await httpClient.get('nfts').then((s) => s.data[0]);
+    setData(nftSelected);
+    const appId = nftSelected?.arc69?.properties?.app_id;
+    console.log('Selected NFT meta:', nftSelected, '>>Data', data);
+    if (appId == null) return null;
+    setAppIndex(appId);
+    const state = (await getGlobalState(appId)) as unknown as SmartContractState;
     setSmartContractState(some(state));
     return state;
   }
@@ -119,6 +123,7 @@ export const NftDetail = () => {
     const appAddr = algosdk.getApplicationAddress(appIndex);
     let previousBid: option<string> = none();
     const state = await updateSmartContractData();
+    if (state == null) return;
     if (!isZeroAccount(state.bid_account)) {
       previousBid = some(algosdk.encodeAddress(state.bid_account));
     }
@@ -187,34 +192,34 @@ export const NftDetail = () => {
     <MainLayout>
       <div className="w-[45rem] m-auto">
         <div className="flex justify-around">
-          {nftSelected?.image_url.endsWith('.mp4') ? (
+          {data?.image_url.endsWith('.mp4') ? (
             <div className="w-full object-cover rounded-lg min-h-[325px] max-h-[325px] mr-8">
               <video className=" min-h-[325px] max-h-[325px]" autoPlay loop muted>
-                <source src={checkIfVideo(nftSelected?.image_url)} type="video/mp4" />
+                <source src={checkIfVideo(data?.image_url)} type="video/mp4" />
               </video>
             </div>
           ) : (
             <div className="w-full object-cover mr-8 rounded-lg">
               <img
                 className="w-full object-contain min-h-[325px] max-h-[325px] "
-                src={nftSelected?.image_url}
-                alt={nftSelected?.image_url}
+                src={data?.image_url}
+                alt={data?.image_url}
               />
             </div>
           )}
 
           <div className="flex flex-col justify-around">
             <h2 className="text-2xl">
-              <strong>{nftSelected?.title}</strong>
+              <strong>{data?.title}</strong>
             </h2>
             <p>
-              Description: <strong>{nftSelected?.arc69?.description}</strong>
+              Description: <strong>{data?.arc69?.description}</strong>
             </p>
             <p>
-              Creator: <strong>{nftSelected?.arc69?.properties?.artist}</strong>{' '}
+              Creator: <strong>{data?.arc69?.properties?.artist}</strong>{' '}
             </p>
             <p>
-              Cause: <strong>{nftSelected?.arc69?.properties?.cause}</strong>{' '}
+              Cause: <strong>{data?.arc69?.properties?.cause}</strong>{' '}
             </p>
           </div>
         </div>
@@ -227,7 +232,7 @@ export const NftDetail = () => {
               Place a new bid{' '}
               <strong>
                 {smartContractState.fold(
-                  nftSelected?.arc69?.properties?.price,
+                  data?.arc69?.properties?.price,
                   (state) => state.bid_amount
                 )}
               </strong>{' '}
