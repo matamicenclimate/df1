@@ -21,7 +21,7 @@ export const Navbar = () => {
   // };
 
   return (
-    <nav className="p-4 border flex gap-4 mb-4 justify-between items-center font-dinpro text-sm">
+    <nav className="p-4 border flex gap-4 justify-between items-center font-dinpro text-sm">
       <li>
         <Link to="/">
           <img src={climateTradeLogo} alt="climateTradeLogo" />
@@ -70,7 +70,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="relative mx-auto min-h-screen flex flex-col">
       {width >= 768 ? <Navbar /> : <NavbarMobile />}
-      <div className="mt-14 md:mt-3 pb-12 mb-12">{children}</div>
+      <div className="pb-12 pt-12 bg-custom-white">{children}</div>
       <Footer />
     </div>
   );

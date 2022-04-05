@@ -21,6 +21,7 @@ export interface NFTListed {
         type: string;
         size: number;
       };
+      date: Date;
       price: number;
     };
   };
