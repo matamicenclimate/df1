@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { CauseContext, CauseContextType } from '@/context/CauseContext';
-import { Cause } from '@/lib/api/ipfs';
+import { Cause } from '@/lib/api/causes';
 
 type CauseDetailProps = { nftDetailCause: string | undefined };
 
