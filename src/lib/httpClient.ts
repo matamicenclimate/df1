@@ -35,7 +35,7 @@ type HTTPClient<T extends Endpoints> = Omit<AxiosInstance, 'get' | 'post'> & {
 };
 
 export const httpClient = Axios.create({
-  baseURL: 'http://localhost:8000/api/v1', //API_URL,
+  baseURL: API_URL, //API_URL,
 }) as HTTPClient<CoreAPI>;
 
 export const httpClientCauses = Axios.create({
