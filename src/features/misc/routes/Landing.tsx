@@ -10,12 +10,14 @@ import { getGlobalState } from './NftDetail';
 
 async function asAppDataIfPossible(element: NFTListed) {
   const id = element.arc69.properties.app_id;
-  if (id == null) {
-    return null;
-  }
-  const state = await getGlobalState(id);
-  if (state.bid_amount != null) {
-    element.arc69.properties.price = state.bid_amount;
+  // if (id == null) {
+  //   return null;
+  // }
+  if (id != null) {
+    const state = await getGlobalState(id);
+    if (state.bid_amount != null) {
+      element.arc69.properties.price = state.bid_amount;
+    }
   }
   return element;
 }
@@ -47,6 +49,7 @@ export const Landing = () => {
   };
 
   const newDataTrial: NFTListed[] | undefined = useMemo(() => {
+    console.log('DUMP NFT INFO:', data);
     return data?.map((nft) => ({ ...nft, image_url: checkIfVideo(nft.image_url) }));
   }, [data]);
 
