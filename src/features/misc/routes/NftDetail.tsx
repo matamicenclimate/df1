@@ -244,11 +244,18 @@ export const NftDetail = () => {
       {data.fold(
         <div className="flex justify-center">
           <Spinner size="lg" />
-        </div>,
-        (detail) => (
-          <div className=" grid grid-cols-3 gap-4">
-            <div className="left col-span-2 flex justify-center overflow-y-auto">
-              <div className="w-[670px]">
+        </div>
+      ) : (
+        <div className=" grid grid-cols-3 gap-4">
+          <div className="left col-span-2 flex justify-center">
+            <div className="w-[670px]">
+              <div className="py-14">
+                <h4 className="font-dinpro font-normal text-2xl">Description</h4>
+              </div>
+              <div>
+                <p className="font-sanspro font-normal text-sm ">{nftDetail?.arc69?.description}</p>
+              </div>
+              <div>
                 <div className="py-14">
                   <h4 className="font-dinpro font-normal text-2xl">Description</h4>
                 </div>

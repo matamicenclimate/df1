@@ -111,37 +111,37 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
           closeButton
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          title="Select Wallet"
+          title="Connect Wallet"
           subtitle=""
-          claim=""
+          claim="Register on Climatetrade's NFT marketplace with your account with one of our suppliers. These accounts are always free of charge."
         >
-          <div className="flex flex-col space-between w-80 m-auto my-5 items-center">
-            <div className="m-5 w-60 shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:text hover:bg-gray-100">
+          <div className="flex flex-col space-between m-auto my-5 items-center">
+            <div className="m-5 w-full shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:text hover:bg-gray-100">
               <button
-                className="p-3 w-full flex justify-around items-center hover:font-bold"
+                className="p-3 w-full flex justify-center items-center hover:font-bold"
                 id="algo-signer"
                 onClick={(event) => handleSelectedWallet(event)}
               >
-                <span>AlgoSigner</span>
                 <img
                   className="w-10"
                   src="https://dartroom.xyz/img/algosigner.69be6245.svg"
                   alt="algosigner-logo"
                 />
+                <span className="ml-4 text-climate-blue">Continue with AlgoSigner</span>
               </button>
             </div>
-            <div className="m-5 w-60 shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:bg-gray-100">
+            <div className="m-5 w-full shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:bg-gray-100">
               <button
-                className="p-3 w-full flex justify-around items-center hover:font-bold"
+                className="p-3 w-full flex justify-center items-center hover:font-bold"
                 id="my-algo-connect"
                 onClick={(event) => handleSelectedWallet(event)}
               >
-                <span>MyAlgo</span>
                 <img
                   className="w-10"
                   src="https://dartroom.xyz/img/myalgo.b2b6857d.svg"
                   alt="myalgo-logo"
                 />
+                <span className="ml-4 text-climate-blue">Continue with MyAlgo</span>
               </button>
             </div>
           </div>

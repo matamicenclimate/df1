@@ -39,18 +39,25 @@ export const Dialog = ({
       {/* Use the overlay to style a dim backdrop for your dialog */}
       <HUIDialog.Overlay className="fixed inset-0 bg-black opacity-30 backdrop-blur" />
       {/* <HUIDialog.Overlay className="fixed inset-0 backdrop-opacity-20" /> */}
-      <div className="relative bg-white rounded-2xl max-w-sm w-full mx-auto p-4">
-        <HUIDialog.Title className="text-xl">{title}</HUIDialog.Title>
+      <div className="min-w-[560px] relative bg-white rounded-2xl max-w-sm w-full mx-auto p-7">
+        <HUIDialog.Title className="text-3xl climate-black-title">{title}</HUIDialog.Title>
         {subtitle ? <HUIDialog.Description>{subtitle}</HUIDialog.Description> : null}
 
-        {claim ? <p>{claim} </p> : null}
+        {claim ? (
+          <p className="font-sanspro text-base text-climate-gray-light font-normal py-7">
+            {claim}{' '}
+          </p>
+        ) : null}
         {children}
         <div className="space-x-2 flex justify-end absolute top-3 right-3 ">
           {closeButton && (
-            <Button className="p-1" onClick={() => (onCancel ? onCancel() : setIsOpen(false))}>
+            <button
+              className="p-1 text-climate-gray-light"
+              onClick={() => (onCancel ? onCancel() : setIsOpen(false))}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-6 w-6"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -61,7 +68,7 @@ export const Dialog = ({
                 />
               </svg>
               {/* {cancelLabel ? cancelLabel : t('dialogs.base.cancel')} */}
-            </Button>
+            </button>
           )}
           {onAccept && (
             <Button onClick={() => (onAccept ? onAccept() : setIsOpen(false))}>
