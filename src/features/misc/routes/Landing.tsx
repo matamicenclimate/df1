@@ -25,7 +25,6 @@ async function asAppDataIfPossible(element: NFTListed) {
 const fetchNfts = async () => {
   const list: NFTListed[] = [];
   const ofList = await httpClient.get('nfts').then(({ data }) => data);
-  console.log('....>', ofList);
   for (const data of ofList) {
     const out = await asAppDataIfPossible(data);
     if (out == null) continue;
@@ -49,7 +48,6 @@ export const Landing = () => {
   };
 
   const newDataTrial: NFTListed[] | undefined = useMemo(() => {
-    console.log('DUMP NFT INFO:', data);
     return data?.map((nft) => ({ ...nft, image_url: checkIfVideo(nft.image_url) }));
   }, [data]);
 
