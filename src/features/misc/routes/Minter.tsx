@@ -178,109 +178,71 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   return (
     <div>
       <MainLayout>
-        <div className="flex justify-center h-screen rounded m-auto">
+        <div className="flex justify-center rounded m-auto">
           <Form
             onSubmit={handleSubmit(formSubmitHandler) as () => Promise<void>}
             className="rounded px-8 pt-6 pb-8 mb-4 min-w-[800px]"
           >
-            <h6 className="font-dinpro font-normal text-base">Basic Info</h6>
-            <div>
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="title"
-              >
-                Title
-              </label>
+            <h6 className="font-dinpro font-normal text-base py-5">Basic Info</h6>
+            <div className="py-6">
               <input
-                className="border border-climate-border rounded-xl p-3"
+                className="w-full border border-climate-border rounded-xl p-3 shadow"
                 id="title"
                 type="text"
-                placeholder="Title.."
+                placeholder="NFT Title"
                 {...register('title', { required: true })}
               />
               {errors.title && <span className="text-red-500">This field is required</span>}
             </div>
-            <div>
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="artist"
-              >
-                Artist
-              </label>
+            <div className="py-6">
               <input
-                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="w-full border border-climate-border rounded-xl p-3 shadow"
                 id="artist"
                 type="text"
-                placeholder="Artist.."
+                placeholder="NFT Creator"
                 {...register('author', { required: true })}
               />
               {errors?.author && <span className="text-red-500">This field is required</span>}
             </div>
-            <div>
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="description"
-              >
-                Description
-              </label>
+            <div className=" py-6">
               <input
-                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                id="description"
-                placeholder="Description.."
-                {...register('description', { required: true })}
-              />
-              {errors.description && <span className="text-red-500">This field is required</span>}
-            </div>
-            <div>
-              <label
-                className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                htmlFor="description"
-              >
-                Price
-              </label>
-              <input
-                className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                className="w-full shadow appearance-none border border-climate-border rounded-xl p-3"
                 id="price"
                 type="number"
-                placeholder="Set a price for your asset.."
+                placeholder="NFT Price"
                 {...register('properties.price', { required: true })}
               />
               {errors.properties?.price && (
                 <span className="text-red-500">This field is required</span>
               )}
             </div>
-            <div className="flex w-full">
+            <div className="flex w-full py-6">
               <div className="w-3/4">
-                <label
-                  className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="cause"
-                >
-                  Cause
-                </label>
                 <select
-                  className="w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-gray-500 rounded py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                  className="text-climate-gray w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-climate-border rounded-xl p-3"
                   {...register('properties.cause', { required: true })}
                 >
-                  <option value="">Select...</option>
-                  {data && data?.map((cause) => <option key={cause.id}>{cause.title}</option>)}
+                  <option disabled selected className="" value="">
+                    Cause
+                  </option>
+                  {data &&
+                    data?.map((cause) => (
+                      <option className="text-climate-black-text" key={cause.id}>
+                        {cause.title}
+                      </option>
+                    ))}
                 </select>
                 {errors.properties?.cause && (
                   <span className="text-red-500">You should select a cause</span>
                 )}
               </div>
               <div className="ml-2">
-                <label
-                  className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="percentage"
-                >
-                  Percentage
-                </label>
                 <input
-                  className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                  className="w-full border border-climate-border rounded-xl p-3 shadow"
                   id="percentage"
                   type="number"
-                  placeholder="Percentage.."
-                  defaultValue={30}
+                  placeholder="Cause Percentage"
+                  // defaultValue={30}
                   {...register('properties.causePercentage', { required: true, min: 30, max: 99 })}
                 />
                 {errors.properties?.causePercentage && (
@@ -301,9 +263,21 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               />
             </div>
             <div>
+              <h6 className="font-normal font-dinpro text-base py-5">NFT details</h6>
+              <textarea
+                className="w-full border border-climate-border rounded-xl p-3"
+                id="description"
+                placeholder="Description.."
+                {...register('description', { required: true })}
+              />
+              {errors.description && <span className="text-red-500">This field is required</span>}
+            </div>
+            <div>
               <div className="flex justify-between">
-                <h6>Upload resources</h6>
-                <p>You can mint jpg, gif, mov, mp4, cad, pdf</p>
+                <h6 className="font-normal font-dinpro text-base py-5">Upload resources</h6>
+                <h6 className="font-dinpro font-normal text-sm text-climate-gray-artist self-center">
+                  You can mint jpg, gif, mov, mp4, cad, pdf
+                </h6>
               </div>
               <div className="mb-4">
                 <input
