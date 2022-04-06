@@ -67,9 +67,9 @@ export const ConnectWallet = () => {
   return (
     <div>
       <MainLayout>
-        <h1 className="text-center text-2xl font-bold">
+        <h2 className="font-normal font-dinpro text-4xl text-center">
           Please connect your Wallet to create an NFT
-        </h1>
+        </h2>
         <div className="flex flex-col space-between w-80 m-auto my-5 items-center">
           <div className="m-5 w-60 shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:text hover:bg-gray-100">
             <button
@@ -77,7 +77,7 @@ export const ConnectWallet = () => {
               id="algo-signer"
               onClick={(event) => handleSelectedWallet(event)}
             >
-              <span>AlgoSigner</span>
+              <h6 className="font-dinpro font-normal text-lg">AlgoSigner</h6>
               <img
                 className="w-10"
                 src="https://dartroom.xyz/img/algosigner.69be6245.svg"
@@ -91,7 +91,7 @@ export const ConnectWallet = () => {
               id="my-algo-connect"
               onClick={(event) => handleSelectedWallet(event)}
             >
-              <span>MyAlgo</span>
+              <h6 className="font-dinpro font-normal text-lg">MyAlgo</h6>
               <img
                 className="w-10"
                 src="https://dartroom.xyz/img/myalgo.b2b6857d.svg"

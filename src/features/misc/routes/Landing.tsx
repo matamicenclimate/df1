@@ -57,6 +57,7 @@ export const Landing = () => {
     <MainLayout>
       <div className="flex justify-center">
         <div className="p-4">
+          <h2 className="font-normal font-dinpro text-4xl">NFTs marketplace</h2>
           {isLoading ? (
             <Spinner size="lg" />
           ) : (

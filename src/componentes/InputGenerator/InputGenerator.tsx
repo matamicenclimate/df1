@@ -30,27 +30,22 @@ export const InputGenerator = ({ inputList, setInputList }: InputGeneratorType) 
   };
 
   return (
-    <div className="mb-4">
-      <label
-        className="block text-custom-white md:text-gray-700 text-sm font-bold mb-2"
-        htmlFor="attribute"
-      >
-        Attributes (Optional)
-      </label>
+    <div className="py-6">
+      <h6 className="font-dinpro font-normal text-base ">Attributes (Optional)</h6>
       {inputList.map((x, i) => {
         return (
-          <div key={`custom-input-parameter-${i}`} className="flex justify-around">
+          <div key={`custom-input-parameter-${i}`} className="flex justify-around  py-6">
             <input
-              className="shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="shadow w-full border border-climate-border rounded-xl p-3"
               name="trait_type"
-              placeholder="Enter trait type.."
+              placeholder="Enter trait type"
               value={x.trait_type}
               onChange={(e) => handleInputChange(e, i)}
             />
             <input
-              className="ml-1 mr-1 shadow appearance-none border border-gray-500 rounded w-full py-2 px-3 md:text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full border border-climate-border rounded-xl p-3 shadow ml-3"
               name="value"
-              placeholder="Enter value.."
+              placeholder="Enter value"
               value={x.value}
               onChange={(e) => handleInputChange(e, i)}
             />
