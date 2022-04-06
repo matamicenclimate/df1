@@ -10,9 +10,9 @@ import { getGlobalState } from './NftDetail';
 
 async function asAppDataIfPossible(element: NFTListed) {
   const id = element.arc69.properties.app_id;
-  // if (id == null) {
-  //   return null;
-  // }
+  if (id == null) {
+    return null;
+  }
   if (id != null) {
     const state = await getGlobalState(id);
     if (state.bid_amount != null) {

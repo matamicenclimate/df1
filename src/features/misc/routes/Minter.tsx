@@ -65,49 +65,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
           assetId: result.value.assetID,
         });
         console.info('Auction program was created:', tx.data);
-        // Modify the asset metadata
-        {
-          const assetId = result.value.assetID;
-          const appIndex = tx.data.appIndex;
-          const asset = meta;
-          const note = await algosdk.encodeObj({
-            ...asset,
-            arc69: {
-              ...asset.arc69,
-              properties: { ...asset.arc69.properties, app_id: appIndex },
-            },
-          });
-          const params = await client().getTransactionParams().do();
-          const txn = await algosdk.makeAssetConfigTxnWithSuggestedParamsFromObject({
-            from: account,
-            reserve: account,
-            clawback: account,
-            manager: account,
-            freeze: account,
-            suggestedParams: params,
-            assetIndex: assetId,
-            note,
-            strictEmptyAddressChecking: false,
-          });
-          const stxn = await wallet.signTxn([txn]);
-          const r = await client().sendRawTransaction(stxn[0].blob).do();
-          const c = await algosdk.waitForConfirmation(client(), r, 10);
-          console.log('PATCHING ASSET NOTE', assetId, c);
-          console.info('Done, targetting asset transfer...');
-          const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
-            optResult.data.targetAccount,
-            result.value.assetID,
-            new Uint8Array()
-          );
-          console.info('Asset transfer to app:', transfer);
-          console.info('Done, targetting auction activation...');
-          const rspActivate = await httpClient.post('activate-auction', {
-            appId: appIndex,
-            assetId,
-          });
-          console.log('Auction activation result:', rspActivate.data);
-        }
-        // -------------------------
         return;
       }
       return console.warn(

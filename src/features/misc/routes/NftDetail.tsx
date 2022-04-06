@@ -45,44 +45,48 @@ interface SmartContractState {
   end: number;
   nft_id: number;
   bid_account: Uint8Array;
-  bid_amount: number;
-  num_bids: number;
+  bid_amount?: number;
+  num_bids?: number;
   min_bid_inc: number;
   reserve_amount: number;
   start: number;
   seller: Uint8Array;
 }
 
+type State = {
+  nft: NFTListed;
+  state: SmartContractState;
+};
+
 export const NftDetail = () => {
-  const { ipnft: idParam } = useParams();
+  const { ipnft } = useParams();
+  const idParam = ipnft;
   const id = Number(idParam);
   const [error, setError] = useState<Error>();
-  const [data, setData] = useState<option<NFTListed>>(none());
-  const setNft = (nft: NFTListed) => setData(some(nft));
-  const clearNft = () => setData(none());
-  const [smartContractState, setSmartContractState] = useState<option<SmartContractState>>(none());
-  const [appIndex, setAppIndex] = useState(0);
+  const [data, setData] = useState<option<State>>(none());
+  const setNft = (state: State) => setData(some(state));
   const wallet = useContext(WalletContext);
 
   useEffect(() => {
     fetchNfts();
+    // const interval = setInterval(() => {
+    //   fetchNfts();
+    // }, 20000);
+    // return () => clearInterval(interval);
   }, [idParam]);
-
-  useEffect(() => {
-    updateSmartContractData();
-    const interval = setInterval(() => {
-      updateSmartContractData();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, []);
 
   const fetchNfts = async () => {
     try {
-      const nftSelected = await httpClient.get('nfts').then((s) => s.data.find((s) => s.id === id));
-      if (nftSelected == null) {
+      const nft = await httpClient.get('nfts').then((s) => s.data.find((s) => s.id === id));
+      if (nft == null) {
         throw new Error(`Invalid NFT selected "${idParam}"!`);
       }
-      setNft(nftSelected);
+      const appId = nft.arc69.properties.app_id;
+      if (appId == null) {
+        throw new Error(`Invalid NFET metadata for ${idParam}!`);
+      }
+      const state = (await getGlobalState(appId)) as unknown as SmartContractState;
+      setNft({ nft, state });
     } catch (err: any) {
       setError(err.message);
     }
@@ -104,17 +108,17 @@ export const NftDetail = () => {
   }
 
   const nftDetailLogo = data.fold(<Spinner />, (detail) =>
-    detail.image_url.endsWith('.mp4') ? (
+    detail.nft.image_url.endsWith('.mp4') ? (
       <div className="w-full object-cover rounded-lg min-h-[325px] max-h-[325px] mr-8">
         <video className="min-h-[325px] max-h-[325px]" autoPlay loop muted>
-          <source src={checkIfVideo(detail.image_url)} type="video/mp4" />
+          <source src={checkIfVideo(detail.nft.image_url)} type="video/mp4" />
         </video>
       </div>
     ) : (
       <img
         className="w-full h-full object-contain rounded-xl"
-        src={detail.image_url}
-        alt={detail.image_url}
+        src={detail.nft.image_url}
+        alt={detail.nft.image_url}
       />
     )
   );
@@ -153,31 +157,25 @@ export const NftDetail = () => {
     return account.reduce((a, b) => a + b, 0) === 0;
   }
 
-  async function updateSmartContractData() {
-    for (const d of data) {
-      const appId = d.arc69.properties.app_id;
-      if (appId == null) return null;
-      setAppIndex(appId);
-      const state = (await getGlobalState(appId)) as unknown as SmartContractState;
-      setSmartContractState(some(state));
-      return state;
-    }
-    return null;
-  }
-
   // Test: Place a bid!
   async function doPlaceABid() {
     const dialog = Container.get(ProcessDialog);
-    const op = Container.get(TransactionOperation);
-    const appAddr = algosdk.getApplicationAddress(appIndex);
+    if (!data.isDefined()) {
+      return alert(`Can't place a bid! App index couldn't be setted.`);
+    }
+    const appId = data.value.nft.arc69.properties.app_id;
+    if (appId == null) {
+      return alert(`Attempting to place a bid on an invalid asset.`);
+    }
+    const appAddr = algosdk.getApplicationAddress(appId);
     let previousBid: option<string> = none();
-    const state = await updateSmartContractData();
+    const state = data.value.state;
     if (state == null) return;
     if (!isZeroAccount(state.bid_account)) {
       previousBid = some(algosdk.encodeAddress(state.bid_account));
     }
     console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-    const minRequired = state.bid_amount + 10;
+    const minRequired = (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 10);
     let bidAmount = 0;
     while (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
       const result = prompt(
@@ -208,11 +206,11 @@ export const NftDetail = () => {
       this.message = `Making application call...`;
       console.log(`Smart contract wallet: ${appAddr}`);
       console.log(
-        `Using this smart contract: https://testnet.algoexplorer.io/application/${appIndex}`
+        `Using this smart contract: https://testnet.algoexplorer.io/application/${appId}`
       );
       const callTxn = await algosdk.makeApplicationCallTxnFromObject({
         from: account.addr,
-        appIndex,
+        appIndex: appId,
         onComplete: algosdk.OnApplicationComplete.NoOpOC,
         appArgs: ['bid'.toBytes()],
         foreignAssets: [state.nft_id],
@@ -228,7 +226,7 @@ export const NftDetail = () => {
       try {
         await algosdk.waitForConfirmation(client(), txId, 10);
         this.message = `Done!`;
-        await updateSmartContractData();
+        await fetchNfts();
       } catch {
         this.message = `FATAL! Could not send your transaction.`;
         await new Promise((r) => setTimeout(r, 1000));
@@ -246,35 +244,37 @@ export const NftDetail = () => {
           <Spinner size="lg" />
         </div>,
         (detail) => (
-          <div className=" grid grid-cols-3 gap-4">
-            <div className="left col-span-2 flex justify-center overflow-y-auto">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="left col-span-2 flex justify-center">
               <div className="w-[670px]">
                 <div className="py-14">
                   <h4 className="font-dinpro font-normal text-2xl">Description</h4>
                 </div>
                 <div>
-                  <p className="font-sanspro font-normal text-sm ">{detail?.arc69?.description}</p>
+                  <p className="font-sanspro font-normal text-sm">{detail.nft.arc69.description}</p>
                 </div>
                 <div>
                   <div className="py-14">
                     <h4 className="font-dinpro font-normal text-2xl">Description</h4>
                   </div>
                   <div>
-                    <p className="font-sanspro font-normal text-sm ">{detail.arc69.description}</p>
+                    <p className="font-sanspro font-normal text-sm ">
+                      {detail.nft.arc69.description}
+                    </p>
                   </div>
                   <div>
                     <div className="py-14">
                       <h4 className="font-dinpro font-normal text-2xl">Causes</h4>
                     </div>
                     <div className="w-[650px]">
-                      <CauseDetail nftDetailCause={detail.arc69.properties.cause} />
+                      <CauseDetail nftDetailCause={detail.nft.arc69.properties.cause} />
                     </div>
                   </div>
                   <div className="image w-[650px] h-[580px]">
                     <div className="py-14 flex justify-between font-dinpro">
                       <h4 className="font-normal text-2xl">Resources</h4>
                       <p className="self-center font-normal text-climate-gray-light text-lg">
-                        {getDateObj(detail.arc69.properties.date)}
+                        {getDateObj(detail.nft.arc69.properties.date)}
                       </p>
                     </div>
                     <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
@@ -283,35 +283,36 @@ export const NftDetail = () => {
                   </div>
                 </div>
               </div>
-              <div className="right col-span-1">
-                <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
-                  <div className="image w-[330px] h-[345px]">{nftDetailLogo}</div>
-                  <div className="p-3">
-                    <div className="cardText">
-                      <div className="bg-white">
-                        <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
-                          <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
-                          <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-                            {detail.arc69.properties.cause}
-                          </p>
-                        </div>
-                        <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
-                          {detail.title}
-                        </h4>
-                        <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
-                          @{detail.arc69.properties.artist}
-                        </div>
+            </div>
+            <div className="right col-span-1">
+              <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
+                <div className="image w-[330px] h-[345px]">{nftDetailLogo}</div>
+                <div className="p-3">
+                  <div className="cardText">
+                    <div className="bg-white">
+                      <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
+                        <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
+                        <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
+                          {detail.nft.arc69.properties.cause}
+                        </p>
+                      </div>
+                      <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
+                        {detail.nft.title}
+                      </h4>
+                      <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
+                        @{detail.nft.arc69.properties.artist}
                       </div>
                     </div>
-                    <div className="offerBid flex justify-between py-7">
-                      <div className="flex flex-col">
-                        <label
-                          className="font-sanspro text-climate-gray-artist text-sm pb-4"
-                          htmlFor="title"
-                        >
-                          Offer Bid
-                        </label>
-                        {/* <input
+                  </div>
+                  <div className="offerBid flex justify-between py-7">
+                    <div className="flex flex-col">
+                      <label
+                        className="font-sanspro text-climate-gray-artist text-sm pb-4"
+                        htmlFor="title"
+                      >
+                        Offer Bid
+                      </label>
+                      {/* <input
                 className="shadow appearance-none border border-gray-500 rounded-xl w-36 py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="title"
                 type="text"
@@ -320,25 +321,21 @@ export const NftDetail = () => {
                   (state) => state.bid_amount
                 )}`}
               /> */}
-                      </div>
-                      <div className="flex self-end">
-                        <p className="text-xl text-climate-blue self-center">
-                          {smartContractState.fold(
-                            detail.arc69.properties.price,
-                            (state) => state.bid_amount
-                          )}
-                        </p>
-                        <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
-                      </div>
                     </div>
-                    <div className="buttons">
-                      <Button
-                        onClick={doPlaceABid}
-                        className="w-full text-2xl text-climate-white mt-8 font-dinpro"
-                      >
-                        <span>Place Bid</span>
-                      </Button>
+                    <div className="flex self-end">
+                      <p className="text-xl text-climate-blue self-center">
+                        {detail.state.bid_amount ?? detail.nft.arc69.properties.price}
+                      </p>
+                      <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                     </div>
+                  </div>
+                  <div className="buttons">
+                    <Button
+                      onClick={doPlaceABid}
+                      className="w-full text-2xl text-climate-white mt-8 font-dinpro"
+                    >
+                      <span>Place Bid</span>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -349,100 +346,3 @@ export const NftDetail = () => {
     </MainLayout>
   );
 };
-
-// {isLoading ? (
-//   <div className="flex justify-center">
-//     <Spinner size="lg" />
-//   </div>
-// ) : (
-//   <div className=" grid grid-cols-3 gap-4">
-//     <div className="left col-span-2 flex justify-center overflow-y-auto">
-//       <div className="w-[670px]">
-//         <div className="py-14">
-//           <h4 className="font-dinpro font-normal text-2xl">Description</h4>
-//         </div>
-//         <div>
-//           <p className="font-sanspro font-normal text-sm ">{nftDetail?.arc69?.description}</p>
-//         </div>
-//         <div>
-//           <div className="py-14">
-//             <h4 className="font-dinpro font-normal text-2xl">Causes</h4>
-//           </div>
-//           <div className="w-[650px]">
-//             <CauseDetail nftDetailCause={nftDetail?.arc69?.properties?.cause} />
-//           </div>
-//         </div>
-//         <div className="image w-[650px] h-[580px]">
-//           <div className="py-14 flex justify-between font-dinpro">
-//             <h4 className="font-normal text-2xl">Resources</h4>
-//             <p className="self-center font-normal text-climate-gray-light text-lg">
-//               {getDateObj(nftDetail?.arc69?.properties?.date)}
-//             </p>
-//           </div>
-//           <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
-//             {nftDetailLogo}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//     <div className="right col-span-1">
-//       <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
-//         <div className="image w-[330px] h-[345px]">{nftDetailLogo}</div>
-//         <div className="p-3">
-//           <div className="cardText">
-//             <div className="bg-white">
-//               <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
-//                 <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
-//                 <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-//                   {nftDetail?.arc69?.properties?.cause}
-//                 </p>
-//               </div>
-//               <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
-//                 {nftDetail?.title}
-//               </h4>
-//               <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
-//                 @{nftDetail?.arc69?.properties?.artist}
-//               </div>
-//             </div>
-//           </div>
-//           <div className="offerBid flex justify-between py-7">
-//             <div className="flex flex-col">
-//               <label
-//                 className="font-sanspro text-climate-gray-artist text-sm pb-4"
-//                 htmlFor="title"
-//               >
-//                 Offer Bid
-//               </label>
-//               {/* <input
-//                 className="shadow appearance-none border border-gray-500 rounded-xl w-36 py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-//                 id="title"
-//                 type="text"
-//                 placeholder={`${smartContractState.fold(
-//                   nftSelected?.arc69?.properties?.price,
-//                   (state) => state.bid_amount
-//                 )}`}
-//               /> */}
-//             </div>
-//             <div className="flex self-end">
-//               <p className="text-xl text-climate-blue self-center">
-//                 {smartContractState.fold(
-//                   data?.arc69?.properties?.price,
-//                   (state) => state.bid_amount
-//                 )}
-//               </p>
-//               <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
-//             </div>
-//           </div>
-//           <div className="buttons">
-//             <Button
-//               onClick={doPlaceABid}
-//               className="w-full text-2xl text-climate-white mt-8 font-dinpro"
-//             >
-//               <span>Place Bid</span>
-//             </Button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// )}
