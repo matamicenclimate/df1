@@ -254,7 +254,7 @@ export const NftDetail = () => {
         </div>
       ) : (
         <div className=" grid grid-cols-3 gap-4">
-          <div className="left col-span-2 flex justify-center overflow-y-auto">
+          <div className="left col-span-2 flex justify-center">
             <div className="w-[670px]">
               <div className="py-14">
                 <h4 className="font-dinpro font-normal text-2xl">Description</h4>
