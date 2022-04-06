@@ -244,74 +244,74 @@ export const NftDetail = () => {
       {data.fold(
         <div className="flex justify-center">
           <Spinner size="lg" />
-        </div>
-      ) : (
-        <div className=" grid grid-cols-3 gap-4">
-          <div className="left col-span-2 flex justify-center">
-            <div className="w-[670px]">
-              <div className="py-14">
-                <h4 className="font-dinpro font-normal text-2xl">Description</h4>
-              </div>
-              <div>
-                <p className="font-sanspro font-normal text-sm ">{nftDetail?.arc69?.description}</p>
-              </div>
-              <div>
+        </div>,
+        (detail) => (
+          <div className=" grid grid-cols-3 gap-4">
+            <div className="left col-span-2 flex justify-center overflow-y-auto">
+              <div className="w-[670px]">
                 <div className="py-14">
                   <h4 className="font-dinpro font-normal text-2xl">Description</h4>
                 </div>
                 <div>
-                  <p className="font-sanspro font-normal text-sm ">{detail.arc69.description}</p>
+                  <p className="font-sanspro font-normal text-sm ">{detail?.arc69?.description}</p>
                 </div>
                 <div>
                   <div className="py-14">
-                    <h4 className="font-dinpro font-normal text-2xl">Causes</h4>
+                    <h4 className="font-dinpro font-normal text-2xl">Description</h4>
                   </div>
-                  <div className="w-[650px]">
-                    <CauseDetail nftDetailCause={detail.arc69.properties.cause} />
+                  <div>
+                    <p className="font-sanspro font-normal text-sm ">{detail.arc69.description}</p>
                   </div>
-                </div>
-                <div className="image w-[650px] h-[580px]">
-                  <div className="py-14 flex justify-between font-dinpro">
-                    <h4 className="font-normal text-2xl">Resources</h4>
-                    <p className="self-center font-normal text-climate-gray-light text-lg">
-                      {getDateObj(detail.arc69.properties.date)}
-                    </p>
+                  <div>
+                    <div className="py-14">
+                      <h4 className="font-dinpro font-normal text-2xl">Causes</h4>
+                    </div>
+                    <div className="w-[650px]">
+                      <CauseDetail nftDetailCause={detail.arc69.properties.cause} />
+                    </div>
                   </div>
-                  <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
-                    {nftDetailLogo}
+                  <div className="image w-[650px] h-[580px]">
+                    <div className="py-14 flex justify-between font-dinpro">
+                      <h4 className="font-normal text-2xl">Resources</h4>
+                      <p className="self-center font-normal text-climate-gray-light text-lg">
+                        {getDateObj(detail.arc69.properties.date)}
+                      </p>
+                    </div>
+                    <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
+                      {nftDetailLogo}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="right col-span-1">
-              <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
-                <div className="image w-[330px] h-[345px]">{nftDetailLogo}</div>
-                <div className="p-3">
-                  <div className="cardText">
-                    <div className="bg-white">
-                      <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
-                        <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
-                        <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-                          {detail.arc69.properties.cause}
-                        </p>
-                      </div>
-                      <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
-                        {detail.title}
-                      </h4>
-                      <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
-                        @{detail.arc69.properties.artist}
+              <div className="right col-span-1">
+                <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
+                  <div className="image w-[330px] h-[345px]">{nftDetailLogo}</div>
+                  <div className="p-3">
+                    <div className="cardText">
+                      <div className="bg-white">
+                        <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
+                          <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
+                          <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
+                            {detail.arc69.properties.cause}
+                          </p>
+                        </div>
+                        <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
+                          {detail.title}
+                        </h4>
+                        <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
+                          @{detail.arc69.properties.artist}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="offerBid flex justify-between py-7">
-                    <div className="flex flex-col">
-                      <label
-                        className="font-sanspro text-climate-gray-artist text-sm pb-4"
-                        htmlFor="title"
-                      >
-                        Offer Bid
-                      </label>
-                      {/* <input
+                    <div className="offerBid flex justify-between py-7">
+                      <div className="flex flex-col">
+                        <label
+                          className="font-sanspro text-climate-gray-artist text-sm pb-4"
+                          htmlFor="title"
+                        >
+                          Offer Bid
+                        </label>
+                        {/* <input
                 className="shadow appearance-none border border-gray-500 rounded-xl w-36 py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="title"
                 type="text"
@@ -320,24 +320,25 @@ export const NftDetail = () => {
                   (state) => state.bid_amount
                 )}`}
               /> */}
+                      </div>
+                      <div className="flex self-end">
+                        <p className="text-xl text-climate-blue self-center">
+                          {smartContractState.fold(
+                            detail.arc69.properties.price,
+                            (state) => state.bid_amount
+                          )}
+                        </p>
+                        <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
+                      </div>
                     </div>
-                    <div className="flex self-end">
-                      <p className="text-xl text-climate-blue self-center">
-                        {smartContractState.fold(
-                          detail.arc69.properties.price,
-                          (state) => state.bid_amount
-                        )}
-                      </p>
-                      <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
+                    <div className="buttons">
+                      <Button
+                        onClick={doPlaceABid}
+                        className="w-full text-2xl text-climate-white mt-8 font-dinpro"
+                      >
+                        <span>Place Bid</span>
+                      </Button>
                     </div>
-                  </div>
-                  <div className="buttons">
-                    <Button
-                      onClick={doPlaceABid}
-                      className="w-full text-2xl text-climate-white mt-8 font-dinpro"
-                    >
-                      <span>Place Bid</span>
-                    </Button>
                   </div>
                 </div>
               </div>
