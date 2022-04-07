@@ -5,7 +5,7 @@ import { Card } from '@/componentes/Elements/Card/Card';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { httpClient } from '@/lib/httpClient';
 import { NFTListed } from '@/lib/api/nfts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { getGlobalState } from './NftDetail';
 import { Case, Match } from '@/componentes/Generic/Match';
 

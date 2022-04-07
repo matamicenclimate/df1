@@ -12,7 +12,6 @@ import { none, option, some } from '@octantis/option';
 import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import '@common/src/lib/binary/extension';
 import { WalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
