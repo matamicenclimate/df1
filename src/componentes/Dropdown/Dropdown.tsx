@@ -15,7 +15,10 @@ export const Dropdown = ({ accts, setOptionSelected }: DropdownProps) => {
   return (
     <>
       <span className="h-3 w-3 bg-green-500 rounded-full inline-block"></span>
-      <select className="mr-2 font-bold" onChange={selectChange}>
+      <select
+        className="mr-2 font-normal font-dinpro text-climate-gray-artist text-sm"
+        onChange={selectChange}
+      >
         {accts.map((addr, idx) => {
           return (
             <option value={addr} key={idx}>
