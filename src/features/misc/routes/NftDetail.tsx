@@ -239,14 +239,11 @@ export const NftDetail = () => {
     });
   }
 
-  if (error)
-    return (
-      <MainLayout>
-        <div className="flex justify-center">{error}</div>
-      </MainLayout>
-    );
   return (
     <MainLayout>
+      {error.fold(<></>, (e) => (
+        <div style={{ color: 'red' }}>Error: {e}</div>
+      ))}
       {nft.fold(
         <div className="flex justify-center">
           <Spinner size="lg" />
