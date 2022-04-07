@@ -33,9 +33,7 @@ const fetchNfts = async () => {
   }
   return list;
 };
-function idem<A>(a: A) {
-  return a;
-}
+
 export const Landing = () => {
   const { data, isLoading, error } = useQuery<NFTListed[]>('nfts', fetchNfts);
 
