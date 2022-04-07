@@ -3,6 +3,7 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
+import { ImageUploader } from '@/componentes/ImageUploader/ImageUploader';
 import { Wallet } from 'algorand-session-wallet';
 import { httpClient } from '@/lib/httpClient';
 import { AssetInfo, createNFT } from '@/lib/nft';
@@ -16,7 +17,6 @@ import { some } from '@octantis/option';
 import Container from 'typedi';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import ProcessDialog from '@/service/ProcessDialog';
-import algosdk from 'algosdk';
 
 export type MinterProps = {
   wallet: Wallet | undefined;
@@ -30,6 +30,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
   const [transaction, setTransaction] = useState<AssetInfo | undefined>();
+  const [selectedImage, setSelectedImage] = useState<unknown | any | File>();
+
+  console.log('selectedImage from Minter', selectedImage);
 
   const causeContext = useContext(CauseContext);
   const data = causeContext?.data;
@@ -38,8 +41,13 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
+
+  console.log('control', control);
+
+  console.log('watch', watch('properties.file'));
 
   async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
     const algodClient = client();
@@ -95,15 +103,13 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     };
     dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
     dataString.properties.price = Number(dataString.properties.price);
-    console.log('dataStringdataStringdataString', dataString);
     const form = new FormData();
+
     form.append('data', JSON.stringify(dataString));
     form.append('file', oneFile, oneFile.name);
-
-    // selectedImage && form.append('file', selectedImage as File);
+    selectedImage && form.append('file', selectedImage as File);
 
     const res = await httpClient.post('ipfs', form);
-
     console.log('res.data', res.data);
     setMetadataNFT(res.data);
     dialog.stop();
@@ -119,7 +125,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   }, [dataToPost]);
 
   useEffect(() => {
-    // if (metadataNFT && wallet.isDefined() && account.isDefined()) {
     if (wallet != null) {
       (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
     }
@@ -237,13 +242,21 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 </h6>
               </div>
               <div className="mb-4">
-                <input
+                <Controller
+                  control={control}
+                  name="properties.file"
+                  render={({ field: { value, onChange } }) => (
+                    <ImageUploader selectedImage={value ?? null} setSelectedImage={onChange} />
+                  )}
+                />
+                {/* <ImageUploader /> */}
+                {/* <input
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-custom-white md:text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   id="file"
                   type="file"
                   {...register('file', { required: true })}
                 />
-                {errors?.file && <span className="text-red-500">This field is required</span>}
+                {errors?.file && <span className="text-red-500">This field is required</span>} */}
               </div>
             </div>
             <Button variant="primary" type="submit">
