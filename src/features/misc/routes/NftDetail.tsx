@@ -18,6 +18,7 @@ import { useQuery } from 'react-query';
 import { fetchNfts } from '@/lib/NFTFetching';
 import { isVideo } from '@/lib/media';
 import { assertArray } from '@/lib/type';
+import Fold from '@/componentes/Generic/Fold';
 
 type Entry = {
   key: string;
@@ -241,14 +242,10 @@ export const NftDetail = () => {
 
   return (
     <MainLayout>
-      {error.fold(<></>, (e) => (
-        <div style={{ color: 'red' }}>Error: {e}</div>
-      ))}
-      {nft.fold(
-        <div className="flex justify-center">
-          <Spinner size="lg" />
-        </div>,
-        (detail) => (
+      <Fold option={error} as={(e) => <div style={{ color: 'red' }}>Error: {e}</div>} />
+      <Fold
+        option={nft}
+        as={(detail) => (
           <div className="grid grid-cols-3 gap-4">
             <div className="left col-span-2 flex justify-center">
               <div className="w-[670px]">
@@ -340,8 +337,12 @@ export const NftDetail = () => {
               </div>
             </div>
           </div>
-        )
-      )}
+        )}
+      >
+        <div className="flex justify-center">
+          <Spinner size="lg" />
+        </div>
+      </Fold>
     </MainLayout>
   );
 };
