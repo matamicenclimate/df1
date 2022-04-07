@@ -5,7 +5,6 @@ import { Landing } from '@/features/misc/routes/Landing';
 import { Minter } from '@/features/misc/routes/Minter';
 import { useAuth } from '@/lib/auth';
 import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
-import { Cause } from '@/features/misc/routes/Cause';
 import { useContext } from 'react';
 import { WalletContext } from '@/context/WalletContext';
 import { NftDetail } from '@/features/misc/routes/NftDetail';
@@ -30,10 +29,6 @@ export const AppRouter = () => {
             account={walletContext?.userWallet?.account}
           />
         ),
-    },
-    {
-      path: '/cause',
-      element: <Cause />,
     },
     {
       path: '/nft/:ipnft',

@@ -57,7 +57,9 @@ export const Landing = () => {
         <div className="p-4">
           <h2 className="font-normal font-dinpro text-4xl">NFTs marketplace</h2>
           {isLoading ? (
-            <Spinner size="lg" />
+            <div className="flex justify-center mt-10">
+              <Spinner size="lg" />
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-4">
               {newDataTrial &&

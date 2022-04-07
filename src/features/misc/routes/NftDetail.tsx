@@ -247,12 +247,6 @@ export const NftDetail = () => {
           <div className="grid grid-cols-3 gap-4">
             <div className="left col-span-2 flex justify-center">
               <div className="w-[670px]">
-                <div className="py-14">
-                  <h4 className="font-dinpro font-normal text-2xl">Description</h4>
-                </div>
-                <div>
-                  <p className="font-sanspro font-normal text-sm">{detail.nft.arc69.description}</p>
-                </div>
                 <div>
                   <div className="py-14">
                     <h4 className="font-dinpro font-normal text-2xl">Description</h4>
