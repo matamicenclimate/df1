@@ -2,8 +2,7 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { NFTListed } from '@/lib/api/nfts';
-import { httpClient } from '@/lib/httpClient';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import algoLogo from '../../../assets/algoLogo.svg';
 import algosdk from 'algosdk';
@@ -12,20 +11,19 @@ import { none, option, some } from '@octantis/option';
 import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import '@common/src/lib/binary/extension';
 import { WalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
+import { useQuery } from 'react-query';
+import { fetchNfts } from '@/lib/NFTFetching';
+import { isVideo } from '@/lib/media';
+import { assertArray } from '@/lib/type';
+import Fold from '@/componentes/Generic/Fold';
 
 type Entry = {
   key: string;
   value: { bytes: string; type: 1 | 2; uint: number };
 };
-
-function assertArray<T>(value: T): unknown[] {
-  if (value instanceof Array) return value as unknown as unknown[];
-  throw new Error('Not an array!');
-}
 
 export async function getGlobalState(appId: number): Promise<SmartContractState> {
   const result = await client().getApplicationByID(appId).do();
@@ -53,65 +51,72 @@ interface SmartContractState {
   seller: Uint8Array;
 }
 
-type State = {
+type CurrentNFTInfo = {
   nft: NFTListed;
   state: SmartContractState;
 };
 
 export const NftDetail = () => {
-  const { ipnft } = useParams();
-  const idParam = ipnft;
-  const id = Number(idParam);
-  const [error, setError] = useState<Error>();
-  const [data, setData] = useState<option<State>>(none());
-  const setNft = (state: State) => setData(some(state));
+  const { ipnft: assetId } = useParams();
+  const { data: queryData } = useQuery('nfts', fetchNfts);
+  const data: NFTListed[] | undefined = useMemo(() => {
+    return queryData?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
+  }, [queryData]);
+  const [nft, setNft] = useState<option<CurrentNFTInfo>>(none());
+  const [error, setError] = useState<option<unknown>>(none());
   const wallet = useContext(WalletContext);
 
   useEffect(() => {
-    fetchNfts();
-    // const interval = setInterval(() => {
-    //   fetchNfts();
-    // }, 20000);
-    // return () => clearInterval(interval);
-  }, [idParam]);
-
-  const fetchNfts = async () => {
-    try {
-      const nft = await httpClient.get('nfts').then((s) => s.data.find((s) => s.id === id));
-      if (nft == null) {
-        throw new Error(`Invalid NFT selected "${idParam}"!`);
+    if (assetId != null && data != null) {
+      setError(none());
+      const found = data.find((i) => i.id === Number(assetId));
+      if (found != null && found.arc69.properties.app_id != null) {
+        getGlobalState(found.arc69.properties.app_id).then((info) => {
+          setNft(
+            some({
+              nft: found,
+              state: info as unknown as SmartContractState,
+            })
+          );
+        });
+      } else {
+        setError(
+          some(`Invalid asset ${assetId}, no application found for the provided asset identifier.`)
+        );
       }
-      const appId = nft.arc69.properties.app_id;
-      if (appId == null) {
-        throw new Error(`Invalid NFET metadata for ${idParam}!`);
-      }
-      const state = (await getGlobalState(appId)) as unknown as SmartContractState;
-      setNft({ nft, state });
-    } catch (err: any) {
-      setError(err.message);
     }
-  };
+  }, [assetId, data]);
 
-  const checkIfVideo = (imageUrl: string) => {
-    if (imageUrl.endsWith('.mp4')) {
-      const spitString = imageUrl.split('/');
-      spitString[2] = 'ipfs.io';
+  // useEffect(() => {
+  //   fetchNfts();
+  //   // const interval = setInterval(() => {
+  //   //   fetchNfts();
+  //   // }, 20000);
+  //   // return () => clearInterval(interval);
+  // }, [idParam]);
 
-      return spitString.join('/');
-    }
-    return imageUrl;
-  };
+  // const fetchNfts = async () => {
+  //   try {
+  //     const nft = await httpClient.get('nfts').then((s) => s.data.find((s) => s.id === id));
+  //     if (nft == null) {
+  //       throw new Error(`Invalid NFT selected "${idParam}"!`);
+  //     }
+  //     const appId = nft.arc69.properties.app_id;
+  //     if (appId == null) {
+  //       throw new Error(`Invalid NFET metadata for ${idParam}!`);
+  //     }
+  //     const state = (await getGlobalState(appId)) as unknown as SmartContractState;
+  //     setNft({ nft, state });
+  //   } catch (err: any) {
+  //     setError(err.message);
+  //   }
+  // };
 
-  function assertArray<T>(value: T): unknown[] {
-    if (value instanceof Array) return value as unknown as unknown[];
-    throw new Error('Not an array!');
-  }
-
-  const nftDetailLogo = data.fold(<Spinner />, (detail) =>
+  const nftDetailLogo = nft.fold(<Spinner />, (detail) =>
     detail.nft.image_url.endsWith('.mp4') ? (
       <div className="w-full object-cover rounded-lg min-h-[325px] max-h-[325px] mr-8">
         <video className="min-h-[325px] max-h-[325px]" autoPlay loop muted>
-          <source src={checkIfVideo(detail.nft.image_url)} type="video/mp4" />
+          <source src={isVideo(detail.nft.image_url)} type="video/mp4" />
         </video>
       </div>
     ) : (
@@ -160,16 +165,16 @@ export const NftDetail = () => {
   // Test: Place a bid!
   async function doPlaceABid() {
     const dialog = Container.get(ProcessDialog);
-    if (!data.isDefined()) {
+    if (!nft.isDefined()) {
       return alert(`Can't place a bid! App index couldn't be setted.`);
     }
-    const appId = data.value.nft.arc69.properties.app_id;
+    const appId = nft.value.nft.arc69.properties.app_id;
     if (appId == null) {
       return alert(`Attempting to place a bid on an invalid asset.`);
     }
     const appAddr = algosdk.getApplicationAddress(appId);
     let previousBid: option<string> = none();
-    const state = data.value.state;
+    const state = nft.value.state;
     if (state == null) return;
     if (!isZeroAccount(state.bid_account)) {
       previousBid = some(algosdk.encodeAddress(state.bid_account));
@@ -235,15 +240,12 @@ export const NftDetail = () => {
     });
   }
 
-  if (error) return <div className="flex justify-center">{error}</div>;
-
   return (
     <MainLayout>
-      {data.fold(
-        <div className="flex justify-center">
-          <Spinner size="lg" />
-        </div>,
-        (detail) => (
+      <Fold option={error} as={(e) => <div style={{ color: 'red' }}>Error: {e}</div>} />
+      <Fold
+        option={nft}
+        as={(detail) => (
           <div className="grid grid-cols-3 gap-4">
             <div className="left col-span-2 flex justify-center">
               <div className="w-[670px]">
@@ -335,8 +337,12 @@ export const NftDetail = () => {
               </div>
             </div>
           </div>
-        )
-      )}
+        )}
+      >
+        <div className="flex justify-center">
+          <Spinner size="lg" />
+        </div>
+      </Fold>
     </MainLayout>
   );
 };
