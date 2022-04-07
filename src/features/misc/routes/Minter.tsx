@@ -75,10 +75,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   }
 
   const getNFTMetadata = async (data: NFTMetadataBackend) => {
-    const filelist = data.file;
-    const oneFile = filelist[0];
-    console.log('oneFile', oneFile);
-
+    const oneFile = data.properties.file;
     const attribute = data.properties?.attributes?.reduce?.(
       (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
@@ -96,11 +93,10 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     };
     dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
     dataString.properties.price = Number(dataString.properties.price);
-    const form = new FormData();
 
+    const form = new FormData();
     form.append('data', JSON.stringify(dataString));
     form.append('file', oneFile, oneFile.name);
-    selectedImage && form.append('file', selectedImage as File);
 
     const res = await httpClient.post('ipfs', form);
     console.log('res.data', res.data);
