@@ -48,14 +48,14 @@ export const Navbar = () => {
         <AlgoWalletConnector isNavbar />
         {userWallet && walletFundsContext?.balanceAlgo && walletFundsContext?.balanceAlgoUSD && (
           <div className="mr-7">
-            <div className="flex ">
+            <div className="flex justify-center">
               <h6 className="font-normal text-climate-blue font-dinpro text-base mr-2">
                 {walletFundsContext?.balanceAlgo}
               </h6>
               <img className="w-4 h-4" src={algoLogo} alt="algoLogo" />
             </div>
-            <div className="flex">
-              <h6 className="font-normal text-climate-blue font-dinpro text-base mr-2 self-center">
+            <div className="flex justify-center">
+              <h6 className="font-normal text-climate-blue font-dinpro text-base mr-3 self-center">
                 {walletFundsContext?.balanceAlgoUSD}
               </h6>
               <span className="text-xl text-climate-blue">$</span>
