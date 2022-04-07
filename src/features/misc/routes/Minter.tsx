@@ -32,8 +32,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   const [transaction, setTransaction] = useState<AssetInfo | undefined>();
   const [selectedImage, setSelectedImage] = useState<unknown | any | File>();
 
-  console.log('selectedImage from Minter', selectedImage);
-
   const causeContext = useContext(CauseContext);
   const data = causeContext?.data;
 
@@ -41,13 +39,8 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     register,
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
-
-  console.log('control', control);
-
-  console.log('watch', watch('properties.file'));
 
   async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
     const algodClient = client();
