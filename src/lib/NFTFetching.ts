@@ -1,4 +1,4 @@
-import { getGlobalState } from '@/features/misc/routes/NftDetail';
+import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import { NFTListed } from './api/nfts';
 import { httpClient } from './httpClient';
 
@@ -8,9 +8,9 @@ export async function asAppDataIfPossible(element: NFTListed) {
     return null;
   }
   if (id != null) {
-    const state = await getGlobalState(id);
+    const state = await TransactionOperation.do.getApplicationState(id);
     if (state.bid_amount != null) {
-      element.arc69.properties.price = state.bid_amount;
+      element.arc69.properties.price = state.bid_amount as number;
     }
   }
   return element;
