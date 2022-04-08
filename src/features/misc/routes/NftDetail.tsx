@@ -17,29 +17,25 @@ import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
 import { useQuery } from 'react-query';
 import { fetchNfts } from '@/lib/NFTFetching';
 import { isVideo } from '@/lib/media';
-import { assertArray } from '@/lib/type';
 import Fold from '@/componentes/Generic/Fold';
 import OptInService from '@common/src/services/OptInService';
+import { TransactionOperation } from '@common/src/services/TransactionOperation';
+import { Case, Match } from '@/componentes/Generic/Match';
 
-type Entry = {
-  key: string;
-  value: { bytes: string; type: 1 | 2; uint: number };
+const getDateObj = (mintingDate: any) => {
+  const date = new Date(mintingDate);
+  const day = date.getDate();
+  const monthName = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  return `Minted on ${day} ${monthName} ${year}`;
 };
 
-export async function getGlobalState(appId: number): Promise<SmartContractState> {
-  const result = await client().getApplicationByID(appId).do();
-  const state = assertArray(result.params['global-state']) as Entry[];
-  return state.reduce<Record<string, unknown>>((prev, curr: Entry) => {
-    const key = Buffer.from(curr.key, 'base64').toString();
-    if (curr.value.type === 1) {
-      prev[key] = Buffer.from(curr.value.bytes, 'base64');
-    } else if (curr.value.type === 2) {
-      prev[key] = curr.value.uint;
-    }
-    return prev;
-  }, {}) as unknown as SmartContractState;
+/**
+ * Returns true if the passed array is all-zero.
+ */
+function isZeroAccount(account: Uint8Array) {
+  return account.reduce((a, b) => a + b, 0) === 0;
 }
-
 interface SmartContractState {
   end: number;
   nft_id: number;
@@ -66,13 +62,14 @@ export const NftDetail = () => {
   const [nft, setNft] = useState<option<CurrentNFTInfo>>(none());
   const [error, setError] = useState<option<unknown>>(none());
   const wallet = useContext(WalletContext);
+  const now = Date.now() / 1000;
 
   useEffect(() => {
     if (assetId != null && data != null) {
       setError(none());
       const found = data.find((i) => i.id === Number(assetId));
       if (found != null && found.arc69.properties.app_id != null) {
-        getGlobalState(found.arc69.properties.app_id).then((info) => {
+        TransactionOperation.do.getApplicationState(found.arc69.properties.app_id).then((info) => {
           setNft(
             some({
               nft: found,
@@ -87,31 +84,6 @@ export const NftDetail = () => {
       }
     }
   }, [assetId, data]);
-
-  // useEffect(() => {
-  //   fetchNfts();
-  //   // const interval = setInterval(() => {
-  //   //   fetchNfts();
-  //   // }, 20000);
-  //   // return () => clearInterval(interval);
-  // }, [idParam]);
-
-  // const fetchNfts = async () => {
-  //   try {
-  //     const nft = await httpClient.get('nfts').then((s) => s.data.find((s) => s.id === id));
-  //     if (nft == null) {
-  //       throw new Error(`Invalid NFT selected "${idParam}"!`);
-  //     }
-  //     const appId = nft.arc69.properties.app_id;
-  //     if (appId == null) {
-  //       throw new Error(`Invalid NFET metadata for ${idParam}!`);
-  //     }
-  //     const state = (await getGlobalState(appId)) as unknown as SmartContractState;
-  //     setNft({ nft, state });
-  //   } catch (err: any) {
-  //     setError(err.message);
-  //   }
-  // };
 
   const nftDetailLogo = nft.fold(<Spinner />, (detail) =>
     detail.nft.image_url.endsWith('.mp4') ? (
@@ -128,40 +100,6 @@ export const NftDetail = () => {
       />
     )
   );
-
-  type Entry = {
-    key: string;
-    value: { bytes: string; type: 1 | 2; uint: number };
-  };
-
-  const getDateObj = (mintingDate: any) => {
-    const date = new Date(mintingDate);
-    const day = date.getDate();
-    const monthName = date.toLocaleString('default', { month: 'long' });
-    const year = date.getFullYear();
-    return `Minted on ${day} ${monthName} ${year}`;
-  };
-
-  async function getGlobalState(appId: number): Promise<Record<string, unknown>> {
-    const result = await client().getApplicationByID(appId).do();
-    const state = assertArray(result.params['global-state']) as Entry[];
-    return state.reduce<Record<string, unknown>>((prev, curr: Entry) => {
-      const key = Buffer.from(curr.key, 'base64').toString();
-      if (curr.value.type === 1) {
-        prev[key] = Buffer.from(curr.value.bytes, 'base64');
-      } else if (curr.value.type === 2) {
-        prev[key] = curr.value.uint;
-      }
-      return prev;
-    }, {});
-  }
-
-  /**
-   * Returns true if the passed array is all-zero.
-   */
-  function isZeroAccount(account: Uint8Array) {
-    return account.reduce((a, b) => a + b, 0) === 0;
-  }
 
   // Test: Place a bid!
   async function doPlaceABid() {
@@ -333,16 +271,39 @@ export const NftDetail = () => {
                   <div className="buttons">
                     <Button
                       disabled={
-                        wallet?.userWallet?.account == null || wallet?.userWallet?.account == ''
-                        // TODO: Add real creator account check.
-                        // ||
-                        // Buffer.from(detail.state.seller).toString() === wallet?.userWallet?.account
+                        wallet?.userWallet?.account == null ||
+                        wallet?.userWallet?.account == '' ||
+                        detail.nft.creator === wallet?.userWallet?.account ||
+                        detail.state.end < now
                       }
                       onClick={doPlaceABid}
                       className="w-full text-2xl text-climate-white mt-8 font-dinpro"
                     >
-                      <span>Place Bid</span>
+                      <span>
+                        <Match>
+                          <Case of={detail.nft.creator === wallet?.userWallet?.account}>
+                            This is your own NFT
+                          </Case>
+                          <Case
+                            of={
+                              wallet?.userWallet?.account == null ||
+                              wallet?.userWallet?.account == ''
+                            }
+                          >
+                            Connect your wallet
+                          </Case>
+                          <Case of={detail.state.end < now}>The auction has ended</Case>
+                          <Case of="default">Place Bid</Case>
+                        </Match>
+                      </span>
                     </Button>
+                    <Match>
+                      <Case of={detail.state.end < now}>
+                        <span className="text-gray-500 text-sm">
+                          Ended {new Date(detail.state.end * 1000).toLocaleString()}
+                        </span>
+                      </Case>
+                    </Match>
                   </div>
                 </div>
               </div>

@@ -31,4 +31,5 @@ export interface NFTListed {
   ipnft: string;
   url: string;
   title: string;
+  creator: string;
 }
