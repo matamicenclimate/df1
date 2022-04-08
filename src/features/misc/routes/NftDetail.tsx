@@ -19,6 +19,7 @@ import { fetchNfts } from '@/lib/NFTFetching';
 import { isVideo } from '@/lib/media';
 import { assertArray } from '@/lib/type';
 import Fold from '@/componentes/Generic/Fold';
+import OptInService from '@common/src/services/OptInService';
 
 type Entry = {
   key: string;
@@ -197,6 +198,10 @@ export const NftDetail = () => {
     }
     const account = WalletAccountProvider.get().account;
     await dialog.process(async function () {
+      const aId = Number(assetId);
+      if (Number.isNaN(aId)) {
+        throw new Error(`Invalid asset selected: No asset ID provided or passed a wrong format!`);
+      }
       if (wallet?.userWallet?.wallet == null) {
         return alert('First connect your wallet!');
       }
@@ -222,7 +227,8 @@ export const NftDetail = () => {
         accounts: previousBid.fold([], (s) => [s]),
         suggestedParams: await client().getTransactionParams().do(),
       });
-      const txns = algosdk.assignGroupID([payTxn, callTxn]);
+      const optTxn = await Container.get(OptInService).createOptInRequest(aId);
+      const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
       const signedTxn = await wallet.userWallet.wallet.signTxn(txns);
       const { txId } = await client()
         .sendRawTransaction(signedTxn.map((tx) => tx.blob))
@@ -239,10 +245,9 @@ export const NftDetail = () => {
       await new Promise((r) => setTimeout(r, 1000));
     });
   }
-
   return (
     <MainLayout>
-      <Fold option={error} as={(e) => <div style={{ color: 'red' }}>Error: {e}</div>} />
+      <Fold option={error} as={(e) => <div className="text-red-600">Error: {`${e}`}</div>} />
       <Fold
         option={nft}
         as={(detail) => (
@@ -327,6 +332,12 @@ export const NftDetail = () => {
                   </div>
                   <div className="buttons">
                     <Button
+                      disabled={
+                        wallet?.userWallet?.account == null || wallet?.userWallet?.account == ''
+                        // TODO: Add real creator account check.
+                        // ||
+                        // Buffer.from(detail.state.seller).toString() === wallet?.userWallet?.account
+                      }
                       onClick={doPlaceABid}
                       className="w-full text-2xl text-climate-white mt-8 font-dinpro"
                     >

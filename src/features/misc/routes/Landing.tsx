@@ -22,10 +22,12 @@ export const Landing = () => {
           <h2 className="font-normal font-dinpro text-4xl">NFTs marketplace</h2>
           <Match>
             <Case of={error}>
-              <div style={{ fontSize: '4rem', color: 'red' }}>An error occurred: {error}</div>
+              <div className="text-xl text-red-600">An error occurred: {`${error}`}</div>
             </Case>
             <Case of={isLoading}>
-              <Spinner size="lg" />
+              <div className="flex justify-center pt-6">
+                <Spinner size="lg" />
+              </div>
             </Case>
             <Case of="default">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-4">

@@ -44,18 +44,20 @@ export const WalletFundsContextProvider = ({ children }: WalletFundsContextProvi
   const [balanceAlgoUSD, setBalanceAlgoUSD] = useState<number>();
 
   useEffect(() => {
-    getBalanceAccount(account as string);
+    getBalanceAccount(account);
   }, [account, data]);
 
-  const getBalanceAccount = async (account: string) => {
-    const algodClient = client();
-    const accountInfo = await algodClient.accountInformation(account).do();
-    const startingAmount = accountInfo.amount;
-    const balanceAlgo = Number((startingAmount / 1000000).toFixed(2));
-    setBalanceAlgo(balanceAlgo);
-    if (data && balanceAlgo) {
-      const balanceUSD = Number((balanceAlgo * data.algorand.usd).toFixed(2));
-      setBalanceAlgoUSD(balanceUSD);
+  const getBalanceAccount = async (account?: string) => {
+    if (account != null) {
+      const algodClient = client();
+      const accountInfo = await algodClient.accountInformation(account).do();
+      const startingAmount = accountInfo.amount;
+      const balanceAlgo = Number((startingAmount / 1000000).toFixed(2));
+      setBalanceAlgo(balanceAlgo);
+      if (data && balanceAlgo) {
+        const balanceUSD = Number((balanceAlgo * data.algorand.usd).toFixed(2));
+        setBalanceAlgoUSD(balanceUSD);
+      }
     }
   };
 
