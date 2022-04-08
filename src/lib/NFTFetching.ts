@@ -8,9 +8,14 @@ export async function asAppDataIfPossible(element: NFTListed) {
     return null;
   }
   if (id != null) {
-    const state = await TransactionOperation.do.getApplicationState(id);
-    if (state.bid_amount != null) {
-      element.arc69.properties.price = state.bid_amount as number;
+    try {
+      const state = await TransactionOperation.do.getApplicationState(id);
+      if (state.bid_amount != null) {
+        element.arc69.properties.price = state.bid_amount as number;
+      }
+    } catch (err) {
+      console.warn('Warning! No app id was valid, ', id, err);
+      return null;
     }
   }
   return element;
