@@ -21,6 +21,7 @@ import Fold from '@/componentes/Generic/Fold';
 import OptInService from '@common/src/services/OptInService';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import { Case, Match } from '@/componentes/Generic/Match';
+import { AuctionAppState } from '@common/src/lib/types';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -36,21 +37,10 @@ const getDateObj = (mintingDate: any) => {
 function isZeroAccount(account: Uint8Array) {
   return account.reduce((a, b) => a + b, 0) === 0;
 }
-interface SmartContractState {
-  end: number;
-  nft_id: number;
-  bid_account: Uint8Array;
-  bid_amount?: number;
-  num_bids?: number;
-  min_bid_inc: number;
-  reserve_amount: number;
-  start: number;
-  seller: Uint8Array;
-}
 
 type CurrentNFTInfo = {
   nft: NFTListed;
-  state: SmartContractState;
+  state: AuctionAppState;
 };
 
 export const NftDetail = () => {
@@ -67,16 +57,13 @@ export const NftDetail = () => {
   useEffect(() => {
     if (assetId != null && data != null) {
       setError(none());
-      const found = data.find((i) => i.id === Number(assetId));
-      if (found != null && found.arc69.properties.app_id != null) {
-        TransactionOperation.do.getApplicationState(found.arc69.properties.app_id).then((info) => {
-          setNft(
-            some({
-              nft: found,
-              state: info as unknown as SmartContractState,
-            })
-          );
-        });
+      const nft = data.find((i) => i.id === Number(assetId));
+      if (nft != null && nft.arc69.properties.app_id != null) {
+        TransactionOperation.do
+          .getApplicationState<AuctionAppState>(nft.arc69.properties.app_id)
+          .then((state) => {
+            setNft(some({ nft, state }));
+          });
       } else {
         setError(
           some(`Invalid asset ${assetId}, no application found for the provided asset identifier.`)

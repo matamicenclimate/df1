@@ -1,3 +1,4 @@
+import { AuctionAppState } from '@common/src/lib/types';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import { NFTListed } from './api/nfts';
 import { httpClient } from './httpClient';
@@ -9,9 +10,9 @@ export async function asAppDataIfPossible(element: NFTListed) {
   }
   if (id != null) {
     try {
-      const state = await TransactionOperation.do.getApplicationState(id);
+      const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(id);
       if (state.bid_amount != null) {
-        element.arc69.properties.price = state.bid_amount as number;
+        element.arc69.properties.price = state.bid_amount;
       }
     } catch (err) {
       console.warn('Warning! No app id was valid, ', id, err);
