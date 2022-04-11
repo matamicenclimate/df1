@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect, MouseEvent, useContext } from 'react';
+import { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
 import { WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
+import algosigner from '../../../assets/algosigner.svg';
+import myalgo from '../../../assets/myalgo.svg';
 
 const ps = {
   algod: {
@@ -78,11 +80,7 @@ export const ConnectWallet = () => {
               onClick={(event) => handleSelectedWallet(event)}
             >
               <h6 className="font-dinpro font-normal text-lg">AlgoSigner</h6>
-              <img
-                className="w-10"
-                src="https://dartroom.xyz/img/algosigner.69be6245.svg"
-                alt="algosigner-logo"
-              />
+              <img className="w-10" src={algosigner} alt="algosigner-logo" />
             </button>
           </div>
           <div className="m-5 w-60 shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:bg-gray-100">
@@ -92,11 +90,7 @@ export const ConnectWallet = () => {
               onClick={(event) => handleSelectedWallet(event)}
             >
               <h6 className="font-dinpro font-normal text-lg">MyAlgo</h6>
-              <img
-                className="w-10"
-                src="https://dartroom.xyz/img/myalgo.b2b6857d.svg"
-                alt="myalgo-logo"
-              />
+              <img className="w-10" src={myalgo} alt="myalgo-logo" />
             </button>
           </div>
         </div>
