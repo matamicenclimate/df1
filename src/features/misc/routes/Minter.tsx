@@ -174,9 +174,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   className="text-climate-gray w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-climate-border rounded-xl p-3"
                   {...register('properties.cause', { required: true })}
                 >
-                  <option disabled selected className="" value="">
-                    Cause
-                  </option>
+                  <option disabled>Cause</option>
                   {data &&
                     data?.map((cause) => (
                       <option className="text-climate-black-text" key={cause.id}>
@@ -243,7 +241,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
             </div>
             <div className="flex justify-between">
               <div className="flex items-center">
-                <input type="checkbox" onClick={() => setChecked(!checked)} checked={checked} />
+                <input type="checkbox" onChange={() => setChecked(!checked)} checked={checked} />
                 <p className="pl-2 text-climate-gray">
                   I agree to ClimateTrade’s Cookie and Privacy Policy.
                 </p>
