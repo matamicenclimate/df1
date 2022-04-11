@@ -28,7 +28,7 @@ export const Navbar = () => {
   // };
 
   return (
-    <nav className="p-4 border flex gap-4 justify-between items-center font-dinpro text-sm">
+    <nav className="p-4 border flex gap-4 justify-evenly items-center font-dinpro text-sm">
       <li>
         <Link to="/">
           <img src={climateTradeLogo} alt="climateTradeLogo" />

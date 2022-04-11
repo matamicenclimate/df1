@@ -2,11 +2,11 @@ import React from 'react';
 
 type DropdownProps = {
   defaultValue?: string;
-  accts: string[];
+  options?: string[];
   setOptionSelected: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
-export const Dropdown = ({ accts, setOptionSelected }: DropdownProps) => {
+export const Dropdown = ({ options, setOptionSelected }: DropdownProps) => {
   const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     setOptionSelected(value);
@@ -14,15 +14,14 @@ export const Dropdown = ({ accts, setOptionSelected }: DropdownProps) => {
 
   return (
     <>
-      <span className="h-3 w-3 bg-green-500 rounded-full inline-block"></span>
       <select
-        className="mr-5 font-normal font-dinpro text-climate-gray-artist text-sm"
+        className="font-normal font-dinpro text-climate-gray-artist text-sm"
         onChange={selectChange}
       >
-        {accts.map((addr, idx) => {
+        {options?.map((addr, idx) => {
           return (
             <option value={addr} key={idx}>
-              {addr.substr(0, 8)}...{' '}
+              {addr}
             </option>
           );
         })}

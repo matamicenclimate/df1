@@ -26,6 +26,7 @@ export type MinterProps = {
 const dialog = Container.get(ProcessDialog);
 
 export const Minter = ({ wallet, account }: MinterProps) => {
+  const [checked, setChecked] = useState<boolean>(false);
   const [imageURL, setImageURL] = useState<string>();
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
   const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
@@ -238,19 +239,19 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                     <ImageUploader selectedImage={value ?? null} setSelectedImage={onChange} />
                   )}
                 />
-                {/* <ImageUploader /> */}
-                {/* <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-custom-white md:text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="file"
-                  type="file"
-                  {...register('file', { required: true })}
-                />
-                {errors?.file && <span className="text-red-500">This field is required</span>} */}
               </div>
             </div>
-            <Button variant="primary" type="submit">
-              Mint Nft
-            </Button>
+            <div className="flex justify-between">
+              <div className="flex items-center">
+                <input type="checkbox" onClick={() => setChecked(!checked)} checked={checked} />
+                <p className="pl-2 text-climate-gray">
+                  I agree to ClimateTrade’s Cookie and Privacy Policy.
+                </p>
+              </div>
+              <Button className="w-48" variant="primary" type="submit" disabled={!checked}>
+                Mint Nft
+              </Button>
+            </div>
           </Form>
         </div>
       </MainLayout>

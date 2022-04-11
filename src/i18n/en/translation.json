@@ -1,5 +1,213 @@
 {
-  "login.heading": "Login Email",
+  "auth": {
+    "Callback": {
+      "error": "Invalid login",
+      "logingIn": "Login in with Magic Link..."
+    },
+    "Login": {
+      "login": "Access with Magiclink",
+      "pageTitle": "Access to Climatecoin",
+      "safetyWarning": "Please make sure that you access from",
+      "form": {
+        "email": {
+          "placeholder": "Write your email...",
+          "label": "Email"
+        }
+      }
+    },
+    "Register": {
+      "pageTitle": "Register",
+      "register": "Register"
+    }
+  },
+  "components": {
+    "dialog": {
+      "accept": {
+        "button": "Accept"
+      },
+      "cancel": {
+        "button": "Cancel"
+      }
+    },
+    "Overview": {
+      "all": "All",
+      "buy": "Buy",
+      "sell": "Sell",
+      "transfer": "Transfer",
+      "offset": "Offset",
+      "activity": "Activity",
+      "type": "Type",
+      "total": "Total",
+      "operationId": "ID Operation",
+      "date": "Date",
+      "totalBalance": "Total balance",
+      "footprint": "Offset CO2 footprint",
+      "buyClimatecoins": "Buy Climatecoins",
+      "viewMore": {
+        "title": "Your help against climate change.",
+        "subtitle": "Use your climatecoins to help in the fight against climate change.",
+        "link": "View more"
+      }
+    },
+    "Navbar": {
+      "i18n": {
+        "title": "Language",
+        "spanish": "Spanish",
+        "french": "French",
+        "english": "English"
+      },
+      "currency": "Currency",
+      "home": "Home",
+      "buy": "Buy",
+      "sell": "Sell",
+      "about": "About us",
+      "developer": "Developer"
+    },
+    "DayPickerRange": {
+      "ranges": {
+        "custom": "Custom range",
+        "day": "One day",
+        "week": "One week",
+        "month": "One month",
+        "year": "One year",
+        "all": "All time"
+      }
+    }
+  },
+  "dialogs": {
+    "base": {
+      "accept": "Accept",
+      "cancel": "Cancel"
+    }
+  },
+  "dialogs.base.accept": "Accept",
   "dialogs.base.cancel": "Cancel",
-  "dialogs.base.accept": "Accept"
+  "documents": {
+    "List": {
+      "breadcrumbTitle": "Documents",
+      "title": "List of documents",
+      "viewDetails": "View details"
+    },
+    "Upload": {
+      "title": "Transfer credits",
+      "stepper": {
+        "CONFIG": "Configuration",
+        "CONFIRMATION": "Confimation",
+        "DETAILS": "Project details",
+        "FILES": "Upload files",
+        "INFO": "Project info"
+      },
+      "confirmationText": "I confirm the creation of this project and the terms and conditions of Climatecoin.",
+      "confirmationTextPre": "I confirm the creation of this project and the",
+      "confirmationTextLink": "terms and conditions",
+      "confirmationTextPost": "of Climatecoin.",
+      "description": "Do you have doubts about how projects are created or managed in Climatecoin?\n",
+      "buys": "My buys",
+      "sold": "My solds",
+      "projects": "My projects",
+      "profile": "Edit profile",
+      "notifications": "Notifications",
+      "wallet": "My Wallet"
+    }
+  },
+  "head": {
+    "List": {
+      "title": "List of documents"
+    },
+    "Profile": {
+      "pageTitle": "Profile"
+    },
+    "Upload": {
+      "title": "Upload carbon documents"
+    },
+    "Wallet": {
+      "title": "Wallet"
+    },
+    "climatecoins": {
+      "Buy": {
+        "title": "Buy Climatecoins"
+      }
+    }
+  },
+  "login": {
+    "heading": "Login Email"
+  },
+  "misc": {
+    "Overview": {
+      "title": "Home"
+    },
+    "Landing": {
+      "title": "Welcome"
+    }
+  },
+  "profile": {
+    "title": "Profile"
+  },
+  "uploadDocuments": {
+    "country": "Country",
+    "credits": {
+      "amount": "Credits available"
+    },
+    "description": "Project description",
+    "firstVerifier": "First Verifier",
+    "link": "Upload documents",
+    "methodology": "Methodology",
+    "modal": {
+      "claim": "Message sent succesfully. We will contact you in the next few days.",
+      "title": "Form submitted successfully",
+      "button": {
+        "accept": "Got it, thanks!"
+      }
+    },
+    "monitoring": {
+      "report": "Monitoring report"
+    },
+    "PDD": "PDD",
+    "project.creditEnd": "Credits end",
+    "project.creditStart": "Credits start",
+    "project.registration": "Registration date",
+    "project.title": "Project Title",
+    "project.type.options.carbon": "Carbon offset",
+    "project.type.options.irecs": "Irecs",
+    "project.type.options.nature": "Nature based solutions",
+    "project.type": "Project type",
+    "project.url": "Project URL",
+    "project.video": "Project video",
+    "projectCover": "Project images: cover",
+    "projectLatitude": "Latitude",
+    "projectLocation": "Project location",
+    "projectLongitude": "Longitude",
+    "projectThumbnail": "Project images: thumbnail",
+    "registry.link": "Registry link",
+    "registry.name": "Name of the registry",
+    "sdgs": "SDG's",
+    "send.button": "Yes, confirm",
+    "serialNumber": "Serial number of credits",
+    "standard": "Standard",
+    "subtype": "Subtype",
+    "title": "Upload carbon documents",
+    "type": "Type",
+    "validation.report": "Validation report",
+    "validator": "Validator",
+    "verification.report": "Verification report"
+  },
+  "validation": {
+    "errors.format.document": "Required field. Required format: pdf",
+    "errors.format.image": "Required field. Required format: png, jpg or jpeg",
+    "errors.format.pdf": "Invalid format. Required format: pdf",
+    "errors.format": "Invalid format",
+    "errors.required": "Required field"
+  },
+  "wallet.Wallet.title": "Wallet",
+  "climatecoins": {
+    "Buy": {
+      "title": "Buy Climatecoins",
+      "description": "Do you know what your CCs are worth?\n\nYou will help with climate change!",
+      "stepper": {
+        "SELECT": "Select",
+        "CONDITIONS": "Conditions",
+        "CONFIRMATION": "Confirmation"
+      }
+    }
+  }
 }
