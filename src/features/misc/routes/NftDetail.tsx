@@ -22,6 +22,7 @@ import OptInService from '@common/src/services/OptInService';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import { Case, Match } from '@/componentes/Generic/Match';
 import { AuctionAppState } from '@common/src/lib/types';
+import useOptionalState from '@/hooks/useOptionalState';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -49,24 +50,26 @@ export const NftDetail = () => {
   const data: NFTListed[] | undefined = useMemo(() => {
     return queryData?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
   }, [queryData]);
-  const [nft, setNft] = useState<option<CurrentNFTInfo>>(none());
-  const [error, setError] = useState<option<unknown>>(none());
+  // const [nft, setNft] = useState<option<CurrentNFTInfo>>(none());
+  const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
+  // const [error, setError] = useState<option<unknown>>(none());
+  const [error, setError, resetError] = useOptionalState<unknown>();
   const wallet = useContext(WalletContext);
   const now = Date.now() / 1000;
 
   useEffect(() => {
     if (assetId != null && data != null) {
-      setError(none());
+      resetError();
       const nft = data.find((i) => i.id === Number(assetId));
       if (nft != null && nft.arc69.properties.app_id != null) {
         TransactionOperation.do
           .getApplicationState<AuctionAppState>(nft.arc69.properties.app_id)
           .then((state) => {
-            setNft(some({ nft, state }));
+            setNft({ nft, state });
           });
       } else {
         setError(
-          some(`Invalid asset ${assetId}, no application found for the provided asset identifier.`)
+          `Invalid asset ${assetId}, no application found for the provided asset identifier.`
         );
       }
     }
