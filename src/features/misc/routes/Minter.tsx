@@ -71,10 +71,8 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         console.info('Asset transfer to app:', transfer);
         const tx = await httpClient.post('create-auction', {
           assetId: result.value.assetID,
-          causeWallet: cause.wallet,
           creatorWallet: account,
           causePercentaje: dataToPost?.properties.causePercentage ?? 30,
-          creatorPercentaje: 30,
         });
         console.info('Auction program was created:', tx.data);
         return;

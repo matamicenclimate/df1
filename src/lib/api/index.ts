@@ -19,9 +19,7 @@ export interface CoreAPI extends Endpoints {
       body: {
         assetId: number;
         creatorWallet: string;
-        causeWallet: string;
         causePercentaje: number;
-        creatorPercentaje: number;
       };
     };
     'activate-auction': { body: { appId: number; assetId: number }; response: unknown };
