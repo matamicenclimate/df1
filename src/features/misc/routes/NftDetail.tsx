@@ -23,6 +23,8 @@ import { TransactionOperation } from '@common/src/services/TransactionOperation'
 import { Case, Match } from '@/componentes/Generic/Match';
 import { AuctionAppState } from '@common/src/lib/types';
 import useOptionalState from '@/hooks/useOptionalState';
+import CurrentNFTInfo from '../state/CurrentNFTInfo';
+import NftDetailPreview from '../components/NftDetailPreview';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -38,11 +40,6 @@ const getDateObj = (mintingDate: any) => {
 function isZeroAccount(account: Uint8Array) {
   return account.reduce((a, b) => a + b, 0) === 0;
 }
-
-type CurrentNFTInfo = {
-  nft: NFTListed;
-  state: AuctionAppState;
-};
 
 export const NftDetail = () => {
   const { ipnft: assetId } = useParams();
@@ -74,22 +71,6 @@ export const NftDetail = () => {
       }
     }
   }, [assetId, data]);
-
-  const nftDetailLogo = nft.fold(<Spinner />, (detail) =>
-    detail.nft.image_url.endsWith('.mp4') ? (
-      <div className="w-full object-cover rounded-lg min-h-[325px] max-h-[325px] mr-8">
-        <video className="min-h-[325px] max-h-[325px]" autoPlay loop muted>
-          <source src={isVideo(detail.nft.image_url)} type="video/mp4" />
-        </video>
-      </div>
-    ) : (
-      <img
-        className="w-full h-full object-contain rounded-xl"
-        src={detail.nft.image_url}
-        alt={detail.nft.image_url}
-      />
-    )
-  );
 
   // Test: Place a bid!
   async function doPlaceABid() {
@@ -207,7 +188,7 @@ export const NftDetail = () => {
                       </p>
                     </div>
                     <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
-                      {nftDetailLogo}
+                      <NftDetailPreview nft={nft} />
                     </div>
                   </div>
                 </div>
@@ -215,7 +196,9 @@ export const NftDetail = () => {
             </div>
             <div className="right col-span-1">
               <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
-                <div className="image w-[330px] h-[345px]">{nftDetailLogo}</div>
+                <div className="image w-[330px] h-[345px]">
+                  <NftDetailPreview nft={nft} />
+                </div>
                 <div className="p-3">
                   <div className="cardText">
                     <div className="bg-white">
