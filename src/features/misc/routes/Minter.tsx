@@ -18,6 +18,8 @@ import Container from 'typedi';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import ProcessDialog from '@/service/ProcessDialog';
 
+const required = false;
+
 export type MinterProps = {
   wallet: Wallet | undefined;
   account: string | undefined;
@@ -34,7 +36,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   const [selectedImage, setSelectedImage] = useState<unknown | any | File>();
 
   const causeContext = useContext(CauseContext);
-  const data = causeContext?.data;
+  const causes = causeContext?.data;
 
   const {
     register,
@@ -44,6 +46,10 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   } = useForm<NFTMetadataBackend>();
 
   async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
+    const cause = causes?.find((cause) => cause.id === dataToPost?.properties.cause);
+    if (cause == null) {
+      return alert("Can't send that!");
+    }
     const algodClient = client();
     await dialog.process(async function () {
       this.title = 'Uploading to blockchain';
@@ -65,6 +71,10 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         console.info('Asset transfer to app:', transfer);
         const tx = await httpClient.post('create-auction', {
           assetId: result.value.assetID,
+          causeWallet: cause.wallet,
+          creatorWallet: account,
+          causePercentaje: dataToPost?.properties.causePercentage ?? 30,
+          creatorPercentaje: 30,
         });
         console.info('Auction program was created:', tx.data);
         return;
@@ -84,9 +94,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
       },
       {}
     );
-
     delete data.properties.attributes;
-
     const dataString = {
       ...data,
       properties: { ...data.properties, ...attribute },
@@ -94,11 +102,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     };
     dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
     dataString.properties.price = Number(dataString.properties.price);
-
     const form = new FormData();
     form.append('data', JSON.stringify(dataString));
     form.append('file', oneFile, oneFile.name);
-
     const res = await httpClient.post('ipfs', form);
     console.log('res.data', res.data);
     setMetadataNFT(res.data);
@@ -142,7 +148,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 id="title"
                 type="text"
                 placeholder="NFT Title"
-                {...register('title', { required: true })}
+                {...register('title', { required })}
               />
               {errors.title && <span className="text-red-500">This field is required</span>}
             </div>
@@ -152,7 +158,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 id="artist"
                 type="text"
                 placeholder="NFT Creator"
-                {...register('author', { required: true })}
+                {...register('author', { required })}
               />
               {errors?.author && <span className="text-red-500">This field is required</span>}
             </div>
@@ -162,7 +168,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 id="price"
                 type="number"
                 placeholder="NFT Price"
-                {...register('properties.price', { required: true })}
+                {...register('properties.price', { required })}
               />
               {errors.properties?.price && (
                 <span className="text-red-500">This field is required</span>
@@ -172,12 +178,12 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               <div className="w-3/4">
                 <select
                   className="text-climate-gray w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-climate-border rounded-xl p-3"
-                  {...register('properties.cause', { required: true })}
+                  {...register('properties.cause', { required })}
                 >
                   <option disabled>Cause</option>
-                  {data &&
-                    data?.map((cause) => (
-                      <option className="text-climate-black-text" key={cause.id}>
+                  {causes &&
+                    causes?.map((cause) => (
+                      <option className="text-climate-black-text" key={cause.id} value={cause.id}>
                         {cause.title}
                       </option>
                     ))}
@@ -193,7 +199,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   type="number"
                   placeholder="Cause Percentage"
                   // defaultValue={30}
-                  {...register('properties.causePercentage', { required: true, min: 30, max: 99 })}
+                  {...register('properties.causePercentage', { required, min: 30, max: 99 })}
                 />
                 {errors.properties?.causePercentage && (
                   <span className="text-red-500">Percentage should be 30% or above</span>
@@ -218,7 +224,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 className="w-full border border-climate-border rounded-xl p-3"
                 id="description"
                 placeholder="Description.."
-                {...register('description', { required: true })}
+                {...register('description', { required })}
               />
               {errors.description && <span className="text-red-500">This field is required</span>}
             </div>
@@ -246,7 +252,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   I agree to ClimateTrade’s Cookie and Privacy Policy.
                 </p>
               </div>
-              <Button className="w-48" variant="primary" type="submit" disabled={!checked}>
+              <Button className="w-48" variant="primary" type="submit" /*disabled={!checked}*/>
                 Mint Nft
               </Button>
             </div>
