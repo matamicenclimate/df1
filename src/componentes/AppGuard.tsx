@@ -17,17 +17,9 @@ export default function AppGuard({ children }: any) {
     if (len <= 0) {
       // Crash if nothing was rendered! //
       setError(
-        <div
-          id="panic"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            flexFlow: 'column',
-            textAlign: 'center',
-          }}
-        >
-          <h1 style={{ color: 'red', fontSize: '4rem' }}>PANIC</h1>
-          <p style={{ color: 'red' }}>
+        <div id="panic" className="flex justify-center content-center flex-col h-full text-center">
+          <h1 className="text-red-600 text-9xl">PANIC</h1>
+          <p className="text-red-700 text-xl m-5">
             Nothing was rendered! The whole app view tree is <b>empty!</b>
           </p>
           <code>This results in a no-op, but consider the app broken somewhere!</code>

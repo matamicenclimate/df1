@@ -8,6 +8,7 @@ import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
 import { useContext } from 'react';
 import { WalletContext } from '@/context/WalletContext';
 import { NftDetail } from '@/features/misc/routes/NftDetail';
+import MyNftList from '@/features/misc/routes/MyNftList';
 
 export const AppRouter = () => {
   // We're not using magiclink at the moment, but it may be needed soon.
@@ -33,6 +34,10 @@ export const AppRouter = () => {
     {
       path: '/nft/:ipnft',
       element: <NftDetail />,
+    },
+    {
+      path: '/my-nfts',
+      element: <MyNftList />,
     },
   ];
 
