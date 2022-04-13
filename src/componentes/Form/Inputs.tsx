@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
 import { Path, UseFormRegister } from 'react-hook-form';
 import { InputProps } from 'react-select';
@@ -7,12 +8,24 @@ export interface InputRegistryOption<T> {
   register: UseFormRegister<T>;
 }
 
+const classListByType = {
+  search: [],
+} as Record<string, string[]>;
+
+const defaultClasses = [''];
+
 export function Input<T, P>({
   register,
   name,
   ...rest
 }: Omit<Partial<InputProps>, 'name'> & { name: P } & InputRegistryOption<T>) {
-  return <input className="border" {...register(name as Path<unknown>)} {...rest} />;
+  return (
+    <input
+      className={clsx(...defaultClasses, ...(classListByType[rest.type ?? ''] ?? []))}
+      {...register(name as Path<unknown>)}
+      {...rest}
+    />
+  );
 }
 
 export function Select<T, P extends string>({
