@@ -17,11 +17,16 @@ const defaultClasses = [''];
 export function Input<T, P>({
   register,
   name,
+  className,
   ...rest
 }: Omit<Partial<InputProps>, 'name'> & { name: P } & InputRegistryOption<T>) {
   return (
     <input
-      className={clsx(...defaultClasses, ...(classListByType[rest.type ?? ''] ?? []))}
+      className={clsx(
+        ...[className],
+        ...defaultClasses,
+        ...(classListByType[rest.type ?? ''] ?? [])
+      )}
       {...register(name as Path<unknown>)}
       {...rest}
     />
