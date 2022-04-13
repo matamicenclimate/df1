@@ -2,6 +2,7 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { Form } from '@/componentes/Form/Form';
 import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
+import { RichTable } from '@/componentes/Layout/RichTable';
 import { useForm } from 'react-hook-form';
 
 function ProfileColumn({
@@ -87,32 +88,35 @@ export default function MyNftList() {
                   </Button>
                 </div>
               </Form>
-              <table className="mt-8 border-collapse table-auto w-full text-sm">
-                <thead className="text-left">
-                  <tr>
-                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray rounded-l-xl">
-                      NFT Name
-                    </th>
-                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray">
-                      Price / Type
-                    </th>
-                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray">
-                      Cause
-                    </th>
-                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray rounded-r-xl">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="p-2 pl-6 pr-6">Some Data</td>
-                    <td className="p-2 pl-6 pr-6">Some Data</td>
-                    <td className="p-2 pl-6 pr-6">Some Data</td>
-                    <td className="p-2 pl-6 pr-6">Some Data</td>
-                  </tr>
-                </tbody>
-              </table>
+              <RichTable
+                header={{
+                  name: 'NFT Name',
+                  price: 'Price / Type',
+                  cause: 'Cause',
+                  status: 'Status',
+                }}
+              >
+                {[
+                  {
+                    name: 'My named NFT',
+                    price: '999$',
+                    cause: 'No cause',
+                    status: 'unknown',
+                  },
+                  {
+                    name: 'My named NFT',
+                    price: '999$',
+                    cause: 'No cause',
+                    status: 'unknown',
+                  },
+                  {
+                    name: 'My named NFT',
+                    price: '999$',
+                    cause: 'No cause',
+                    status: 'unknown',
+                  },
+                ]}
+              </RichTable>
             </div>
           </div>
           <div className="basis-1/4">&nbsp;</div>
