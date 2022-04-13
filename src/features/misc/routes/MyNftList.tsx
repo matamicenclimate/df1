@@ -89,34 +89,37 @@ export default function MyNftList() {
                 </div>
               </Form>
               <RichTable
+                order={['name', 'price', 'cause', 'status']}
                 header={{
                   name: 'NFT Name',
                   price: 'Price / Type',
                   cause: 'Cause',
                   status: 'Status',
                 }}
-              >
-                {[
+                rows={[
                   {
+                    $id: '1',
                     name: 'My named NFT',
                     price: '999$',
                     cause: 'No cause',
                     status: 'unknown',
                   },
                   {
+                    $id: '2',
                     name: 'My named NFT',
                     price: '999$',
                     cause: 'No cause',
                     status: 'unknown',
                   },
                   {
+                    $id: '3',
                     name: 'My named NFT',
                     price: '999$',
                     cause: 'No cause',
                     status: 'unknown',
                   },
                 ]}
-              </RichTable>
+              />
             </div>
           </div>
           <div className="basis-1/4">&nbsp;</div>
