@@ -10,7 +10,7 @@ export default function NftName({ title, id, thumbnail }: NftNameProps) {
       <div className="mr-2 bg-climate-gray-light rounded-lg w-10 h-10">&nbsp;</div>
       <div className="flex flex-col">
         <div>{title}</div>
-        <div>#{id}</div>
+        <div className="text-climate-gray-light">#{id}</div>
       </div>
     </div>
   );
