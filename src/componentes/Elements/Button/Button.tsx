@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-const base = 'rounded-md';
+const base = 'rounded-lg';
 
 const sizes = {
   sm: 'p-2',
@@ -9,7 +9,7 @@ const sizes = {
 };
 
 const variants = {
-  light: 'text-white bg-secondary',
+  light: 'text-climate-gray font-semibold bg-climate-action-light',
   primary: 'text-climate-white bg-climate-blue',
   delete: 'text-white bg-red-800',
 };

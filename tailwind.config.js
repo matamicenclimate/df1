@@ -16,6 +16,7 @@ module.exports = {
         'climate-border': '#E2E2EA',
         'custom-white': '#F8FAFC',
         'custom-gray': '#37383D',
+        'climate-action-light': '#F1F1F5',
       },
       fontFamily: {
         sans: ['Roboto', 'sans-serif', ...fontFamily.sans],
