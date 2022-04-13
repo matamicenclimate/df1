@@ -39,7 +39,7 @@ export default function MyNftList() {
       <div className="flex flex-row w-full">
         <ProfileColumn className="flex">
           <div className="basis-1/2">&nbsp;</div>
-          <div className="flex p-4 flex-col items-center basis-1/2 shadow-lg rounded-lg bg-white">
+          <div className="flex p-4 flex-col items-center basis-1/2 shadow-lg rounded-xl bg-white">
             <h5 className="text-lg font-dinpro font-normal text-climate-black-text">
               Climate View
             </h5>
@@ -74,8 +74,45 @@ export default function MyNftList() {
             <h2 className="text-4xl font-normal font-dinpro text-climate-black-title">My NFTs</h2>
             <div className="p-3 rounded-3xl bg-white shadow-lg mt-7">
               <Form onSubmit={async () => void 0}>
-                <Input register={register} name="term" type="search" placeholder="Search" />
+                <div className="flex justify-between">
+                  <Input
+                    className="basis-2/4"
+                    register={register}
+                    name="term"
+                    type="search"
+                    placeholder="Search"
+                  />
+                  <Button className="basis-1/3" size="sm" variant="inverted">
+                    + Mint new NFT
+                  </Button>
+                </div>
               </Form>
+              <table className="mt-8 border-collapse table-auto w-full text-sm">
+                <thead className="text-left">
+                  <tr>
+                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray rounded-l-xl">
+                      NFT Name
+                    </th>
+                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray">
+                      Price / Type
+                    </th>
+                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray">
+                      Cause
+                    </th>
+                    <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray rounded-r-xl">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-2 pl-6 pr-6">Some Data</td>
+                    <td className="p-2 pl-6 pr-6">Some Data</td>
+                    <td className="p-2 pl-6 pr-6">Some Data</td>
+                    <td className="p-2 pl-6 pr-6">Some Data</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
           <div className="basis-1/4">&nbsp;</div>
