@@ -1,5 +1,8 @@
 import { Button } from '@/componentes/Elements/Button/Button';
+import { Form } from '@/componentes/Form/Form';
+import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
+import { useForm } from 'react-hook-form';
 
 function ProfileColumn({
   children,
@@ -30,6 +33,7 @@ function TransactionFrame({
  * minted user's NFTs, ongoing bids, sales...
  */
 export default function MyNftList() {
+  const { register } = useForm();
   return (
     <MainLayout>
       <div className="flex flex-row w-full">
@@ -66,7 +70,15 @@ export default function MyNftList() {
           </div>
         </ProfileColumn>
         <TransactionFrame className="flex">
-          <h2 className="text-4xl font-normal font-dinpro text-climate-black-title">My NFTs</h2>
+          <div className="flex flex-col basis-3/4">
+            <h2 className="text-4xl font-normal font-dinpro text-climate-black-title">My NFTs</h2>
+            <div className="p-3 rounded-3xl bg-white shadow-lg mt-7">
+              <Form onSubmit={async () => void 0}>
+                <Input register={register} name="term" type="search" placeholder="Search" />
+              </Form>
+            </div>
+          </div>
+          <div className="basis-1/4">&nbsp;</div>
         </TransactionFrame>
       </div>
     </MainLayout>

@@ -1,24 +1,32 @@
 import { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
+import { Path, UseFormRegister } from 'react-hook-form';
 import { InputProps } from 'react-select';
 
-export interface InputRegistryOption {
-  register: (name?: string) => Record<string, unknown>;
+export interface InputRegistryOption<T> {
+  // register: (name?: string) => Record<string, unknown>;
+  register: UseFormRegister<T>;
 }
 
-export function Input({ register, name, ...rest }: Partial<InputProps> & InputRegistryOption) {
-  return <input className="border" {...register(name)} {...rest} />;
+export function Input<T, P>({
+  register,
+  name,
+  ...rest
+}: Omit<Partial<InputProps>, 'name'> & { name: P } & InputRegistryOption<T>) {
+  return <input className="border" {...register(name as Path<unknown>)} {...rest} />;
 }
 
-export function Select({
+export function Select<T, P extends string>({
   register,
   options,
   name,
   ...rest
-}: Pick<InputProps, 'options'> &
-  DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> &
-  InputRegistryOption) {
+}: Omit<Pick<InputProps, 'options'>, 'name'> & { name: P } & DetailedHTMLProps<
+    SelectHTMLAttributes<HTMLSelectElement>,
+    HTMLSelectElement
+  > &
+  InputRegistryOption<T>) {
   return (
-    <select {...register(name)} {...rest}>
+    <select {...register(name as Path<unknown>)} {...rest}>
       {options.map((value: any) => (
         <option key={value} value={value}>
           {value}
