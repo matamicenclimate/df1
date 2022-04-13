@@ -4,6 +4,10 @@ import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
 import { useForm } from 'react-hook-form';
+import NftCause from '../components/NftCause';
+import NftName from '../components/NftName';
+import NftPrice from '../components/NftPrice';
+import NftStatus from '../components/NftStatus';
 
 function ProfileColumn({
   children,
@@ -98,25 +102,18 @@ export default function MyNftList() {
                 }}
                 rows={[
                   {
-                    $id: '1',
-                    name: 'My named NFT',
-                    price: '999$',
-                    cause: 'No cause',
-                    status: 'unknown',
+                    $id: '445465778-85437',
+                    name: <NftName title="NFT Name here" id="445465778-85437" />,
+                    price: <NftPrice price={320.1} type="direct" />,
+                    cause: <NftCause id="radix-1" />,
+                    status: <NftStatus status="selling" />,
                   },
                   {
-                    $id: '2',
-                    name: 'My named NFT',
-                    price: '999$',
-                    cause: 'No cause',
-                    status: 'unknown',
-                  },
-                  {
-                    $id: '3',
-                    name: 'My named NFT',
-                    price: '999$',
-                    cause: 'No cause',
-                    status: 'unknown',
+                    $id: '#995465778-84935',
+                    name: <NftName title="NFT Name here" id="#995465778-84935" />,
+                    price: <NftPrice price={320.1} type="auction" />,
+                    cause: <NftCause id="radix-1" />,
+                    status: <NftStatus status="bidding" />,
                   },
                 ]}
               />
