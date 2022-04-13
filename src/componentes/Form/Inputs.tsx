@@ -1,16 +1,25 @@
 import clsx from 'clsx';
-import { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
+import React, { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
 import { Path, UseFormRegister } from 'react-hook-form';
 import { InputProps } from 'react-select';
+import { IconMagnify } from '../Icons';
 
 export interface InputRegistryOption<T> {
   // register: (name?: string) => Record<string, unknown>;
   register: UseFormRegister<T>;
 }
 
+type TypeRecord<A> = {
+  [K in React.HTMLInputTypeAttribute]?: A;
+};
+
 const classListByType = {
   search: [],
-} as Record<string, string[]>;
+} as TypeRecord<string[]>;
+
+const extras = {
+  search: <IconMagnify className="stroke-climate-gray-light mr-5" />,
+} as TypeRecord<JSX.Element>;
 
 const defaultClasses = [''];
 
@@ -21,15 +30,18 @@ export function Input<T, P>({
   ...rest
 }: Omit<Partial<InputProps>, 'name'> & { name: P } & InputRegistryOption<T>) {
   return (
-    <input
-      className={clsx(
-        ...[className],
-        ...defaultClasses,
-        ...(classListByType[rest.type ?? ''] ?? [])
-      )}
-      {...register(name as Path<unknown>)}
-      {...rest}
-    />
+    <div className="flex items-center">
+      {extras[rest.type ?? ''] ?? null}
+      <input
+        className={clsx(
+          ...[className],
+          ...defaultClasses,
+          ...(classListByType[rest.type ?? ''] ?? [])
+        )}
+        {...register(name as Path<unknown>)}
+        {...rest}
+      />
+    </div>
   );
 }
 
