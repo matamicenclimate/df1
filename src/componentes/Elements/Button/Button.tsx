@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-const base = 'rounded-lg';
+const base = 'rounded-xl';
 
 const sizes = {
   sm: 'p-2',
@@ -12,6 +12,7 @@ const variants = {
   light: 'text-climate-gray font-semibold bg-climate-action-light',
   primary: 'text-climate-white bg-climate-blue',
   delete: 'text-white bg-red-800',
+  inverted: 'bg-transparent border-climate-blue text-climate-blue border',
 };
 
 const hover = {
