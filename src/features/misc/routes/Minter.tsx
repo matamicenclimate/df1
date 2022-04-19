@@ -145,31 +145,31 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 className="w-full border border-climate-border rounded-xl p-3 shadow"
                 id="title"
                 type="text"
-                placeholder="NFT Title"
+                placeholder={t('Minter.nftTitle')}
                 {...register('title', { required })}
               />
-              {errors.title && <span className="text-red-500">This field is required</span>}
+              {errors.title && <span className="text-red-500">{t('Minter.fieldRequired')}</span>}
             </div>
             <div className="py-6">
               <input
                 className="w-full border border-climate-border rounded-xl p-3 shadow"
                 id="artist"
                 type="text"
-                placeholder="NFT Creator"
+                placeholder={t('Minter.nftCreator')}
                 {...register('author', { required })}
               />
-              {errors?.author && <span className="text-red-500">This field is required</span>}
+              {errors?.author && <span className="text-red-500">{t('Minter.fieldRequired')}</span>}
             </div>
             <div className=" py-6">
               <input
                 className="w-full shadow appearance-none border border-climate-border rounded-xl p-3"
                 id="price"
                 type="number"
-                placeholder="NFT Price"
+                placeholder={t('Minter.nftPrice')}
                 {...register('properties.price', { required })}
               />
               {errors.properties?.price && (
-                <span className="text-red-500">This field is required</span>
+                <span className="text-red-500">{t('Minter.fieldRequired')}</span>
               )}
             </div>
             <div className="flex w-full py-6">
@@ -178,7 +178,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   className="text-climate-gray w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-climate-border rounded-xl p-3"
                   {...register('properties.cause', { required })}
                 >
-                  <option disabled>Cause</option>
+                  <option disabled>{t('Minter.nftCause')}</option>
                   {causes &&
                     causes?.map((cause) => (
                       <option className="text-climate-black-text" key={cause.id} value={cause.id}>
@@ -187,7 +187,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                     ))}
                 </select>
                 {errors.properties?.cause && (
-                  <span className="text-red-500">You should select a cause</span>
+                  <span className="text-red-500">{t('Minter.selectCause')}</span>
                 )}
               </div>
               <div className="ml-2">
@@ -195,12 +195,12 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   className="w-full border border-climate-border rounded-xl p-3 shadow"
                   id="percentage"
                   type="number"
-                  placeholder="Cause Percentage"
+                  placeholder={t('Minter.nftCausePercentage')}
                   // defaultValue={30}
                   {...register('properties.causePercentage', { required, min: 30, max: 99 })}
                 />
                 {errors.properties?.causePercentage && (
-                  <span className="text-red-500">Percentage should be 30% or above</span>
+                  <span className="text-red-500">{t('Minter.selectPercentage')}</span>
                 )}
               </div>
             </div>
@@ -217,20 +217,24 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               />
             </div>
             <div>
-              <h6 className="font-normal font-dinpro text-base py-5">NFT details</h6>
+              <h6 className="font-normal font-dinpro text-base py-5">{t('Minter.nftDetails')}</h6>
               <textarea
                 className="w-full border border-climate-border rounded-xl p-3"
                 id="description"
-                placeholder="Description.."
+                placeholder={t('Minter.nftDescription')}
                 {...register('description', { required })}
               />
-              {errors.description && <span className="text-red-500">This field is required</span>}
+              {errors.description && (
+                <span className="text-red-500">{t('Minter.fieldRequired')}</span>
+              )}
             </div>
             <div>
               <div className="flex justify-between">
-                <h6 className="font-normal font-dinpro text-base py-5">Upload resources</h6>
+                <h6 className="font-normal font-dinpro text-base py-5">
+                  {t('Minter.uploadResources')}
+                </h6>
                 <h6 className="font-dinpro font-normal text-sm text-climate-gray-artist self-center">
-                  You can mint jpg, gif, mov, mp4, cad, pdf
+                  {t('Minter.uploadFile')}
                 </h6>
               </div>
               <div className="mb-4">
@@ -246,11 +250,9 @@ export const Minter = ({ wallet, account }: MinterProps) => {
             <div className="flex justify-between">
               <div className="flex items-center">
                 <input type="checkbox" onChange={() => setChecked(!checked)} checked={checked} />
-                <p className="pl-2 text-climate-gray">
-                  I agree to ClimateTrade’s Cookie and Privacy Policy.
-                </p>
+                <p className="pl-2 text-climate-gray">{t('Minter.agreeConditions')}</p>
               </div>
-              <Button className="w-48" variant="primary" type="submit" /*disabled={!checked}*/>
+              <Button className="w-48" variant="primary" type="submit" disabled={!checked}>
                 Mint Nft
               </Button>
             </div>

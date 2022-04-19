@@ -5,6 +5,7 @@ import { WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import algosigner from '../../../assets/algosigner.svg';
 import myalgo from '../../../assets/myalgo.svg';
+import { useTranslation } from 'react-i18next';
 
 const ps = {
   algod: {
@@ -17,6 +18,7 @@ const ps = {
 };
 
 export const ConnectWallet = () => {
+  const { t } = useTranslation();
   const sw = new SessionWallet(ps.algod.network);
   const [sessionWallet, setSessionWallet] = useState(sw);
   const [, setAccounts] = useState(sw.accountList());
@@ -69,9 +71,7 @@ export const ConnectWallet = () => {
   return (
     <div>
       <MainLayout>
-        <h2 className="font-normal font-dinpro text-4xl text-center">
-          Please connect your Wallet to create an NFT
-        </h2>
+        <h2 className="font-normal font-dinpro text-4xl text-center">{t('ConnectWallet.title')}</h2>
         <div className="flex flex-col space-between w-80 m-auto my-5 items-center">
           <div className="m-5 w-60 shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:text hover:bg-gray-100">
             <button
