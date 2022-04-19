@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN npm install -g serve
 
-COPY ./build .
 RUN mv ./.env.prod ./.env
+COPY ./build .
 
 CMD ["serve", "-s", "."]
