@@ -1,5 +1,7 @@
 import { AuctionAppState } from '@common/src/lib/types';
+import NetworkClient from '@common/src/services/NetworkClient';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
+import Container from 'typedi';
 import { NFTListed } from './api/nfts';
 import { httpClient } from './httpClient';
 
@@ -22,6 +24,8 @@ export async function asAppDataIfPossible(element: NFTListed) {
   return element;
 }
 
+const client = Container.get(NetworkClient);
+
 /**
  * Attempts to fetch all NFTs from remote.
  * Also tries to populate state metadata, based on the application
@@ -29,7 +33,7 @@ export async function asAppDataIfPossible(element: NFTListed) {
  */
 export async function fetchNfts() {
   const list: NFTListed[] = [];
-  const ofList = await httpClient.get('nfts').then(({ data }) => data);
+  const ofList = await client.core.get('nfts').then((_) => _.data);
   for (const data of ofList) {
     const out = await asAppDataIfPossible(data);
     if (out == null) continue;

@@ -14,9 +14,11 @@ module.exports = {
         'climate-gray-artist': '#92929D',
         'climate-gray-light': '#B5B5BE',
         'climate-border': '#E2E2EA',
+        'climate-informative-green': '#90D963',
         'climate-green-light': '#3DD598',
         'custom-white': '#F8FAFC',
         'custom-gray': '#37383D',
+        'climate-action-light': '#F1F1F5',
       },
       fontFamily: {
         sans: ['Roboto', 'sans-serif', ...fontFamily.sans],

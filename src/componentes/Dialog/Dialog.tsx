@@ -1,10 +1,11 @@
 import { Dialog as HUIDialog } from '@headlessui/react';
 import { Button } from '../Elements/Button/Button';
 import { useTranslation } from 'react-i18next';
+import unit from '@/lib/unit';
 
 type DialogProps = {
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
   subtitle?: string;
   claim?: string;
@@ -18,7 +19,7 @@ type DialogProps = {
 
 export const Dialog = ({
   isOpen,
-  setIsOpen,
+  setIsOpen = unit,
   title,
   subtitle,
   claim,

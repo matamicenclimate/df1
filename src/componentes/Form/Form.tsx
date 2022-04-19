@@ -1,11 +1,13 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
+type MaybeArray<T> = T[] | T;
+
 interface FormProps {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   defaultValues?: Record<string, any>;
-  children: React.ReactElement[];
-  onSubmit: (data: Record<string, unknown>) => Promise<void>;
+  children: MaybeArray<React.ReactElement>;
+  onSubmit: (data: Record<string, unknown>) => Promise<void> | void;
   className?: string;
 }
 export const Form = ({ defaultValues, children, onSubmit, className }: FormProps) => {

@@ -22,8 +22,8 @@ import { useTranslation } from 'react-i18next';
 const required = false;
 
 export type MinterProps = {
-  wallet: Wallet | undefined;
-  account: string | undefined;
+  wallet: Wallet;
+  account: string;
 };
 
 const dialog = Container.get(ProcessDialog);
@@ -121,10 +121,8 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   }, [dataToPost]);
 
   useEffect(() => {
-    if (wallet != null) {
-      (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
-    }
-    if (metadataNFT && wallet && account) {
+    (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
+    if (metadataNFT) {
       mintNFT(metadataNFT, wallet, account);
     }
   }, [metadataNFT]);

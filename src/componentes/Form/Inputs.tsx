@@ -1,24 +1,62 @@
-import { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
+import clsx from 'clsx';
+import React, { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
+import { Path, UseFormRegister } from 'react-hook-form';
 import { InputProps } from 'react-select';
+import { IconMagnify } from '../Icons';
 
-export interface InputRegistryOption {
-  register: (name?: string) => Record<string, unknown>;
+export interface InputRegistryOption<T> {
+  // register: (name?: string) => Record<string, unknown>;
+  register: UseFormRegister<T>;
 }
 
-export function Input({ register, name, ...rest }: Partial<InputProps> & InputRegistryOption) {
-  return <input className="border" {...register(name)} {...rest} />;
+type TypeRecord<A> = {
+  [K in React.HTMLInputTypeAttribute]?: A;
+};
+
+const classListByType = {
+  search: [],
+} as TypeRecord<string[]>;
+
+const extras = {
+  search: <IconMagnify className="stroke-climate-gray-light mr-5" />,
+} as TypeRecord<JSX.Element>;
+
+const defaultClasses = [''];
+
+export function Input<T, P>({
+  register,
+  name,
+  className,
+  ...rest
+}: Omit<Partial<InputProps>, 'name'> & { name: P } & InputRegistryOption<T>) {
+  return (
+    <div className="flex items-center">
+      {extras[rest.type ?? ''] ?? null}
+      <input
+        className={clsx(
+          ...[className],
+          ...defaultClasses,
+          ...(classListByType[rest.type ?? ''] ?? [])
+        )}
+        {...register(name as Path<unknown>)}
+        {...rest}
+      />
+    </div>
+  );
 }
 
-export function Select({
+export function Select<T, P extends string>({
   register,
   options,
   name,
   ...rest
-}: Pick<InputProps, 'options'> &
-  DetailedHTMLProps<SelectHTMLAttributes<HTMLSelectElement>, HTMLSelectElement> &
-  InputRegistryOption) {
+}: Omit<Pick<InputProps, 'options'>, 'name'> & { name: P } & DetailedHTMLProps<
+    SelectHTMLAttributes<HTMLSelectElement>,
+    HTMLSelectElement
+  > &
+  InputRegistryOption<T>) {
   return (
-    <select {...register(name)} {...rest}>
+    <select {...register(name as Path<unknown>)} {...rest}>
       {options.map((value: any) => (
         <option key={value} value={value}>
           {value}
