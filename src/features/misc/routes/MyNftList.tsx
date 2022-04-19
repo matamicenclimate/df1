@@ -316,7 +316,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
                     price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
                     cause: <NftCause id={nft.arc69.properties.cause} />,
-                    status: <NftStatus status="bidding" />,
+                    status: <NftStatus status={nft.arc69.properties.app_id ? 'bidding' : 'sold'} />,
                   };
                 })}
               />
