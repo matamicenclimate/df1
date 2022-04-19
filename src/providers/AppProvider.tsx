@@ -9,7 +9,6 @@ import { DialogProvider } from './DialogProvider';
 import { WalletFundsContextProvider } from '@/context/WalletFundsContext';
 import ModalDialogProvider from './ModalDialogProvider';
 import { LanguageContextProvider } from '@/context/LanguageContext';
-import { nestProviders, ProviderList } from './util';
 
 const queryClient = new QueryClient();
 
@@ -27,18 +26,21 @@ const ErrorFallback = () => {
   );
 };
 
+/**
+ * A stack of providers.
+ */
 const providers = [
-  [ErrorBoundary, { FallbackComponent: ErrorFallback }],
-  [QueryClientProvider, { client: queryClient }],
-  UserContextProvider,
-  CauseContextProvider,
-  WalletFundsContextProvider,
-  LanguageContextProvider,
-  AuthProvider,
-  DialogProvider,
-  ModalDialogProvider,
-] as ProviderList;
+  (children) => <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>,
+  (children) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+  (children) => <UserContextProvider>{children}</UserContextProvider>,
+  (children) => <CauseContextProvider>{children}</CauseContextProvider>,
+  (children) => <WalletFundsContextProvider>{children}</WalletFundsContextProvider>,
+  (children) => <LanguageContextProvider>{children}</LanguageContextProvider>,
+  (children) => <AuthProvider>{children}</AuthProvider>,
+  (children) => <DialogProvider>{children}</DialogProvider>,
+  (children) => <ModalDialogProvider>{children}</ModalDialogProvider>,
+] as ((children: JSX.Element) => JSX.Element)[];
 
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  return nestProviders(children, providers);
+export const AppProvider = ({ children }: { children: JSX.Element }) => {
+  return providers.reduceRight((children, mount) => mount(children), children);
 };
