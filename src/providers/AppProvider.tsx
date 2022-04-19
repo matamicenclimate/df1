@@ -9,6 +9,7 @@ import { DialogProvider } from './DialogProvider';
 import { WalletFundsContextProvider } from '@/context/WalletFundsContext';
 import ModalDialogProvider from './ModalDialogProvider';
 import { LanguageContextProvider } from '@/context/LanguageContext';
+import { nestProviders, ProviderList } from './util';
 
 const queryClient = new QueryClient();
 
@@ -26,24 +27,18 @@ const ErrorFallback = () => {
   );
 };
 
+const providers = [
+  [ErrorBoundary, { FallbackComponent: ErrorFallback }],
+  [QueryClientProvider, { client: queryClient }],
+  UserContextProvider,
+  CauseContextProvider,
+  WalletFundsContextProvider,
+  LanguageContextProvider,
+  AuthProvider,
+  DialogProvider,
+  ModalDialogProvider,
+] as ProviderList;
+
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <UserContextProvider>
-          <CauseContextProvider>
-            <WalletFundsContextProvider>
-              <LanguageContextProvider>
-                <AuthProvider>
-                  <DialogProvider>
-                    <ModalDialogProvider>{children}</ModalDialogProvider>
-                  </DialogProvider>
-                </AuthProvider>
-              </LanguageContextProvider>
-            </WalletFundsContextProvider>
-          </CauseContextProvider>
-        </UserContextProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
+  return nestProviders(children, providers);
 };
