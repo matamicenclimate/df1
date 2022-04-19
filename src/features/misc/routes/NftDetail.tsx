@@ -25,6 +25,7 @@ import { AuctionAppState } from '@common/src/lib/types';
 import useOptionalState from '@/hooks/useOptionalState';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
 import NftDetailPreview from '../components/NftDetailPreview';
+import { useTranslation } from 'react-i18next';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -42,6 +43,7 @@ function isZeroAccount(account: Uint8Array) {
 }
 
 export const NftDetail = () => {
+  const { t } = useTranslation();
   const { ipnft: assetId } = useParams();
   const { data: queryData } = useQuery('nfts', fetchNfts);
   const data: NFTListed[] | undefined = useMemo(() => {
@@ -66,7 +68,8 @@ export const NftDetail = () => {
           });
       } else {
         setError(
-          `Invalid asset ${assetId}, no application found for the provided asset identifier.`
+          // `Invalid asset ${assetId}, no application found for the provided asset identifier.`
+          t('NFTDetail.dialog.invalidAsset')
         );
       }
     }
@@ -76,11 +79,11 @@ export const NftDetail = () => {
   async function doPlaceABid() {
     const dialog = Container.get(ProcessDialog);
     if (!nft.isDefined()) {
-      return alert(`Can't place a bid! App index couldn't be setted.`);
+      return alert(t('NFTDetail.dialog.bidError'));
     }
     const appId = nft.value.nft.arc69.properties.app_id;
     if (appId == null) {
-      return alert(`Attempting to place a bid on an invalid asset.`);
+      return alert(t('NFTDetail.dialog.attemptError'));
     }
     const appAddr = algosdk.getApplicationAddress(appId);
     let previousBid: option<string> = none();
@@ -102,27 +105,28 @@ export const NftDetail = () => {
       }
       bidAmount = Number(result);
       if (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
-        alert('Please enter a valid amount and try again!');
+        alert(t('NFTDetail.dialog.bidErrorAmount'));
       }
     }
     const account = WalletAccountProvider.get().account;
     await dialog.process(async function () {
       const aId = Number(assetId);
       if (Number.isNaN(aId)) {
-        throw new Error(`Invalid asset selected: No asset ID provided or passed a wrong format!`);
+        throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
       }
       if (wallet?.userWallet?.wallet == null) {
-        return alert('First connect your wallet!');
+        return alert(t('NFTDetail.dialog.alertConnectWallet'));
       }
-      this.title = `Placing a bid (${bidAmount} μAlgo)`;
-      this.message = 'Making the payment....';
+      // this.title = `Placing a bid (${bidAmount} μAlgo)`;
+      this.title = t('NFTDetail.dialog.placingBid');
+      this.message = t('NFTDetail.dialog.makingPayment');
       const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: account.addr,
         to: appAddr,
         amount: bidAmount,
         suggestedParams: await client().getTransactionParams().do(),
       });
-      this.message = `Making application call...`;
+      this.message = t('NFTDetail.dialog.makingAppCall');
       console.log(`Smart contract wallet: ${appAddr}`);
       console.log(
         `Using this smart contract: https://testnet.algoexplorer.io/application/${appId}`
@@ -142,13 +146,13 @@ export const NftDetail = () => {
       const { txId } = await client()
         .sendRawTransaction(signedTxn.map((tx) => tx.blob))
         .do();
-      this.message = `Waiting for confirmation...`;
+      this.message = t('NFTDetail.dialog.waintingConf');
       try {
         await algosdk.waitForConfirmation(client(), txId, 10);
-        this.message = `Done!`;
+        this.message = t('NFTDetail.dialog.bidFinishedSuccess');
         await fetchNfts();
       } catch {
-        this.message = `FATAL! Could not send your transaction.`;
+        this.message = t('NFTDetail.dialog.bidFinishedFail');
         await new Promise((r) => setTimeout(r, 1000));
       }
       await new Promise((r) => setTimeout(r, 1000));
@@ -156,7 +160,10 @@ export const NftDetail = () => {
   }
   return (
     <MainLayout>
-      <Fold option={error} as={(e) => <div className="text-red-600">Error: {`${e}`}</div>} />
+      <Fold
+        option={error}
+        as={(e) => <div className="text-red-600 flex justify-center">Error: {`${e}`}</div>}
+      />
       <Fold
         option={nft}
         as={(detail) => (
@@ -165,7 +172,9 @@ export const NftDetail = () => {
               <div className="w-[670px]">
                 <div>
                   <div className="py-14">
-                    <h4 className="font-dinpro font-normal text-2xl">Description</h4>
+                    <h4 className="font-dinpro font-normal text-2xl">
+                      {t('NFTDetail.Overview.nftDescription')}
+                    </h4>
                   </div>
                   <div>
                     <p className="font-sanspro font-normal text-sm ">
@@ -174,7 +183,9 @@ export const NftDetail = () => {
                   </div>
                   <div>
                     <div className="py-14">
-                      <h4 className="font-dinpro font-normal text-2xl">Causes</h4>
+                      <h4 className="font-dinpro font-normal text-2xl">
+                        {t('NFTDetail.Overview.nftCause')}
+                      </h4>
                     </div>
                     <div className="w-[650px]">
                       <CauseDetail nftDetailCause={detail.nft.arc69.properties.cause} />
@@ -182,7 +193,9 @@ export const NftDetail = () => {
                   </div>
                   <div className="image w-[650px] h-[580px]">
                     <div className="py-14 flex justify-between font-dinpro">
-                      <h4 className="font-normal text-2xl">Resources</h4>
+                      <h4 className="font-normal text-2xl">
+                        {t('NFTDetail.Overview.nftResources')}
+                      </h4>
                       <p className="self-center font-normal text-climate-gray-light text-lg">
                         {getDateObj(detail.nft.arc69.properties.date)}
                       </p>

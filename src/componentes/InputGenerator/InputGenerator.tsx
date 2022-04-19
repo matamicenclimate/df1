@@ -1,4 +1,5 @@
 import { Button } from '@/componentes/Elements/Button/Button';
+import { useTranslation } from 'react-i18next';
 
 export type InputGeneratorType<T = unknown> = {
   inputList: {
@@ -11,6 +12,7 @@ export type InputGeneratorType<T = unknown> = {
 };
 
 export const InputGenerator = ({ inputList, setInputList }: InputGeneratorType) => {
+  const { t } = useTranslation();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { name, value } = e.target;
     const list: any = [...inputList];
@@ -31,21 +33,23 @@ export const InputGenerator = ({ inputList, setInputList }: InputGeneratorType) 
 
   return (
     <div className="py-6">
-      <h6 className="font-dinpro font-normal text-base ">Attributes (Optional)</h6>
+      <h6 className="font-dinpro font-normal text-base ">
+        {t('Minter.nftAttributes.nftAttributeTitle')}
+      </h6>
       {inputList.map((x, i) => {
         return (
           <div key={`custom-input-parameter-${i}`} className="flex justify-around  py-6">
             <input
               className="shadow w-full border border-climate-border rounded-xl p-3"
               name="trait_type"
-              placeholder="Enter trait type"
+              placeholder={t('Minter.nftAttributes.nftAttributeTrait')}
               value={x.trait_type}
               onChange={(e) => handleInputChange(e, i)}
             />
             <input
               className="w-full border border-climate-border rounded-xl p-3 shadow ml-3"
               name="value"
-              placeholder="Enter value"
+              placeholder={t('Minter.nftAttributes.nftAttributeValue')}
               value={x.value}
               onChange={(e) => handleInputChange(e, i)}
             />

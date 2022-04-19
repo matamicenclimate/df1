@@ -3,8 +3,61 @@
     "basicInfo": "Basic Info",
     "nftTitle": "NFT Title",
     "nftCreator": "NFT Creator",
-    "nftPrice": "NFT Price"
+    "nftPrice": "NFT Price",
+    "nftDescription": "NFT Description",
+    "fieldRequired": "This field is required",
+    "nftCause": "Cause",
+    "nftCausePercentage": "Cause Percentage",
+    "selectCause": "Please select a cause",
+    "selectPercentage": "Percentage selected should be minumum 30%",
+    "nftDetails": "NFT Details",
+    "uploadResources": "Upload Resources",
+    "uploadFile": "You can mint jpg, gif, mov, mp4, cad, pdf",
+    "agreeConditions": "I agree to ClimateTrade’s Cookie and Privacy Policy.",
+    "nftAttributes": {
+      "nftAttributeTitle": "Attributes (Optional)",
+      "nftAttributeValue": "Enter value",
+      "nftAttributeTrait": "Enter trait type"
+    },
+    "dialog": {
+      "dialogTitle": "Uploading to blockchain..",
+      "dialogMeta": "Creating the NFT data...",
+      "dialogOptin": "Opting in",
+      "dialogIpfs": "Uploading NFT to IPFS...",
+      "dialogPrepNft": "Preparing NFT"
+    }
   },
+  "NFTDetail": {
+    "dialog": {
+      "invalidAsset": "Invalid asset ID, no application found for the provided asset identifier.",
+      "bidError": "Can't place a bid! App index couldn't be setted.",
+      "attemptError": "Attempting to place a bid on an invalid asset.",
+      "bidErrorAmount": "Please enter a valid amount and try again!",
+      "assetWrongFormat": "Invalid asset selected: No asset ID provided or passed a wrong format!",
+      "alertConnectWallet": "First connect your wallet!",
+      "placingBid": "Placing bid...",
+      "makingPayment": "Making the payment...",
+      "makingAppCall": "Making application call...",
+      "waintingConf": "Waiting for confirmation...",
+      "bidFinishedSuccess": "Done!",
+      "bidFinishedFail": "FATAL! Could not send your transaction."
+    },
+    "Overview": {
+      "nftDescription": "Description",
+      "nftCause": "Causes",
+      "nftResources": "Resources",
+      "nftOfferBid": "Offer Bid",
+      "nftTitle": "This is your own NFTs",
+      "connectWallet": "Connect your wallet",
+      "auctionEnded": "The auction has ended",
+      "placeBid": "Place Bid",
+      "endedAuction": "Ended"
+    }
+  },
+  "ConnectWallet": {
+    "title": "Please connect your Wallet to create an NFT"
+  },
+
   "components": {
     "dialog": {
       "accept": {

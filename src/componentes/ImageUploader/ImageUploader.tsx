@@ -1,3 +1,5 @@
+import { t } from 'i18next';
+
 type ImageUploaderProps<T = unknown> = {
   selectedImage?: File | Blob | undefined | MediaSource;
   setSelectedImage?: React.Dispatch<React.SetStateAction<File | Blob | undefined | MediaSource>>;
@@ -44,7 +46,9 @@ export const ImageUploader = ({ selectedImage, setSelectedImage }: ImageUploader
                   />
                 </svg>
 
-                <p className="pt-1 text-sm font-sanspro font-normal">Upload file</p>
+                <p className="pt-1 text-sm font-sanspro font-normal">
+                  {t('Minter.uploadResources')}
+                </p>
                 <p className="text-sm text-climate-gray-artist">Max 50 mb</p>
               </div>
             )}

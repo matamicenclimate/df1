@@ -1,176 +1,60 @@
 {
   "Minter": {
-    "basicInfo": "Informaciones Basica"
+    "basicInfo": "Informaciones Basicas",
+    "nftTitle": "Titulo NFT",
+    "nftCreator": "Creador NFT",
+    "nftPrice": "Precio NFT",
+    "nftDescription": "Descripción",
+    "fieldRequired": "Campo requerido.",
+    "nftCause": "Causa",
+    "nftCausePercentage": "Porcentaje Causa",
+    "selectCause": "Seleccionar una causa",
+    "selectPercentage": "El porcentaje minimo es 30%",
+    "nftDetails": "Detalle NFT",
+    "uploadResources": "Subir Archivo",
+    "uploadFile": "Puedes mintear jpg, gif, mov, mp4, cad, pdf",
+    "agreeConditions": "Acepto la Política de Privacidad y Cookies de ClimateTrade.",
+    "nftAttributes": {
+      "nftAttributeTitle": "Atributos (Opcional)",
+      "nftAttributeValue": "Introducir valor",
+      "nftAttributeTrait": "Introducir tipo de característica"
+    },
+    "dialog": {
+      "dialogTitle": "Subiendo a la blockchain",
+      "dialogMeta": "Creando el NFT..",
+      "dialogOptin": "Opting in",
+      "dialogIpfs": "Subiendo el NFT a IPFS...",
+      "dialogPrepNft": "Preparando el NFT"
+    }
   },
-  "components": {
-    "dialog.accept.button": "Aceptar",
-    "dialog.cancel.button": "Cancelar",
-    "Navbar": {
-      "i18n": {
-        "title": "Idioma",
-        "spanish": "Español",
-        "english": "Inglés"
-      },
-      "currency": "Moneda"
+  "NFTDetail": {
+    "dialog": {
+      "invalidAsset": "Asset ID invalido: no se ha encontrado la application por el asset especificado.",
+      "bidError": "¡No se puede realizar la puja! El índice de la aplicación no se ha puedido configurar.",
+      "attemptError": "No se ha podido realizar la puja por un asset invalido.",
+      "bidErrorAmount": "Por favor, introduzca una cantidad válida e inténtelo de nuevo!",
+      "assetWrongFormat": "Asset ID seleccionado no válido: ¡Ningún asset ID proporcionado o formato incorrecto!",
+      "alertConnectWallet": "¡Primero conecta tu billetera!",
+      "placingBid": "Realizando puja...",
+      "makingPayment": "Realizando el pago...",
+      "makingAppCall": "Realizando llamada a la application...",
+      "waintingConf": "Esperando la confirmación...",
+      "bidFinishedSuccess": "Listo!",
+      "bidFinishedFail": "FATAL! No se pudo enviar su transacción.."
     },
     "Overview": {
-      "all": "Todo",
-      "buy": "Comprar",
-      "sell": "Vender",
-      "transfer": "Transferir",
-      "offset": "Compensar",
-      "activity": "Actividad",
-      "type": "Tipo",
-      "total": "Total",
-      "operationId": "ID de la operación",
-      "date": "Fecha",
-      "totalBalance": "Balance total",
-      "footprint": "Huella de CO2 compensada",
-      "buyClimatecoins": "Comprar Climatecoins",
-      "viewMore": {
-        "title": "Tu ayuda contra el cambio climático.",
-        "subtitle": "Utiliza tus climatecoins para ayudar en la lucha contra el cambio climático.",
-        "link": "Ver más"
-      }
-    },
-    "DayPickerRange": {
-      "ranges": {
-        "custom": "Rango personalizado",
-        "day": "Un día",
-        "week": "Una semana",
-        "month": "Un mes",
-        "year": "Un año",
-        "all": "Desde siempre"
-      }
+      "nftDescription": "Descripción",
+      "nftCause": "Causas",
+      "nftResources": "Recursos",
+      "nftOfferBid": "Offer Bid",
+      "nftTitle": "This is your own NFTs",
+      "connectWallet": "Connect your wallet",
+      "auctionEnded": "The auction has ended",
+      "placeBid": "Place Bid",
+      "endedAuction": "Ended"
     }
   },
-  "dialogs.base.accept": "Aceptar",
-  "dialogs.base.cancel": "Cancelar",
-  "documents": {
-    "List": {
-      "breadcrumbTitle": "Documents",
-      "title": "Lista de documentos",
-      "viewDetails": "Ver detalles"
-    },
-    "Upload": {
-      "stepper.CONFIG": "Configuración",
-      "stepper.CONFIRMATION": "Confirmación",
-      "stepper.DETAILS": "Detalles",
-      "stepper.FILES": "Archivos",
-      "stepper.INFO": "Info",
-      "title": "Transferir créditos",
-      "confirmationText": "Confirmo la creación de este proyecto y los términos y condiciones de Climatecoin.",
-      "confirmationTextPre": "Confirmo la creación de este proyecto y los",
-      "confirmationTextLink": "términos y condiciones",
-      "confirmationTextPost": "de Climatecoin.",
-      "description": "¿Tienes dudas sobre cómo se crean o gestionan los proyectos en Climatecoin?",
-      "buys": "Mis compras",
-      "sold": "Mis ventas",
-      "projects": "Mis proyectos",
-      "profile": "Editar perfil",
-      "notifications": "Notificaciones",
-      "wallet": "Mi Cartera"
-    }
-  },
-  "head": {
-    "List": {
-      "title": "Lista de documentos"
-    },
-    "Profile": {
-      "pageTitle": "Perfil"
-    },
-    "Upload": {
-      "title": "Subir documentos de carbono"
-    },
-    "Wallet": {
-      "title": "Cartera"
-    },
-    "climatecoins": {
-      "Buy": {
-        "title": "Comprar Climatecoins"
-      }
-    }
-  },
-  "login": {
-    "heading": "Login Email"
-  },
-  "misc": {
-    "Overview": {
-      "title": "Home"
-    },
-    "Landing": {
-      "title": "Welcome"
-    }
-  },
-  "profile": {
-    "title": "Perfil"
-  },
-  "uploadDocuments": {
-    "credits": {
-      "amount": "Créditos disponibles"
-    },
-    "description": "Descripción del proyecto",
-    "firstVerifier": "Primer verificador",
-    "link": "Subir documentos",
-    "methodology": "Metodología",
-    "modal": {
-      "button": {
-        "accept": "Entendido ¡Gracias!"
-      },
-      "claim": "Mensaje enviado con éxito. Nos pondremos en contacto contigo en los próximos días.",
-      "title": "Formulario enviado con éxito"
-    },
-    "monitoring": {
-      "report": "Informe de monitorización"
-    },
-    "PDD": "PDD",
-    "project": {
-      "registration": "Fecha de registro de proyectos",
-      "creditEnd": "Fin de los créditos",
-      "creditStart": "Inicio de los créditos",
-      "project.title": "Título del proyecto",
-      "project.type.options.carbon": "Compensación de carbono",
-      "project.type.options.irecs": "Irecs",
-      "project.type.options.nature": "Soluciones basadas en la naturaleza",
-      "project.type": "Tipo de proyecto",
-      "project.url": "URL del proyecto",
-      "project.video": "Video del proyecto"
-    },
-    "projectCover": "Imágenes del proyecto: cover",
-    "projectLatitude": "Latitud",
-    "projectLocation": "Localización del proyecto",
-    "projectLongitude": "Longitud",
-    "projectThumbnail": "Imágenes del proyecto: thumbnail",
-    "registry.link": "Enlace al registro",
-    "registry.name": "Nombre del registro",
-    "sdgs": "SDG's",
-    "send.button": "Sí, enviar",
-    "serialNumber": "Número de serie de los créditos",
-    "standard": "Estándar",
-    "subtype": "Subtipo",
-    "title": "Subir documentos de carbono",
-    "type": "Tipo",
-    "validation.report": "Informe de validación",
-    "validator": "Validador",
-    "verification.report": "Informe de verificación"
-  },
-  "validation": {
-    "errors.format.document": "Campo requerido. Formato: pdf",
-    "errors.format.image": "Campo requerido. Formato: png, jpg o jpeg",
-    "errors.format.pdf": "Formato inválido. Formato requerido: pdf",
-    "errors.format": "Formato inválido",
-    "errors.required": "Campo requerido"
-  },
-  "wallet.Wallet.title": "Cartera",
-  "climatecoins": {
-    "Buy": {
-      "description": "¿Sabes lo que valen tus CCs?\n\n¡Ayudarás con el cambio climático!",
-      "title": "Comprar Climatecoins",
-      "stepper": {
-        "SELECT": "Seleccione",
-        "CONDITIONS": "Condiciones",
-        "CONFIRMATION": "Confirmación"
-      }
-    }
+  "ConnectWallet": {
+    "title": "Conecte su cartera para crear un NFT"
   }
 }
