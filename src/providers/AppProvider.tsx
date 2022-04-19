@@ -26,6 +26,8 @@ const ErrorFallback = () => {
   );
 };
 
+export type ProviderStack = ((children: JSX.Element) => JSX.Element)[];
+
 /**
  * A stack of providers.
  */
@@ -39,8 +41,7 @@ const providers = [
   (children) => <AuthProvider>{children}</AuthProvider>,
   (children) => <DialogProvider>{children}</DialogProvider>,
   (children) => <ModalDialogProvider>{children}</ModalDialogProvider>,
-] as ((children: JSX.Element) => JSX.Element)[];
+] as ProviderStack;
 
-export const AppProvider = ({ children }: { children: JSX.Element }) => {
-  return providers.reduceRight((children, mount) => mount(children), children);
-};
+export const AppProvider = ({ children }: { children: JSX.Element }) =>
+  providers.reduceRight((children, mount) => mount(children), children);
