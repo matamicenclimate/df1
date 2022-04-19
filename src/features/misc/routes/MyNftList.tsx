@@ -11,6 +11,7 @@ import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
+import { Link } from 'react-router-dom';
 import Container from 'typedi';
 import NftCause from '../components/NftCause';
 import NftName from '../components/NftName';
@@ -251,9 +252,11 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     type="search"
                     placeholder="Search"
                   />
-                  <Button className="basis-1/3" size="sm" variant="inverted">
-                    + Mint new NFT
-                  </Button>
+                  <Link to="/mint">
+                    <Button className="basis-1/3" size="sm" variant="inverted">
+                      + Mint new NFT
+                    </Button>
+                  </Link>
                 </div>
               </Form>
               <div
