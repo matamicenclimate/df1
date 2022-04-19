@@ -203,12 +203,12 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
     const size = Object.keys(nfts).length;
     if (size === 0) return;
     const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as Asset[];
-    setInfo(`Loaded ${size - pending.length} out of ${nfts.size} total assets...`);
+    setInfo(`Loaded ${size - pending.length} out of ${size} total assets...`);
     if (pending.length === 0) {
       setInfo(`Done! All assets loaded!`);
       setTimeout(() => {
         setInfo('');
-      }, 10000);
+      }, 3000);
     } else {
       const ad = pending.shift();
       const id = ad?.['asset-id']?.toString();
@@ -223,7 +223,6 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
           }),
           10
         );
-        console.info(`Asset ${id} data fetched`);
         setNfts({ ...nfts, [res.data.value.id.toString()]: res.data.value });
       })();
     }
@@ -312,7 +311,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
                     price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
                     cause: <NftCause id={nft.arc69.properties.cause} />,
-                    status: <NftStatus status="selling" />,
+                    status: <NftStatus status="bidding" />,
                   };
                 })}
               />
