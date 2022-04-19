@@ -7,8 +7,10 @@ import { Asset, Nft } from '@common/src/lib/api/entities';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
+import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useQuery } from 'react-query';
 import Container from 'typedi';
 import NftCause from '../components/NftCause';
 import NftName from '../components/NftName';
@@ -134,6 +136,34 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
 function isAsset(assetOrNft: Asset | Nft): assetOrNft is Asset {
   return typeof (assetOrNft as unknown as Record<string, unknown>)['asset-id'] === 'number';
 }
+const net = Container.get(NetworkClient);
+
+function errorIsAxios(err: unknown): err is AxiosError {
+  const e = err as Record<string, unknown>;
+  return e.isAxiosError === true && e.response != null;
+}
+
+async function retrying<A>(
+  req: Promise<AxiosResponse<A>>,
+  retries: number,
+  total = retries
+): Promise<AxiosResponse<A>> {
+  try {
+    return await req;
+  } catch (err) {
+    if (errorIsAxios(err)) {
+      if (retries <= 0) {
+        throw new Error(`Request failed after ${total} retries.`, {
+          cause: err,
+        });
+      }
+      console.warn(`Request ${err.config.url} failed ${retries}/${total}`);
+      return retrying(axios(err.config), retries - 1, total);
+    } else {
+      throw err;
+    }
+  }
+}
 
 /**
  * A root component that shows a panel with information about the
@@ -142,7 +172,8 @@ function isAsset(assetOrNft: Asset | Nft): assetOrNft is Asset {
 export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
-  const [nfts, setNfts] = useState<(Nft | Asset)[]>([]);
+  const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
+  const [info, setInfo] = useState('');
   useEffect(() => {
     setUser(
       some({
@@ -151,22 +182,60 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       })
     );
     (async () => {
-      const net = Container.get(NetworkClient);
-      const res = await net.core.get('assets', {
-        query: {
-          wallet: account,
-        },
-      });
-      console.log(res);
-      setNfts(res.data);
+      setInfo(`Preloading assets...`);
+      const res = await retrying(
+        net.core.get('assets', {
+          query: {
+            wallet: account,
+          },
+        }),
+        10
+      );
+      setNfts(
+        res.data.assets.reduce((map, asset) => {
+          map[asset['asset-id'].toString()] = asset;
+          return map;
+        }, {} as Record<string, Asset | Nft>)
+      );
     })();
   }, []);
+  useEffect(() => {
+    const size = Object.keys(nfts).length;
+    if (size === 0) return;
+    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as Asset[];
+    setInfo(`Loaded ${size - pending.length} out of ${nfts.size} total assets...`);
+    if (pending.length === 0) {
+      setInfo(`Done! All assets loaded!`);
+      setTimeout(() => {
+        setInfo('');
+      }, 10000);
+    } else {
+      const ad = pending.shift();
+      const id = ad?.['asset-id']?.toString();
+      if (id == null) {
+        throw new Error(`Invalid data payload! This shouldn't be happening!`);
+      }
+      (async () => {
+        console.info(`Fetching asset ${id}...`);
+        const res = await retrying(
+          net.core.get(`asset/:id`, {
+            params: { id },
+          }),
+          10
+        );
+        console.info(`Asset ${id} data fetched`);
+        setNfts({ ...nfts, [res.data.value.id.toString()]: res.data.value });
+      })();
+    }
+  }, [nfts]);
   return (
     <MainLayout>
       <div className="flex flex-row w-full">
         <ProfileColumn className="flex">
           <div className="basis-1/2">&nbsp;</div>
-          {user.fold(<ProfileLoading />, (state) => createProfile(account, wallet, state))}
+          <div className="basis-1/2">
+            {user.fold(<ProfileLoading />, (state) => createProfile(account, wallet, state))}
+          </div>
         </ProfileColumn>
         <TransactionFrame className="flex">
           <div className="flex flex-col basis-3/4">
@@ -186,6 +255,12 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                   </Button>
                 </div>
               </Form>
+              <div
+                className="text-climate-black-title font-thin font-dinpro text-xs ml-4 mt-2"
+                style={{ marginBottom: '-2rem' }}
+              >
+                &nbsp;{info}
+              </div>
               <RichTable
                 order={['name', 'price', 'cause', 'status']}
                 header={{
@@ -194,23 +269,49 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                   cause: 'Cause',
                   status: 'Status',
                 }}
-                rows={nfts.map((nft) => {
+                rows={[...Object.values(nfts)].map((nft) => {
                   if (isAsset(nft)) {
                     const id = nft['asset-id'].toString();
                     return {
                       $id: id,
-                      name: <NftName title="Loading..." id={id} />,
-                      price: <NftPrice price={-1} type="direct" />,
-                      cause: <NftCause id={`Loading #${id} (x${nft.amount})...`} />,
-                      status: <NftStatus status="selling" />,
+                      name: (
+                        <div className="animate-pulse flex">
+                          <div className="mr-2 bg-climate-action-light rounded-lg w-10 h-10">
+                            &nbsp;
+                          </div>
+                          <div className="flex flex-col w-6/12">
+                            <div className="rounded mb-2 bg-climate-action-light">&nbsp;</div>
+                            <div className="rounded bg-climate-action-light h-2">&nbsp;</div>
+                          </div>
+                        </div>
+                      ),
+                      price: (
+                        <div className="flex flex-col animate-pulse">
+                          <div className="mt-2 mb-4 flex justify-between">
+                            <div className="bg-climate-action-light rounded w-full">&nbsp;</div>
+                            <div className="ml-2 bg-climate-action-light rounded w-4">&nbsp;</div>
+                          </div>
+                          <hr />
+                        </div>
+                      ),
+                      cause: (
+                        <div className="animate-pulse rounded w-full bg-climate-action-light">
+                          &nbsp;
+                        </div>
+                      ),
+                      status: (
+                        <div className="animate-pulse rounded w-full bg-climate-action-light">
+                          &nbsp;
+                        </div>
+                      ),
                     };
                   }
                   const id = nft.id.toString();
                   return {
                     $id: id,
-                    name: <NftName title="NFT Name here" id={id} />,
-                    price: <NftPrice price={-1} type="direct" />,
-                    cause: <NftCause id="Loading..." />,
+                    name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
+                    price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
+                    cause: <NftCause id={nft.arc69.properties.cause} />,
                     status: <NftStatus status="selling" />,
                   };
                 })}

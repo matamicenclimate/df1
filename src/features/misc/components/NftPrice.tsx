@@ -1,11 +1,14 @@
+import clsx from 'clsx';
+
 export interface NftPriceProps {
   price: number;
   type: 'auction' | 'direct';
+  className?: string;
 }
 
-export default function NftPrice({ type, price }: NftPriceProps) {
+export default function NftPrice({ className, type, price }: NftPriceProps) {
   return (
-    <div className="flex flex-col">
+    <div className={clsx('flex flex-col', className)}>
       <div className="flex justify-between">
         <div className="text-climate-gray-artist">
           {type === 'auction' ? 'Auction' : 'Direct buy'}

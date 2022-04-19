@@ -22,11 +22,15 @@ function mapToDisplay(detail: CurrentNFTInfo) {
   );
 }
 
+export interface NftDetailPreviewProps {
+  nft: option<CurrentNFTInfo>;
+  className?: string;
+}
+
 /**
  * A simple component that maps an optional NFT state to
  * a thumbnail depending on the underlying type of asset.
  */
-export default function NftDetailPreview(props: { nft: option<CurrentNFTInfo> }) {
-  const { nft } = props;
+export default function NftDetailPreview({ nft, className }: NftDetailPreviewProps) {
   return nft.fold(<Spinner />, mapToDisplay);
 }
