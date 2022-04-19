@@ -193,7 +193,9 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       );
       setNfts(
         res.data.assets.reduce((map, asset) => {
-          map[asset['asset-id'].toString()] = asset;
+          if (asset.amount > 0) {
+            map[asset['asset-id'].toString()] = asset;
+          }
           return map;
         }, {} as Record<string, Asset | Nft>)
       );
@@ -273,8 +275,9 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     const id = nft['asset-id'].toString();
                     return {
                       $id: id,
+                      $class: 'animate-pulse',
                       name: (
-                        <div className="animate-pulse flex">
+                        <div className="flex">
                           <div className="mr-2 bg-climate-action-light rounded-lg w-10 h-10">
                             &nbsp;
                           </div>
@@ -285,7 +288,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                         </div>
                       ),
                       price: (
-                        <div className="flex flex-col animate-pulse">
+                        <div className="flex flex-col">
                           <div className="mt-2 mb-4 flex justify-between">
                             <div className="bg-climate-action-light rounded w-full">&nbsp;</div>
                             <div className="ml-2 bg-climate-action-light rounded w-4">&nbsp;</div>
@@ -293,21 +296,14 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                           <hr />
                         </div>
                       ),
-                      cause: (
-                        <div className="animate-pulse rounded w-full bg-climate-action-light">
-                          &nbsp;
-                        </div>
-                      ),
-                      status: (
-                        <div className="animate-pulse rounded w-full bg-climate-action-light">
-                          &nbsp;
-                        </div>
-                      ),
+                      cause: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
+                      status: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
                     };
                   }
                   const id = nft.id.toString();
                   return {
                     $id: id,
+                    $class: '',
                     name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
                     price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
                     cause: <NftCause id={nft.arc69.properties.cause} />,
