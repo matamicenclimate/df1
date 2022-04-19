@@ -18,7 +18,7 @@ export const Navbar = () => {
   const walletContext = useContext(WalletContext);
   const userWallet = walletContext?.userWallet?.account;
   return (
-    <nav className="p-4 border flex gap-4 justify-between items-center font-dinpro text-sm">
+    <nav className="p-4 border flex gap-4 justify-evenly items-center font-dinpro text-sm">
       <li>
         <Link to="/">
           <img src={climateTradeLogo} alt="climateTradeLogo" />
@@ -53,7 +53,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="relative mx-auto min-h-screen flex flex-col">
       <Navbar />
-      <div className="pb-12 pt-12 bg-custom-white">{children}</div>
+      <div className="pb-12 pt-12 bg-custom-white flex-1">{children}</div>
       <Footer />
     </div>
   );

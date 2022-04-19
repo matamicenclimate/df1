@@ -27,6 +27,8 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   const [accts, setAccounts] = useState(sw.accountList());
   const [connected, setConnected] = useState(sw.connected());
 
+  const acctsTrunc = accts.map((acc) => acc.substring(0, 8) + '...');
+
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
   const userWalletContext = useContext(WalletContext);
@@ -83,9 +85,13 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
       {sessionWallet.accountList()[0] && isNavbar ? (
         <div className="flex items-center">
           {accts && (
-            <Dropdown accts={accts} defaultValue={accts[0]} setOptionSelected={setOptionSelected} />
+            <Dropdown
+              options={acctsTrunc}
+              defaultValue={acctsTrunc[0]}
+              setOptionSelected={setOptionSelected}
+            />
           )}
-          <Button className="p-2" onClick={disconnectWallet}>
+          <Button className="p-2 ml-6" onClick={disconnectWallet}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"

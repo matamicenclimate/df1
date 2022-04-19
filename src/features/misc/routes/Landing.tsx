@@ -32,7 +32,7 @@ export const Landing = () => {
             <Case of="default">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-4">
                 {dataMemo &&
-                  dataMemo?.map((nft: NFTListed, i: number) => (
+                  dataMemo?.map((nft: NFTListed) => (
                     <Link key={`link-of-${nft.id}`} to={`/nft/${nft.id}`}>
                       <Card key={`card-of-${nft.id}`} nft={nft} />
                     </Link>
