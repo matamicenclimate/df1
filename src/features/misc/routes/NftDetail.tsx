@@ -194,7 +194,7 @@ export const NftDetail = () => {
                 </div>
               </div>
             </div>
-            <div className="right col-span-1">
+            <div className="right-40 col-span-1">
               <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
                 <div className="image w-[330px] h-[345px]">
                   <NftDetailPreview nft={nft} />

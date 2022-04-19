@@ -1,24 +1,9 @@
 {
-  "auth": {
-    "Callback": {
-      "error": "Invalid login",
-      "logingIn": "Login in with Magic Link..."
-    },
-    "Login": {
-      "login": "Access with Magiclink",
-      "pageTitle": "Access to Climatecoin",
-      "safetyWarning": "Please make sure that you access from",
-      "form": {
-        "email": {
-          "placeholder": "Write your email...",
-          "label": "Email"
-        }
-      }
-    },
-    "Register": {
-      "pageTitle": "Register",
-      "register": "Register"
-    }
+  "Minter": {
+    "basicInfo": "Basic Info",
+    "nftTitle": "NFT Title",
+    "nftCreator": "NFT Creator",
+    "nftPrice": "NFT Price"
   },
   "components": {
     "dialog": {
@@ -53,7 +38,6 @@
       "i18n": {
         "title": "Language",
         "spanish": "Spanish",
-        "french": "French",
         "english": "English"
       },
       "currency": "Currency",

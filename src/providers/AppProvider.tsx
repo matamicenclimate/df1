@@ -8,6 +8,7 @@ import { CauseContextProvider } from '@/context/CauseContext';
 import { DialogProvider } from './DialogProvider';
 import { WalletFundsContextProvider } from '@/context/WalletFundsContext';
 import ModalDialogProvider from './ModalDialogProvider';
+import { LanguageContextProvider } from '@/context/LanguageContext';
 
 const queryClient = new QueryClient();
 
@@ -32,11 +33,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         <UserContextProvider>
           <CauseContextProvider>
             <WalletFundsContextProvider>
-              <AuthProvider>
-                <DialogProvider>
-                  <ModalDialogProvider>{children}</ModalDialogProvider>
-                </DialogProvider>
-              </AuthProvider>
+              <LanguageContextProvider>
+                <AuthProvider>
+                  <DialogProvider>
+                    <ModalDialogProvider>{children}</ModalDialogProvider>
+                  </DialogProvider>
+                </AuthProvider>
+              </LanguageContextProvider>
             </WalletFundsContextProvider>
           </CauseContextProvider>
         </UserContextProvider>

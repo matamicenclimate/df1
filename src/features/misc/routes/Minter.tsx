@@ -17,6 +17,7 @@ import { some } from '@octantis/option';
 import Container from 'typedi';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import ProcessDialog from '@/service/ProcessDialog';
+import { useTranslation } from 'react-i18next';
 
 const required = false;
 
@@ -28,6 +29,7 @@ export type MinterProps = {
 const dialog = Container.get(ProcessDialog);
 
 export const Minter = ({ wallet, account }: MinterProps) => {
+  const { t } = useTranslation();
   const [checked, setChecked] = useState<boolean>(false);
   const [imageURL, setImageURL] = useState<string>();
   const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
@@ -137,7 +139,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
             onSubmit={handleSubmit(formSubmitHandler) as () => Promise<void>}
             className="rounded px-8 pt-6 pb-8 mb-4 min-w-[800px]"
           >
-            <h6 className="font-dinpro font-normal text-base py-5">Basic Info</h6>
+            <h6 className="font-dinpro font-normal text-base py-5">{t('Minter.basicInfo')}</h6>
             <div className="py-6">
               <input
                 className="w-full border border-climate-border rounded-xl p-3 shadow"
