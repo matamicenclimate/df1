@@ -3,11 +3,13 @@ import { Form } from '@/componentes/Form/Form';
 import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
-import { Nft } from '@/lib/api/nfts';
+import { Asset, Nft } from '@common/src/lib/api/entities';
+import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import Container from 'typedi';
 import NftCause from '../components/NftCause';
 import NftName from '../components/NftName';
 import NftPrice from '../components/NftPrice';
@@ -129,6 +131,10 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
   </div>
 );
 
+function isAsset(assetOrNft: Asset | Nft): assetOrNft is Asset {
+  return typeof (assetOrNft as unknown as Record<string, unknown>)['asset-id'] === 'number';
+}
+
 /**
  * A root component that shows a panel with information about the
  * minted user's NFTs, ongoing bids, sales...
@@ -136,7 +142,7 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
 export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
-  const [nfts, setNfts] = useState<Nft[]>([]);
+  const [nfts, setNfts] = useState<(Nft | Asset)[]>([]);
   useEffect(() => {
     setUser(
       some({
@@ -144,6 +150,16 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
         balance: 0,
       })
     );
+    (async () => {
+      const net = Container.get(NetworkClient);
+      const res = await net.core.get('assets', {
+        query: {
+          wallet: account,
+        },
+      });
+      console.log(res);
+      setNfts(res.data);
+    })();
   }, []);
   return (
     <MainLayout>
@@ -179,12 +195,22 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                   status: 'Status',
                 }}
                 rows={nfts.map((nft) => {
-                  const id = `${nft.id ?? '?????'}`;
+                  if (isAsset(nft)) {
+                    const id = nft['asset-id'].toString();
+                    return {
+                      $id: id,
+                      name: <NftName title="Loading..." id={id} />,
+                      price: <NftPrice price={-1} type="direct" />,
+                      cause: <NftCause id={`Loading #${id} (x${nft.amount})...`} />,
+                      status: <NftStatus status="selling" />,
+                    };
+                  }
+                  const id = nft.id.toString();
                   return {
                     $id: id,
                     name: <NftName title="NFT Name here" id={id} />,
-                    price: <NftPrice price={nft.price ?? -1} type="direct" />,
-                    cause: <NftCause id={nft.description ?? '?'} />,
+                    price: <NftPrice price={-1} type="direct" />,
+                    cause: <NftCause id="Loading..." />,
                     status: <NftStatus status="selling" />,
                   };
                 })}

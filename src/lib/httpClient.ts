@@ -34,14 +34,17 @@ type HTTPClient<T extends Endpoints> = Omit<AxiosInstance, 'get' | 'post'> & {
   ): ApiFuture<T, 'post', K>;
 };
 
+/** @deprecated See common module client. */
 export const httpClient = Axios.create({
   baseURL: API_URL, //API_URL,
 }) as HTTPClient<CoreAPI>;
 
+/** @deprecated See common module client. */
 export const httpClientCauses = Axios.create({
   baseURL: API_URL_CAUSES,
 }) as HTTPClient<CausesAPI>;
 
+/** @deprecated See common module client. */
 export const httpClientMockNfts = Axios.create({
   baseURL: API_URL,
 }) as HTTPClient<CoreAPI>;
