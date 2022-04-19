@@ -3,12 +3,13 @@ import { Form } from '@/componentes/Form/Form';
 import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
+import { WalletFundsContext } from '@/context/WalletFundsContext';
 import { Asset, Nft } from '@common/src/lib/api/entities';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
 import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
@@ -174,14 +175,19 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
   const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
+  const funds = useContext(WalletFundsContext);
   const [info, setInfo] = useState('');
   useEffect(() => {
-    setUser(
-      some({
-        projects: 0,
-        balance: 0,
-      })
-    );
+    if (funds != null) {
+      setUser(
+        some({
+          projects: 0,
+          balance: funds.balanceAlgoUSD ?? -1,
+        })
+      );
+    }
+  }, [funds]);
+  useEffect(() => {
     (async () => {
       setInfo(`Preloading assets...`);
       const res = await retrying(
