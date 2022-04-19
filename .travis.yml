@@ -39,7 +39,7 @@ jobs:
         - docker
       script:
         - npm install
-        - CI=false npm run build
+        - CI=false
         - VERSION=`node -p "require('./package.json').version"`
         - IMAGE_ID=registry.dekaside.com/$PROJECT_NAME/$REPO_NAME
         - docker build . -f ./compose/staging/Dockerfile --tag $IMAGE_ID:latest
