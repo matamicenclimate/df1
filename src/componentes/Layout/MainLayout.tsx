@@ -84,9 +84,10 @@ export const Navbar = () => {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="relative mx-auto min-h-screen flex flex-col">
+    <div className="mx-auto flex flex-col">
       <Navbar />
-      <div className="pb-12 pt-12 bg-custom-white flex-1">{children}</div>
+      {/* <div className="pb-12 pt-12 bg-custom-white flex-1">{children}</div> */}
+      <div className="pt-12 bg-custom-white flex-1 pb-80">{children}</div>
       <Footer />
     </div>
   );

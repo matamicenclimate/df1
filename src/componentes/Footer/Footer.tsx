@@ -1,19 +1,7 @@
 import climateTradeLogo from '../../assets/cliamteTradeLogo.svg';
-import { Dropdown } from '../Dropdown/Dropdown';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { DropdownLanguage } from '../DropdownLanguage/DropdownLanguage';
 
 export const Footer = () => {
-  const { t, i18n } = useTranslation();
-  const [optionSelected, setOptionSelected] = useState<string | undefined>();
-
-  const languageOptions = [
-    { name: `🇺🇸 ${t('components.Navbar.i18n.english')}`, key: 'en' },
-    { name: `🇪🇸 ${t('components.Navbar.i18n.spanish')}`, key: 'es' },
-  ];
-
-  const languages = languageOptions.map((lang) => lang.name);
-
   return (
     <footer className="text-center bg-white">
       <div className="container m-auto px-6 pt-6">
@@ -170,7 +158,7 @@ export const Footer = () => {
           </p>
         </div>
         <div className="flex p-3 border border-climate-border rounded-xl">
-          <Dropdown options={languages} setOptionSelected={setOptionSelected} />
+          <DropdownLanguage />
         </div>
       </div>
     </footer>

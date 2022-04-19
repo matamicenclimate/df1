@@ -1,19 +1,6 @@
 {
-  "auth": {
-    "Callback.error": "Acceso invalido",
-    "Callback.logingIn": "Acceso con Magic Link...",
-    "Login.form.email": "Email",
-    "Login.login": "Acceso",
-    "Login.pageTitlev": "Acceso",
-    "Register.register": "Registro",
-    "Login": {
-      "form": {
-        "email": {
-          "placeholder": "Escribe tu correo...",
-          "label": "Correo"
-        }
-      }
-    }
+  "Minter": {
+    "basicInfo": "Informaciones Basica"
   },
   "components": {
     "dialog.accept.button": "Aceptar",
@@ -22,7 +9,6 @@
       "i18n": {
         "title": "Idioma",
         "spanish": "Español",
-        "french": "Francés",
         "english": "Inglés"
       },
       "currency": "Moneda"
