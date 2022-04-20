@@ -5,6 +5,7 @@ import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
 import { WalletFundsContext } from '@/context/WalletFundsContext';
 import { Asset, Nft } from '@common/src/lib/api/entities';
+import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
@@ -139,33 +140,6 @@ function isAsset(assetOrNft: Asset | Nft): assetOrNft is Asset {
   return typeof (assetOrNft as unknown as Record<string, unknown>)['asset-id'] === 'number';
 }
 const net = Container.get(NetworkClient);
-
-function errorIsAxios(err: unknown): err is AxiosError {
-  const e = err as Record<string, unknown>;
-  return e.isAxiosError === true && e.response != null;
-}
-
-async function retrying<A>(
-  req: Promise<AxiosResponse<A>>,
-  retries: number,
-  total = retries
-): Promise<AxiosResponse<A>> {
-  try {
-    return await req;
-  } catch (err) {
-    if (errorIsAxios(err)) {
-      if (retries <= 0) {
-        throw new Error(`Request failed after ${total} retries.`, {
-          cause: err,
-        });
-      }
-      console.warn(`Request ${err.config.url} failed ${retries}/${total}`);
-      return retrying(axios(err.config), retries - 1, total);
-    } else {
-      throw err;
-    }
-  }
-}
 
 /**
  * A root component that shows a panel with information about the
