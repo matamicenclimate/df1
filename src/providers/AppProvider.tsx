@@ -26,24 +26,22 @@ const ErrorFallback = () => {
   );
 };
 
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <QueryClientProvider client={queryClient}>
-        <UserContextProvider>
-          <CauseContextProvider>
-            <WalletFundsContextProvider>
-              <LanguageContextProvider>
-                <AuthProvider>
-                  <DialogProvider>
-                    <ModalDialogProvider>{children}</ModalDialogProvider>
-                  </DialogProvider>
-                </AuthProvider>
-              </LanguageContextProvider>
-            </WalletFundsContextProvider>
-          </CauseContextProvider>
-        </UserContextProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
-};
+export type ProviderStack = ((children: JSX.Element) => JSX.Element)[];
+
+/**
+ * A stack of providers.
+ */
+const providers = [
+  (children) => <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>,
+  (children) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
+  (children) => <UserContextProvider>{children}</UserContextProvider>,
+  (children) => <CauseContextProvider>{children}</CauseContextProvider>,
+  (children) => <WalletFundsContextProvider>{children}</WalletFundsContextProvider>,
+  (children) => <LanguageContextProvider>{children}</LanguageContextProvider>,
+  (children) => <AuthProvider>{children}</AuthProvider>,
+  (children) => <DialogProvider>{children}</DialogProvider>,
+  (children) => <ModalDialogProvider>{children}</ModalDialogProvider>,
+] as ProviderStack;
+
+export const AppProvider = ({ children }: { children: JSX.Element }) =>
+  providers.reduceRight((children, mount) => mount(children), children);

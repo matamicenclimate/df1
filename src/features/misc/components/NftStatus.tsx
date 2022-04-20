@@ -1,16 +1,34 @@
+import clsx from 'clsx';
+
 export interface NftStatusProps {
   status: 'selling' | 'bidding' | 'sold' | 'locked';
   onEdit?: () => void;
   onDuplicate?: () => void;
   onSend?: () => void;
   onDelete?: () => void;
+  className?: string;
 }
 
-export default function NftStatus({ status }: NftStatusProps) {
+const colors = {
+  bidding: 'climate-informative-green',
+  sold: 'climate-informative-yellow',
+} as ByStatus;
+
+const text = {
+  bidding: 'Auction Open',
+  sold: 'Auction Ended',
+} as ByStatus;
+
+type ByStatus = { [D in NftStatusProps['status']]: string };
+
+export default function NftStatus({ status, className }: NftStatusProps) {
+  const color = colors[status];
   return (
-    <div className="flex justify-between items-center">
-      <div className="p-1 pl-4 pr-4 rounded-md bg-climate-informative-green bg-opacity-10 text-climate-informative-green">
-        {status}
+    <div className={clsx('flex justify-between items-center', className)}>
+      <div
+        className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
+      >
+        {text[status] ?? status}
       </div>
       <button className="text-xl font-bold">...</button>
     </div>

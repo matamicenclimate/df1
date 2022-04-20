@@ -1,9 +1,12 @@
-type Dict = Record<string, JSX.Element | string> & { $id: string };
-
+interface Meta {
+  $id: string;
+  $class?: string;
+}
+type Dict = Record<string, JSX.Element | string> & Meta;
 export interface RichTableProps<T extends Dict[]> {
   rows: T;
-  order: (keyof Omit<{ [K in keyof T[number]]: JSX.Element | string }, '$id'>)[];
-  header: Omit<{ [K in keyof T[number]]: JSX.Element | string }, '$id'>;
+  order: (keyof Omit<{ [K in keyof T[number]]: JSX.Element | string }, keyof Meta>)[];
+  header: Omit<{ [K in keyof T[number]]: JSX.Element | string }, keyof Meta>;
 }
 
 export function RichTable<T extends Dict[]>({ rows, header, order }: RichTableProps<T>) {
@@ -29,7 +32,7 @@ export function RichTable<T extends Dict[]>({ rows, header, order }: RichTablePr
       </thead>
       <tbody>
         {rows.map((child) => (
-          <tr key={child.$id}>
+          <tr key={child.$id} className={child.$class}>
             {order.map((k) => (
               <td key={`${child.$id}/${k}`} className="p-2 pl-6 pr-6">
                 {child[k]}
