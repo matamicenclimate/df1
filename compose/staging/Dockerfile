@@ -4,6 +4,7 @@ WORKDIR /app
 
 RUN npm install -g serve
 COPY . .
+RUN mv ./.env ./.env
 RUN npm install
 RUN npm run build
 
