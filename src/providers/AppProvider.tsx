@@ -2,7 +2,7 @@ import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 // import { AuthProvider } from '@/context/auth-context';
 import { ErrorBoundary } from 'react-error-boundary';
-import { AuthProvider } from '@/lib/auth';
+// import { AuthProvider } from '@/lib/auth';
 import { UserContextProvider } from '@/context/WalletContext';
 import { CauseContextProvider } from '@/context/CauseContext';
 import { DialogProvider } from './DialogProvider';
@@ -38,7 +38,7 @@ const providers = [
   (children) => <CauseContextProvider>{children}</CauseContextProvider>,
   (children) => <WalletFundsContextProvider>{children}</WalletFundsContextProvider>,
   (children) => <LanguageContextProvider>{children}</LanguageContextProvider>,
-  (children) => <AuthProvider>{children}</AuthProvider>,
+  // (children) => <AuthProvider>{children}</AuthProvider>,
   (children) => <DialogProvider>{children}</DialogProvider>,
   (children) => <ModalDialogProvider>{children}</ModalDialogProvider>,
 ] as ProviderStack;

@@ -5,8 +5,8 @@ import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { LoginCredentialsDTO } from '@/features/auth/api/login';
 import { RegisterCredentialsDTO, registerWithEmailAndPassword } from '@/features/auth/api/register';
 import { AuthUser, UserResponse } from '@/features/auth/types';
-import { magiclink } from './magiclink';
-import { getUser } from '@/features/auth/api/getUser';
+// import { magiclink } from './magiclink';
+// import { getUser } from '@/features/auth/api/getUser';
 
 async function handleUserResponse(data: UserResponse) {
   const { jwt, user } = data;
@@ -17,34 +17,34 @@ async function handleUserResponse(data: UserResponse) {
 async function loadUser(): Promise<AuthUser | null> {
   return null; // Override for now the use of magic link.
 
-  const isLoggedIn = await magiclink.user.isLoggedIn();
-  console.log({ isLoggedIn });
+  // const isLoggedIn = await magiclink.user.isLoggedIn();
+  // console.log({ isLoggedIn });
 
-  if (isLoggedIn) {
-    // /* Get the DID for the user */
-    // const jwt = await magiclink.user.getIdToken();
-    // storage.setToken(jwt);
+  // if (isLoggedIn) {
+  //   // /* Get the DID for the user */
+  //   // const jwt = await magiclink.user.getIdToken();
+  //   // storage.setToken(jwt);
 
-    /* Get user metadata including email */
-    const userMetadata = await getUser();
-    return userMetadata;
-  }
+  //   /* Get user metadata including email */
+  //   const userMetadata = await getUser();
+  //   return userMetadata;
+  // }
 
-  return null;
+  // return null;
 }
 
-async function loginFn(data: LoginCredentialsDTO): Promise<AuthUser> {
-  // const response = await loginWithEmailAndPassword(data);
-  const redirectURI = `${window.location.origin}/auth/callback`; // 👈 This will be our callback URI
+// async function loginFn(data: LoginCredentialsDTO): Promise<AuthUser> {
+//   // const response = await loginWithEmailAndPassword(data);
+//   const redirectURI = `${window.location.origin}/auth/callback`; // 👈 This will be our callback URI
 
-  const jwt = await magiclink.auth.loginWithMagicLink({ ...data, redirectURI });
+//   // const jwt = await magiclink.auth.loginWithMagicLink({ ...data, redirectURI });
 
-  storage.setToken(jwt as string);
-  console.log({ jwt });
+//   // storage.setToken(jwt as string);
+//   // console.log({ jwt });
 
-  const userMetadata = await getUser();
-  return userMetadata;
-}
+//   const userMetadata = await getUser();
+//   return userMetadata;
+// }
 
 async function registerFn(data: RegisterCredentialsDTO) {
   const response = await registerWithEmailAndPassword(data);
@@ -53,13 +53,13 @@ async function registerFn(data: RegisterCredentialsDTO) {
 }
 
 async function logoutFn() {
-  await magiclink.user.logout();
+  // await magiclink.user.logout();
   window.location.assign(window.location.origin as unknown as string);
 }
 
 const authConfig = {
   loadUser,
-  loginFn,
+  // loginFn,
   registerFn,
   logoutFn,
   LoaderComponent() {
@@ -71,9 +71,9 @@ const authConfig = {
   },
 };
 
-export const { AuthProvider, useAuth } = initReactQueryAuth<
-  AuthUser | null,
-  unknown,
-  LoginCredentialsDTO,
-  RegisterCredentialsDTO
->(authConfig);
+// export const { AuthProvider, useAuth } = initReactQueryAuth<
+//   AuthUser | null,
+//   unknown,
+//   LoginCredentialsDTO,
+//   RegisterCredentialsDTO
+// >(authConfig);

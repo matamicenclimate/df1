@@ -1,21 +1,21 @@
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Form } from '@/componentes/Form/Form';
-import { Input } from '@/componentes/Form/Inputs';
+// import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
-import { useAuth } from '@/lib/auth';
+// import { useAuth } from '@/lib/auth';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const Login = () => {
-  const auth = useAuth();
+  // const auth = useAuth();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState<boolean>(true);
 
   const handleLogin = async (data: Record<string, unknown>) => {
     console.log(data);
 
-    await auth.login({ email: data.email as string });
+    // await auth.login({ email: data.email as string });
   };
 
   return (
