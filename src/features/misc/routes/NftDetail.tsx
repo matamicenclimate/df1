@@ -26,6 +26,8 @@ import useOptionalState from '@/hooks/useOptionalState';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
 import NftDetailPreview from '../components/NftDetailPreview';
 import { useTranslation } from 'react-i18next';
+import NetworkClient from '@common/src/services/NetworkClient';
+import { retrying } from '@common/src/lib/net';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -42,13 +44,36 @@ function isZeroAccount(account: Uint8Array) {
   return account.reduce((a, b) => a + b, 0) === 0;
 }
 
+const net = Container.get(NetworkClient);
+
+async function tryGetNFTData(
+  id: string,
+  nft: option<CurrentNFTInfo>,
+  setNft: (nft: CurrentNFTInfo) => void,
+  setError: (err: unknown) => void
+) {
+  try {
+    const {
+      data: { value: nft },
+    } = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
+    const appId = nft.arc69.properties.app_id;
+    if (appId == null) {
+      return setError('No app');
+    }
+    const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
+    setNft({ state, nft });
+  } catch (err) {
+    setError(err);
+  }
+}
+
 export const NftDetail = () => {
   const { t } = useTranslation();
   const { ipnft: assetId } = useParams();
-  const { data: queryData } = useQuery('nfts', fetchNfts);
-  const data: NFTListed[] | undefined = useMemo(() => {
-    return queryData?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
-  }, [queryData]);
+  // const { data: queryData } = useQuery('nfts', fetchNfts);
+  // const data: NFTListed[] | undefined = useMemo(() => {
+  //   return queryData?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
+  // }, [queryData]);
   // const [nft, setNft] = useState<option<CurrentNFTInfo>>(none());
   const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
   // const [error, setError] = useState<option<unknown>>(none());
@@ -57,23 +82,27 @@ export const NftDetail = () => {
   const now = Date.now() / 1000;
 
   useEffect(() => {
-    if (assetId != null && data != null) {
-      resetError();
-      const nft = data.find((i) => i.id === Number(assetId));
-      if (nft != null && nft.arc69.properties.app_id != null) {
-        TransactionOperation.do
-          .getApplicationState<AuctionAppState>(nft.arc69.properties.app_id)
-          .then((state) => {
-            setNft({ nft, state });
-          });
-      } else {
-        setError(
-          // `Invalid asset ${assetId}, no application found for the provided asset identifier.`
-          t('NFTDetail.dialog.invalidAsset')
-        );
-      }
-    }
-  }, [assetId, data]);
+    tryGetNFTData(assetId as string, nft, setNft, setError);
+  }, []);
+
+  // useEffect(() => {
+  //   if (assetId != null && data != null) {
+  //     resetError();
+  //     const nft = data.find((i) => i.id === Number(assetId));
+  //     if (nft != null && nft.arc69.properties.app_id != null) {
+  //       TransactionOperation.do
+  //         .getApplicationState<AuctionAppState>(nft.arc69.properties.app_id)
+  //         .then((state) => {
+  //           setNft({ nft, state });
+  //         });
+  //     } else {
+  //       setError(
+  //         // `Invalid asset ${assetId}, no application found for the provided asset identifier.`
+  //         t('NFTDetail.dialog.invalidAsset')
+  //       );
+  //     }
+  //   }
+  // }, [assetId, data]);
 
   // Test: Place a bid!
   async function doPlaceABid() {
