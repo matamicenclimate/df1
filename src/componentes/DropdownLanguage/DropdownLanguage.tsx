@@ -24,8 +24,6 @@ export const DropdownLanguage = () => {
     }
   };
 
-  console.log('language', language);
-
   useEffect(() => {
     if (language != undefined) {
       i18n.changeLanguage(language);

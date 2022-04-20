@@ -89,10 +89,18 @@ export const Landing = () => {
                 {list.map((asset) => {
                   const id = getId(asset);
                   if (isAsset(asset)) {
+                    return <Card loading />;
+                  }
+                  if (asset.arc69.properties.app_id == null) {
                     return (
-                      <Link key={`link-of-${id}`} to={`/nft/${id}`}>
-                        <Card loading />
-                      </Link>
+                      <div className="relative">
+                        <div className="absolute rotate-45 pt-1 font-bold z-10 h-10 text-3xl text-climate-black-title text-center font-dinpro w-1/2 top-1/4 right-1/4 bg-white rounded shadow">
+                          SOLD
+                        </div>
+                        <div className="opacity-60 cursor-not-allowed z-0">
+                          <Card nft={asset} />
+                        </div>
+                      </div>
                     );
                   }
                   return (
