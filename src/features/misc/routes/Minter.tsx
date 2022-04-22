@@ -16,8 +16,6 @@ import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
 import ErrorHint from '@/componentes/Form/ErrorHint';
 
-const required = false;
-
 export type MinterProps = {
   wallet: Wallet;
   account: string;
@@ -75,15 +73,14 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               <div className="w-3/4">
                 <select
                   className="text-climate-gray w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-climate-border rounded-xl p-3"
-                  {...register('properties.cause', { required })}
+                  {...register('properties.cause', { required: true })}
                 >
                   <option disabled>{t('Minter.nftCause')}</option>
-                  {causes &&
-                    causes?.map((cause) => (
-                      <option className="text-climate-black-text" key={cause.id} value={cause.id}>
-                        {cause.title}
-                      </option>
-                    ))}
+                  {causes?.map((cause) => (
+                    <option className="text-climate-black-text" key={cause.id} value={cause.id}>
+                      {cause.title}
+                    </option>
+                  )) ?? null}
                 </select>
                 <ErrorHint on={errors.properties?.cause} text="Minter.selectCause" />
               </div>
@@ -94,7 +91,12 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   type="number"
                   placeholder={t('Minter.nftCausePercentage')}
                   // defaultValue={30}
-                  {...register('properties.causePercentage', { required, min: 30, max: 99 })}
+                  {...register('properties.causePercentage', {
+                    required: true,
+                    valueAsNumber: true,
+                    min: 30,
+                    max: 99,
+                  })}
                 />
                 <ErrorHint on={errors.properties?.causePercentage} text="Minter.selectPercentage" />
               </div>
@@ -117,7 +119,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 className="w-full border border-climate-border rounded-xl p-3"
                 id="description"
                 placeholder={t('Minter.nftDescription')}
-                {...register('description', { required })}
+                {...register('description', { required: true })}
               />
               <ErrorHint on={errors.description} text="Minter.fieldRequired" />
             </div>

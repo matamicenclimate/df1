@@ -81,7 +81,7 @@ export function useMintAction(
         const tx = await net.core.post('create-auction', {
           assetId: result.value.assetID,
           creatorWallet: account,
-          causePercentaje: dataToPost?.properties.causePercentage ?? 30,
+          causePercentage: dataToPost?.properties.causePercentage ?? 30,
         });
         console.info('Auction program was created:', tx.data);
         return;
