@@ -19,6 +19,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { diffFrom } from '@common/src/lib/dates';
 
 export type MinterProps = {
   wallet: Wallet;
@@ -32,7 +33,7 @@ function bind<A>(dispatch: React.Dispatch<React.SetStateAction<A>>, key: keyof A
 }
 
 type Nullable<T> = { [P in keyof T]?: T[P] | null };
-
+type DateErrors = { start?: string; end?: string };
 type Dates = { start: Date; end: Date };
 
 export const Minter = ({ wallet, account }: MinterProps) => {
@@ -41,6 +42,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     start: new Date(),
     end: new Date(Date.now() + defaultOffset),
   });
+  const [dateErrors, setDateErrors] = useState<DateErrors>({});
   const setStartDate = bind(setDates, 'start');
   const setEndDate = bind(setDates, 'end');
   const [checked, setChecked] = useState<boolean>(false);
@@ -59,12 +61,22 @@ export const Minter = ({ wallet, account }: MinterProps) => {
    * This handles the submit of the data.
    */
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
-    const meta = await getNFTMetadata(data);
     (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
-    if (meta && dates.start != null && dates.end != null) {
+    for (const diff of diffFrom(dates.start, dates.end)) {
+      if (diff.past || !diff.valid) {
+        setDateErrors({});
+        if (diff.past) {
+          setDateErrors((d) => ({ ...d, start: "Start date can't be in the past." }));
+        }
+        if (!diff.valid) {
+          setDateErrors((d) => ({ ...d, end: 'End date must be later than start date.' }));
+        }
+        return;
+      }
+      const meta = await getNFTMetadata(data);
       const info = {
-        start: dates.start,
-        end: dates.end,
+        start: diff.start,
+        end: diff.end,
         cause: {
           id: meta.arc69.properties.cause,
           part: meta.arc69.properties.causePercentage,
@@ -95,6 +107,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                     onChange={setStartDate}
                     value={dates.start}
                   />
+                  <ErrorHint on={dateErrors.start} text={dateErrors.start ?? ''} />
                 </div>
                 <div className="flex flex-col w-full ml-1">
                   <label>Auction end</label>
@@ -103,6 +116,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                     onChange={setEndDate}
                     value={dates.end}
                   />
+                  <ErrorHint on={dateErrors.end} text={dateErrors.end ?? ''} />
                 </div>
               </div>
             </LocalizationProvider>

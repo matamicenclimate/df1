@@ -7,6 +7,7 @@ import { Cause } from '@/lib/api/causes';
 import { createNFT } from '@/lib/nft';
 import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
 import ProcessDialog from '@/service/ProcessDialog';
+import { DateLike } from '@common/src/lib/dates';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { Wallet } from 'algorand-session-wallet';
@@ -49,8 +50,8 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
 }
 
 export type MintMeta = {
-  end: Date;
-  start: Date;
+  end: DateLike;
+  start: DateLike;
   cause: {
     part?: number;
     id: string;
