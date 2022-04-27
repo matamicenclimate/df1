@@ -48,25 +48,38 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
   return res.data;
 }
 
+export type MintMeta = {
+  end: Date;
+  start: Date;
+  cause: {
+    part?: number;
+    id: string;
+  };
+};
+
 /**
  * Creates a bound in-place mint action that can be used to mint a new
  * NFT from a react component.
  */
-export function useMintAction(
-  causes: Cause[] | undefined,
-  dataToPost: NFTMetadataBackend | undefined,
-  bidDuration: number = 5 * 60 * 1000
-) {
-  return async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
-    const cause = causes?.find((cause) => cause.id === dataToPost?.properties.cause);
+export function useMintAction(causes: Cause[] | undefined) {
+  if (causes == null) {
+    return () => alert('Causes not loaded yet.');
+  }
+  return async function mintNFT(
+    data: metadataNFTType,
+    info: MintMeta,
+    wallet: Wallet,
+    account: string
+  ) {
+    const cause = causes.find((cause) => cause.id === info.cause.id);
     if (cause == null) {
-      return alert("Can't send that!");
+      return alert('Invalid cause selected!');
     }
     const algodClient = client();
     await dialog.process(async function () {
       this.title = 'Uploading to blockchain';
       this.message = 'Creating the NFT data...';
-      const result = await createNFT(algodClient, account, meta, wallet);
+      const result = await createNFT(algodClient, account, data, wallet);
       if (result.isDefined()) {
         this.message = 'Opting in...';
         const optResult = await net.core.post('opt-in', {
@@ -82,9 +95,9 @@ export function useMintAction(
         const tx = await net.core.post('create-auction', {
           assetId: result.value.assetID,
           creatorWallet: account,
-          causePercentage: dataToPost?.properties.causePercentage ?? 30,
-          startDate: new Date().toISOString(),
-          endDate: new Date(Date.now() + bidDuration).toISOString(),
+          causePercentage: info.cause.part ?? 30,
+          startDate: info.start.toISOString(),
+          endDate: info.end.toISOString(),
         });
         console.info('Auction program was created:', tx.data);
         return;

@@ -15,20 +15,38 @@ import { useTranslation } from 'react-i18next';
 import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
 import ErrorHint from '@/componentes/Form/ErrorHint';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import TextField from '@mui/material/TextField';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 export type MinterProps = {
   wallet: Wallet;
   account: string;
 };
 
+const defaultOffset = 24 * 60 * 60 * 1000;
+
+function bind<A>(dispatch: React.Dispatch<React.SetStateAction<A>>, key: keyof A) {
+  return (data: A[typeof key]) => dispatch((old) => ({ ...old, [key]: data }));
+}
+
+type Nullable<T> = { [P in keyof T]?: T[P] | null };
+
+type Dates = { start: Date; end: Date };
+
 export const Minter = ({ wallet, account }: MinterProps) => {
   const { t } = useTranslation();
+  const [dates, setDates] = useState<Nullable<Dates>>({
+    start: new Date(),
+    end: new Date(Date.now() + defaultOffset),
+  });
+  const setStartDate = bind(setDates, 'start');
+  const setEndDate = bind(setDates, 'end');
   const [checked, setChecked] = useState<boolean>(false);
-  const [dataToPost, setDataToPost] = useState<NFTMetadataBackend | undefined>();
-  const [metadataNFT, setMetadataNFT] = useState<metadataNFTType | undefined>();
   const causeContext = useContext(CauseContext);
   const causes = causeContext?.data;
-  const mintNFT = useMintAction(causes, dataToPost);
+  const mintNFT = useMintAction(causes);
 
   const {
     register,
@@ -37,24 +55,23 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
 
-  async function handleUpload() {
-    if (dataToPost) {
-      setMetadataNFT(await getNFTMetadata(dataToPost));
-    }
-  }
-  useEffect(() => {
-    handleUpload();
-  }, [dataToPost]);
-
-  useEffect(() => {
+  /**
+   * This handles the submit of the data.
+   */
+  const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
+    const meta = await getNFTMetadata(data);
     (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
-    if (metadataNFT) {
-      mintNFT(metadataNFT, wallet, account);
+    if (meta && dates.start != null && dates.end != null) {
+      const info = {
+        start: dates.start,
+        end: dates.end,
+        cause: {
+          id: meta.arc69.properties.cause,
+          part: meta.arc69.properties.causePercentage,
+        },
+      };
+      mintNFT(meta, info, wallet, account);
     }
-  }, [metadataNFT]);
-
-  const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = (data: NFTMetadataBackend) => {
-    setDataToPost(data);
   };
 
   return (
@@ -69,6 +86,26 @@ export const Minter = ({ wallet, account }: MinterProps) => {
             <TextInput id="title" error={errors.title} register={register} />
             <TextInput id="author" error={errors.author} register={register} />
             <TextInput id="properties.price" error={errors.properties?.price} register={register} />
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <div className="flex justify-evenly">
+                <div className="flex flex-col w-full mr-1">
+                  <label>Auction start</label>
+                  <DateTimePicker
+                    renderInput={(_) => <TextField {..._} className="bg-white" />}
+                    onChange={setStartDate}
+                    value={dates.start}
+                  />
+                </div>
+                <div className="flex flex-col w-full ml-1">
+                  <label>Auction end</label>
+                  <DateTimePicker
+                    renderInput={(_) => <TextField {..._} className="bg-white" />}
+                    onChange={setEndDate}
+                    value={dates.end}
+                  />
+                </div>
+              </div>
+            </LocalizationProvider>
             <div className="flex w-full py-6">
               <div className="w-3/4">
                 <select
