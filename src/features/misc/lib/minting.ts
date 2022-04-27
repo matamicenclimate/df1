@@ -54,7 +54,8 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
  */
 export function useMintAction(
   causes: Cause[] | undefined,
-  dataToPost: NFTMetadataBackend | undefined
+  dataToPost: NFTMetadataBackend | undefined,
+  bidDuration: number = 5 * 60 * 1000
 ) {
   return async function mintNFT(meta: metadataNFTType, wallet: Wallet, account: string) {
     const cause = causes?.find((cause) => cause.id === dataToPost?.properties.cause);
@@ -82,6 +83,8 @@ export function useMintAction(
           assetId: result.value.assetID,
           creatorWallet: account,
           causePercentage: dataToPost?.properties.causePercentage ?? 30,
+          startDate: new Date().toISOString(),
+          endDate: new Date(Date.now() + bidDuration).toISOString(),
         });
         console.info('Auction program was created:', tx.data);
         return;
