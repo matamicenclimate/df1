@@ -97,36 +97,19 @@ export const Minter = ({ wallet, account }: MinterProps) => {
             <h6 className="font-dinpro font-normal text-base py-5">{t('Minter.basicInfo')}</h6>
             <TextInput id="title" error={errors.title} register={register} />
             <TextInput id="author" error={errors.author} register={register} />
-            <TextInput id="properties.price" error={errors.properties?.price} register={register} />
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <div className="flex justify-evenly">
-                <div className="flex flex-col w-full mr-1">
-                  <label>Auction start</label>
-                  <DateTimePicker
-                    renderInput={(_) => <TextField {..._} className="bg-white" />}
-                    onChange={setStartDate}
-                    value={dates.start}
-                  />
-                  <ErrorHint on={dateErrors.start} text={dateErrors.start ?? ''} />
-                </div>
-                <div className="flex flex-col w-full ml-1">
-                  <label>Auction end</label>
-                  <DateTimePicker
-                    renderInput={(_) => <TextField {..._} className="bg-white" />}
-                    onChange={setEndDate}
-                    value={dates.end}
-                  />
-                  <ErrorHint on={dateErrors.end} text={dateErrors.end ?? ''} />
-                </div>
-              </div>
-            </LocalizationProvider>
+            <TextInput
+              id="properties.price"
+              error={errors.properties?.price}
+              register={register}
+              min={1}
+            />
             <div className="flex w-full py-6">
               <div className="w-3/4">
                 <select
                   className="text-climate-gray w-full bg-[url('/src/assets/chevronDown.svg')] bg-no-repeat bg-right shadow appearance-none border border-climate-border rounded-xl p-3"
                   {...register('properties.cause', { required: true })}
                 >
-                  <option disabled>{t('Minter.nftCause')}</option>
+                  <option>{t('Minter.nftCause')}</option>
                   {causes?.map((cause) => (
                     <option className="text-climate-black-text" key={cause.id} value={cause.id}>
                       {cause.title}
@@ -141,17 +124,39 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   id="percentage"
                   type="number"
                   placeholder={t('Minter.nftCausePercentage')}
-                  // defaultValue={30}
                   {...register('properties.causePercentage', {
                     required: true,
                     valueAsNumber: true,
-                    min: 30,
+                    min: 50,
                     max: 99,
                   })}
                 />
                 <ErrorHint on={errors.properties?.causePercentage} text="Minter.selectPercentage" />
               </div>
             </div>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <div className="flex justify-evenly py-6">
+                <div className="flex flex-col w-full mr-1">
+                  <label className="font-dinpro font-normal text-base py-3">Auction start</label>
+                  <DateTimePicker
+                    renderInput={(_) => <TextField {..._} className="bg-white " />}
+                    onChange={setStartDate}
+                    value={dates.start}
+                  />
+                  <ErrorHint on={dateErrors.start} text={dateErrors.start ?? ''} />
+                </div>
+                <div className="flex flex-col w-full ml-1">
+                  <label className="font-dinpro font-normal text-base py-3">Auction end</label>
+                  <DateTimePicker
+                    renderInput={(_) => <TextField {..._} className="bg-white" />}
+                    onChange={setEndDate}
+                    value={dates.end}
+                  />
+                  <ErrorHint on={dateErrors.end} text={dateErrors.end ?? ''} />
+                </div>
+              </div>
+            </LocalizationProvider>
+
             <div>
               <Controller
                 control={control}

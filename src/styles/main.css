@@ -1,16 +1,9 @@
 @import 'tailwind.css';
 @import 'fonts.css';
 
-/* body {
-  margin: 0;
-  font-family: Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-} */
-
-body, html, body > div {
-  height: 100%;
+body,
+html,
+body > div {
   border: 0;
   padding: 0;
   margin: 0;

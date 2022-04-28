@@ -13,6 +13,7 @@ export interface TextInputProps {
   register: UseFormRegister<NFTMetadataBackend>;
   error: unknown | undefined;
   id: MappedKeys;
+  min?: number;
 }
 
 const PLACEHOLDER_TRANSLATIONS = {
@@ -24,16 +25,16 @@ const PLACEHOLDER_TRANSLATIONS = {
 /**
  * A simple text input component used in minter form.
  */
-export default function MinterTextInput({ register, id, error }: TextInputProps) {
+export default function MinterTextInput({ register, min, id, error }: TextInputProps) {
   const { t } = useTranslation();
   return (
     <div className="py-6">
       <input
-        className="w-full border border-climate-border rounded-xl p-3 shadow"
+        className="w-full border border-climate-border rounded-xl p-3 shadow font-sanspro font-normal"
         id={id}
         type="text"
         placeholder={t(PLACEHOLDER_TRANSLATIONS[id])}
-        {...register(id, { required: true })}
+        {...register(id, { required: true, min: min })}
       />
       <ErrorHint on={error} text="Minter.fieldRequired" />
     </div>

@@ -40,6 +40,7 @@ export type NFTMetadataBackend = {
   title: string;
   description: string;
   author: string;
+  price: number;
   file: FileList;
   properties: Properties;
   image_url: string;
