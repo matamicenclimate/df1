@@ -93,7 +93,7 @@ export const Landing = () => {
                   }
                   if (asset.arc69.properties.app_id == null) {
                     return (
-                      <div className="relative">
+                      <div key={asset.id} className="relative">
                         <div className="absolute rotate-45 pt-1 font-bold z-10 h-10 text-3xl text-climate-black-title text-center font-dinpro w-1/2 top-1/4 right-1/4 bg-white rounded shadow">
                           SOLD
                         </div>

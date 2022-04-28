@@ -54,7 +54,7 @@ export const ImageUploader = ({ selectedImage, setSelectedImage }: ImageUploader
             )}
             <input
               type="file"
-              className="absolute w-full h-full  opacity-0"
+              className="absolute w-full h-60 opacity-0 cursor-pointer top-1"
               onChange={(event) => imageChange(event)}
             />
           </div>
