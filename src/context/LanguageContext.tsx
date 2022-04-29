@@ -16,11 +16,8 @@ export const LanguageContextProvider = ({ children }: LanguageContextProviderPro
 
   useEffect(() => {
     const localData = localStorage.getItem('language');
-    console.log('localData', localData);
     if (localData) setLanguageSelected(localData);
   }, [languageSelected]);
-
-  console.log('languageSelected from context', languageSelected);
 
   return (
     <LanguageContext.Provider value={{ languageSelected, setLanguageSelected }}>

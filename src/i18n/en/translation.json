@@ -174,7 +174,8 @@
       "title": "Home"
     },
     "Landing": {
-      "title": "Welcome"
+      "title": "Welcome",
+      "no-nft-message": "No assets found, go mint one!"
     }
   },
   "profile": {

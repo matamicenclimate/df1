@@ -15,8 +15,8 @@ const colors = {
 } as ByStatus;
 
 const text = {
-  bidding: 'Auction Open',
-  sold: 'Auction Ended',
+  bidding: 'Pending',
+  sold: 'Sold',
 } as ByStatus;
 
 type ByStatus = { [D in NftStatusProps['status']]: string };

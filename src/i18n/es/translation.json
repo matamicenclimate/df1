@@ -56,5 +56,10 @@
   },
   "ConnectWallet": {
     "title": "Conecte su cartera para crear un NFT"
+  },
+  "misc": {
+    "Landing": {
+      "no-nft-message": "No hay NFTs, ¡Mintea uno!"
+    }
   }
 }

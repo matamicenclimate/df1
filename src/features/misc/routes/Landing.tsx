@@ -1,26 +1,30 @@
-import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Card } from '@/componentes/Elements/Card/Card';
-import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { NFTListed } from '@/lib/api/nfts';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Case, Match } from '@/componentes/Generic/Match';
-import { fetchNfts } from '@/lib/NFTFetching';
-import { isVideo } from '@/lib/media';
 import { retrying } from '@common/src/lib/net';
 import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { Asset } from '@common/src/lib/api/entities';
+import { TransactionOperation } from '@common/src/services/TransactionOperation';
+import { AuctionAppState } from '@common/src/lib/types';
+import { useTranslation } from 'react-i18next';
 
 const net = Container.get(NetworkClient);
 
 type State = (NFTListed | Asset)[];
 type Update = React.Dispatch<React.SetStateAction<(Asset | NFTListed)[]>>;
 
+function hasAmount(amountLike: { amount: number }) {
+  return amountLike.amount > 0;
+}
+
 async function tryGetManifest(setList: Update) {
   const res = await retrying(net.core.get('assets'), 10);
-  setList(res.data.assets);
+  console.log('???', res.data.assets.filter(hasAmount));
+  setList(res.data.assets.filter(hasAmount));
 }
 
 function isAsset(asset: State[number]): asset is Asset {
@@ -43,6 +47,19 @@ async function tryUpdateOne(list: State, setList: Update) {
       net.core.get('asset/:id', { params: { id: asset['asset-id'].toString() } }),
       10
     );
+    const id = data.data.value.arc69.properties.app_id;
+    if (id == null) {
+      console.info(`Asset ${data.data.value.id} has no app ID, skipping...`);
+      clone.splice(found, 1);
+      return setList(clone);
+    }
+    try {
+      await TransactionOperation.do.getApplicationState<AuctionAppState>(id);
+    } catch {
+      console.info(`Asset ${data.data.value.id} did error, skipping...`);
+      clone.splice(found, 1);
+      return setList(clone);
+    }
     clone[found] = data.data.value;
     setList(clone);
   }
@@ -53,7 +70,7 @@ export const Landing = () => {
   // const dataMemo: NFTListed[] | undefined = useMemo(() => {
   //   return data?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
   // }, [data]);
-
+  const { t } = useTranslation();
   const [list, setList] = useState<State>([]);
 
   useEffect(() => {
@@ -86,29 +103,21 @@ export const Landing = () => {
                       <Card loading key={`card-of-${nft.id}`} nft={nft} />
                     </Link>
                   ))} */}
-                {list.map((asset) => {
-                  const id = getId(asset);
-                  if (isAsset(asset)) {
-                    return <Card loading />;
-                  }
-                  if (asset.arc69.properties.app_id == null) {
+                {list.length === 0 ? (
+                  <div>{t('misc.Landing.no-nft-message')}</div>
+                ) : (
+                  list.map((asset) => {
+                    const id = getId(asset);
+                    if (isAsset(asset)) {
+                      return <Card key={`link-of-${id}`} loading />;
+                    }
                     return (
-                      <div key={asset.id} className="relative">
-                        <div className="absolute rotate-45 pt-1 font-bold z-10 h-10 text-3xl text-climate-black-title text-center font-dinpro w-1/2 top-1/4 right-1/4 bg-white rounded shadow">
-                          SOLD
-                        </div>
-                        <div className="opacity-60 cursor-not-allowed z-0">
-                          <Card nft={asset} />
-                        </div>
-                      </div>
+                      <Link key={`link-of-${id}`} to={`/nft/${id}`}>
+                        <Card nft={asset} />
+                      </Link>
                     );
-                  }
-                  return (
-                    <Link key={`link-of-${id}`} to={`/nft/${id}`}>
-                      <Card nft={asset} />
-                    </Link>
-                  );
-                })}
+                  })
+                )}
               </div>
             </Case>
           </Match>

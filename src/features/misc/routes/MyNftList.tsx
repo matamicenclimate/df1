@@ -9,10 +9,8 @@ import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
-import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import Container from 'typedi';
 import NftCause from '../components/NftCause';
@@ -105,7 +103,7 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
     </p>
     <div className="flex pt-2 justify-evenly">
       <div className=" flex flex-col items-center p-2">
-        <p>{state.balance} €</p>
+        <p>{state.balance} $</p>
         <p className="font-sanspro text-xs text-climate-gray-artist">Total balance</p>
       </div>
       <div className="flex flex-col items-center p-2">
@@ -220,6 +218,8 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
           </div>
         </ProfileColumn>
         <TransactionFrame className="flex">
+          <div className="bg-climate-informative-yellow text-climate-informative-yellow"></div>
+          <div className="bg-climate-informative-green text-climate-informative-green"></div>
           <div className="flex flex-col basis-3/4">
             <h2 className="text-4xl font-normal font-dinpro text-climate-black-title">My NFTs</h2>
             <div className="p-3 rounded-3xl bg-white shadow-lg mt-7">
