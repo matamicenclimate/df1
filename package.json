@@ -46,6 +46,7 @@
     "install-python-deps": "cd contracts && pip install -r requirements.txt",
     "start": "craco start",
     "dev": "craco start",
+    "dev:local": "REACT_APP_API_URL=\"http://localhost:8000/api/v1\" craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"
