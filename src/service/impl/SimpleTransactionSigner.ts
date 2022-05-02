@@ -11,8 +11,15 @@ function die(): never {
 export default class SimpleTransactionSigner implements TransactionSigner.type {
   wallet: option<Wallet> = none();
 
-  async signTransaction(transaction: Transaction): Promise<Uint8Array> {
+  async signTransaction(transaction: Transaction): Promise<Uint8Array>;
+  async signTransaction(transaction: Transaction[]): Promise<Uint8Array[]>;
+  async signTransaction(
+    transaction: Transaction | Transaction[]
+  ): Promise<Uint8Array | Uint8Array[]> {
     if (this.wallet.isDefined()) {
+      if (transaction instanceof Array) {
+        return (await this.wallet.value.signTxn(transaction)).map((_) => _.blob);
+      }
       return ((await this.wallet.value.signTxn([transaction])).at(0) ?? die()).blob;
     }
     throw new Error("Didn't set any wallet!");

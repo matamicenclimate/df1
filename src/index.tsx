@@ -12,6 +12,9 @@ import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 import config from '@/lib/config';
 import { asTable, at, extracting, matches, parseKVFormat } from '@common/src/lib/data';
+import NetworkClient from '@common/src/services/NetworkClient';
+import Container from 'typedi';
+import Configuration from './context/ConfigContext';
 
 function configOptions(str: string) {
   return parseKVFormat(str)
@@ -22,11 +25,13 @@ function configOptions(str: string) {
 axios
   .get<string>('/conf.env')
   .then(extracting('data', configOptions))
-  .then(() => {
+  .then(() => Container.get(NetworkClient).causes.get('causes/config'))
+  .then(({ data: causes }) => {
+    const config = new Configuration(causes.percentages.cause);
     ReactDOM.render(
       <React.StrictMode>
         <BrowserRouter>
-          <App />
+          <App config={config} />
         </BrowserRouter>
       </React.StrictMode>,
       document.getElementById('root')

@@ -20,6 +20,7 @@ import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { diffFrom } from '@common/src/lib/dates';
+import Configuration from '@/context/ConfigContext';
 
 export type MinterProps = {
   wallet: Wallet;
@@ -49,6 +50,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   const causeContext = useContext(CauseContext);
   const causes = causeContext?.data;
   const mintNFT = useMintAction(causes);
+  const config = useContext(Configuration.Context);
 
   const {
     register,
@@ -127,7 +129,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   {...register('properties.causePercentage', {
                     required: true,
                     valueAsNumber: true,
-                    min: 50,
+                    min: config.minBidPart,
                     max: 99,
                   })}
                 />
