@@ -101,6 +101,13 @@ export const NftDetail = () => {
   //   }
   // }, [assetId, data]);
 
+  /** The deposit fee value. */
+  const depositTxCount = 7;
+  /** Base transactions that will be paid immediately. */
+  const baseTxFees = 2;
+  /** The extra amount of money needed for future transactions. */
+  const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
+
   // Test: Place a bid!
   async function doPlaceABid() {
     const dialog = Container.get(ProcessDialog);
@@ -149,7 +156,7 @@ export const NftDetail = () => {
       const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: account.addr,
         to: appAddr,
-        amount: bidAmount,
+        amount: bidAmount + computedExtraFees,
         suggestedParams: await client().getTransactionParams().do(),
       });
       this.message = t('NFTDetail.dialog.makingAppCall');
