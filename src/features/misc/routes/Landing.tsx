@@ -17,14 +17,10 @@ const net = Container.get(NetworkClient);
 type State = (NFTListed | Asset)[];
 type Update = React.Dispatch<React.SetStateAction<(Asset | NFTListed)[]>>;
 
-function hasAmount(amountLike: { amount: number }) {
-  return amountLike.amount > 0;
-}
-
 async function tryGetManifest(setList: Update) {
   const res = await retrying(net.core.get('assets'), 10);
-  console.log('???', res.data.assets.filter(hasAmount));
-  setList(res.data.assets.filter(hasAmount));
+  console.log('???', res.data.assets);
+  setList(res.data.assets);
 }
 
 function isAsset(asset: State[number]): asset is Asset {
