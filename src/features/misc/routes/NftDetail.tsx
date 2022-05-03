@@ -1,4 +1,5 @@
 import { Button } from '@/componentes/Elements/Button/Button';
+import { CauseContext, CauseContextType } from '@/context/CauseContext';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { useContext, useEffect } from 'react';
@@ -25,6 +26,8 @@ import NftDetailPreview from '../components/NftDetailPreview';
 import { useTranslation } from 'react-i18next';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
+import { Cause } from '@/lib/api/causes';
+import { NFTListed } from '@/lib/api/nfts';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -66,14 +69,10 @@ async function tryGetNFTData(
 
 export const NftDetail = () => {
   const { t } = useTranslation();
+  const causeContext = useContext(CauseContext);
+  const causes = causeContext?.data?.map((cause) => cause);
   const { ipnft: assetId } = useParams();
-  // const { data: queryData } = useQuery('nfts', fetchNfts);
-  // const data: NFTListed[] | undefined = useMemo(() => {
-  //   return queryData?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
-  // }, [queryData]);
-  // const [nft, setNft] = useState<option<CurrentNFTInfo>>(none());
   const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
-  // const [error, setError] = useState<option<unknown>>(none());
   const [error, setError, resetError] = useOptionalState<unknown>();
   const wallet = useContext(WalletContext);
   const now = Date.now() / 1000;
@@ -81,25 +80,6 @@ export const NftDetail = () => {
   useEffect(() => {
     tryGetNFTData(assetId as string, nft, setNft, setError);
   }, []);
-
-  // useEffect(() => {
-  //   if (assetId != null && data != null) {
-  //     resetError();
-  //     const nft = data.find((i) => i.id === Number(assetId));
-  //     if (nft != null && nft.arc69.properties.app_id != null) {
-  //       TransactionOperation.do
-  //         .getApplicationState<AuctionAppState>(nft.arc69.properties.app_id)
-  //         .then((state) => {
-  //           setNft({ nft, state });
-  //         });
-  //     } else {
-  //       setError(
-  //         // `Invalid asset ${assetId}, no application found for the provided asset identifier.`
-  //         t('NFTDetail.dialog.invalidAsset')
-  //       );
-  //     }
-  //   }
-  // }, [assetId, data]);
 
   /** The deposit fee value. */
   const depositTxCount = 7;
@@ -191,6 +171,14 @@ export const NftDetail = () => {
       await new Promise((r) => setTimeout(r, 1000));
     });
   }
+
+  const getCauseTitle = (causes: Cause[] | undefined, nft: NFTListed) => {
+    const cause: Cause | undefined = causes?.find(
+      (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
+    );
+    return cause?.title;
+  };
+
   return (
     <MainLayout>
       <Fold
@@ -251,7 +239,7 @@ export const NftDetail = () => {
                       <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
                         <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
                         <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-                          {detail.nft.arc69.properties.cause}
+                          {getCauseTitle(causes, detail.nft)}
                         </p>
                       </div>
                       <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
@@ -270,15 +258,6 @@ export const NftDetail = () => {
                       >
                         Offer Bid
                       </label>
-                      {/* <input
-                className="shadow appearance-none border border-gray-500 rounded-xl w-36 py-2 px-3 leading-tight focus:outline-none focus:shadow-outline"
-                id="title"
-                type="text"
-                placeholder={`${smartContractState.fold(
-                  nftSelected?.arc69?.properties?.price,
-                  (state) => state.bid_amount
-                )}`}
-              /> */}
                     </div>
                     <div className="flex self-end">
                       <p className="text-xl text-climate-blue self-center">

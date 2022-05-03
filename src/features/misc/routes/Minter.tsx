@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { ImageUploader } from '@/componentes/ImageUploader/ImageUploader';
 import { Wallet } from 'algorand-session-wallet';
-import { NFTMetadataBackend, metadataNFTType } from '@/lib/type';
+import { NFTMetadataBackend } from '@/lib/type';
 import { InputGenerator } from '@/componentes/InputGenerator/InputGenerator';
 import { CauseContext } from '@/context/CauseContext';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
@@ -104,6 +104,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
               error={errors.properties?.price}
               register={register}
               min={1}
+              number={'number'}
             />
             <div className="flex w-full py-6">
               <div className="w-3/4">

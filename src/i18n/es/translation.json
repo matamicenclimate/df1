@@ -24,7 +24,8 @@
       "dialogMeta": "Creando el NFT..",
       "dialogOptin": "Opting in",
       "dialogIpfs": "Subiendo el NFT a IPFS...",
-      "dialogPrepNft": "Preparando el NFT"
+      "dialogPrepNft": "Preparando el NFT",
+      "dialogNFTCreatedSuccess": "Tu NFT ha sido creado correctamente!"
     }
   },
   "NFTDetail": {

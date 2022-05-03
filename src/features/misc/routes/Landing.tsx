@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { Card } from '@/componentes/Elements/Card/Card';
 import { NFTListed } from '@/lib/api/nfts';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Case, Match } from '@/componentes/Generic/Match';
 import { retrying } from '@common/src/lib/net';
 import Container from 'typedi';
@@ -62,10 +62,6 @@ async function tryUpdateOne(list: State, setList: Update) {
 }
 
 export const Landing = () => {
-  // const { data, isLoading, error } = useQuery('nfts', fetchNfts);
-  // const dataMemo: NFTListed[] | undefined = useMemo(() => {
-  //   return data?.map((nft) => ({ ...nft, image_url: isVideo(nft.image_url) }));
-  // }, [data]);
   const { t } = useTranslation();
   const [list, setList] = useState<State>([]);
 

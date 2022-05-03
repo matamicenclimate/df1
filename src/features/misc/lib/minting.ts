@@ -11,7 +11,9 @@ import { DateLike } from '@common/src/lib/dates';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { Wallet } from 'algorand-session-wallet';
+import { useTranslation } from 'react-i18next';
 import Container from 'typedi';
+import { useNavigate } from 'react-router-dom';
 
 const dialog = Container.get(ProcessDialog);
 
@@ -63,6 +65,10 @@ export type MintMeta = {
  * NFT from a react component.
  */
 export function useMintAction(causes: Cause[] | undefined) {
+  const { t } = useTranslation();
+
+  const goToPage = useNavigate();
+
   if (causes == null) {
     return () => alert('Causes not loaded yet.');
   }
@@ -81,6 +87,8 @@ export function useMintAction(causes: Cause[] | undefined) {
       this.title = 'Uploading to blockchain';
       this.message = 'Creating the NFT data...';
       const result = await createNFT(algodClient, account, data, wallet);
+      console.log('result from createNFT', result);
+
       if (result.isDefined()) {
         this.message = 'Opting in...';
         const optResult = await net.core.post('opt-in', {
@@ -93,6 +101,7 @@ export function useMintAction(causes: Cause[] | undefined) {
           new Uint8Array()
         );
         console.info('Asset transfer to app:', transfer);
+        this.message = 'Creating auction...';
         const tx = await net.core.post('create-auction', {
           assetId: result.value.assetID,
           creatorWallet: account,
@@ -100,7 +109,16 @@ export function useMintAction(causes: Cause[] | undefined) {
           startDate: info.start.toISOString(),
           endDate: info.end.toISOString(),
         });
+
         console.info('Auction program was created:', tx.data);
+        if (tx.data) {
+          this.title = 'Your NFT has been successfully created!!';
+          this.message = '';
+
+          goToPage(`/nft/${result.value.assetID}`);
+          await new Promise((r) => setTimeout(r, 5000));
+        }
+
         return;
       }
       return console.warn(
