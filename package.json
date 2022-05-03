@@ -49,6 +49,7 @@
     "dev:local": "REACT_APP_API_URL=\"http://localhost:8000/api/v1\" craco start",
     "build": "craco build",
     "test": "craco test",
+    "test:common:net": "ts-node climate-nft-common/src/spec/net.spec.ts",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -87,7 +88,8 @@
     "raw-loader": "^4.0.2",
     "react-app-alias": "^2.1.0",
     "stream-browserify": "^3.0.0",
-    "tailwindcss": "^3.0.23"
+    "tailwindcss": "^3.0.23",
+    "ts-node": "^10.7.0"
   },
   "jest": {
     "moduleNameMapper": {
