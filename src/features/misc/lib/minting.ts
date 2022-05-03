@@ -111,11 +111,11 @@ export function useMintAction(causes: Cause[] | undefined) {
         });
 
         console.info('Auction program was created:', tx.data);
-        if (tx.data) {
+        if (tx.data.appIndex) {
           this.title = 'Your NFT has been successfully created!!';
           this.message = '';
 
-          goToPage(`/nft/${result.value.assetID}`);
+          goToPage(`/`);
           await new Promise((r) => setTimeout(r, 5000));
         }
 
