@@ -103,8 +103,8 @@ export const NftDetail = () => {
 
   /** The deposit fee value. */
   const depositTxCount = 7;
-  /** Base transactions that will be paid immediately. */
-  const baseTxFees = 2;
+  /** Base transactions that will be paid immediately. None atm. */
+  const baseTxFees = 0;
   /** The extra amount of money needed for future transactions. */
   const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
 
