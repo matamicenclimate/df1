@@ -2,12 +2,13 @@ import { Dialog as HUIDialog } from '@headlessui/react';
 import { Button } from '../Elements/Button/Button';
 import { useTranslation } from 'react-i18next';
 import unit from '@/lib/unit';
+import { Content } from '@/service/ProcessDialog';
 
 type DialogProps = {
   isOpen: boolean;
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-  title: string;
-  subtitle?: string;
+  title: Content;
+  subtitle?: Content;
   claim?: string;
   onAccept?: () => void;
   acceptLabel?: string;
@@ -42,7 +43,9 @@ export const Dialog = ({
       {/* <HUIDialog.Overlay className="fixed inset-0 backdrop-opacity-20" /> */}
       <div className="min-w-[560px] relative bg-white rounded-2xl max-w-sm w-full mx-auto p-7">
         <HUIDialog.Title className="text-3xl climate-black-title">{title}</HUIDialog.Title>
-        {subtitle ? <HUIDialog.Description>{subtitle}</HUIDialog.Description> : null}
+        {subtitle ? (
+          <HUIDialog.Description className="pt-4">{subtitle}</HUIDialog.Description>
+        ) : null}
 
         {claim ? (
           <p className="font-sanspro text-base text-climate-gray-light font-normal py-7">
@@ -68,7 +71,6 @@ export const Dialog = ({
                   clipRule="evenodd"
                 />
               </svg>
-              {/* {cancelLabel ? cancelLabel : t('dialogs.base.cancel')} */}
             </button>
           )}
           {onAccept && (

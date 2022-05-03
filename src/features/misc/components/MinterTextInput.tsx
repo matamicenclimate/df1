@@ -14,6 +14,7 @@ export interface TextInputProps {
   error: unknown | undefined;
   id: MappedKeys;
   min?: number;
+  number?: string;
 }
 
 const PLACEHOLDER_TRANSLATIONS = {
@@ -25,14 +26,14 @@ const PLACEHOLDER_TRANSLATIONS = {
 /**
  * A simple text input component used in minter form.
  */
-export default function MinterTextInput({ register, min, id, error }: TextInputProps) {
+export default function MinterTextInput({ register, min, number, id, error }: TextInputProps) {
   const { t } = useTranslation();
   return (
     <div className="py-6">
       <input
         className="w-full border border-climate-border rounded-xl p-3 shadow font-sanspro font-normal"
         id={id}
-        type="text"
+        type={number ? 'number' : 'text'}
         placeholder={t(PLACEHOLDER_TRANSLATIONS[id])}
         {...register(id, { required: true, min: min })}
       />

@@ -175,8 +175,16 @@ export async function createNFT(
   try {
     const info = await createAsset(algodClient, account, metadat, wallet);
     return some(info);
-  } catch (err) {
+  } catch (err: any) {
     console.log('Failed to process NFT creation!', err);
+
+    if (err) {
+      dialog.start();
+      dialog.title = 'An error occured, please restart the minting process.';
+      dialog.message = '';
+      await dialog.interaction();
+    }
+
     return none();
   }
 }

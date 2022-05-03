@@ -1,14 +1,20 @@
 import unit from '@/lib/unit';
+import EventEmitter from 'events';
 import React from 'react';
 import { Service } from 'typedi';
+
+export type Content = string | JSX.Element | null;
 
 @Service()
 export default class ProcessDialog {
   setOpen: React.Dispatch<boolean> = unit;
-  setMessage: React.Dispatch<string> = unit;
-  setTitle: React.Dispatch<string> = unit;
-  setSubtitle: React.Dispatch<string> = unit;
+  setMessage: React.Dispatch<Content> = unit;
+  setTitle: React.Dispatch<Content> = unit;
+  setSubtitle: React.Dispatch<Content> = unit;
   setRed: React.Dispatch<boolean> = unit;
+  setInteraction: React.Dispatch<boolean> = unit;
+
+  private readonly event = new EventEmitter();
 
   /**
    * Shows the dialog.
@@ -32,19 +38,28 @@ export default class ProcessDialog {
    * Setting this property will cause an update to the underlying dialog
    * container.
    */
-  set message(value: string) {
+  set message(value: Content) {
     this.setMessage(value);
   }
 
-  set subtitle(value: string) {
+  set subtitle(value: Content) {
     this.setSubtitle(value);
   }
 
   /**
    * The title of the dialog.
    */
-  set title(value: string) {
+  set title(value: Content) {
     this.setTitle(value);
+  }
+
+  async interaction() {
+    this.setInteraction(true);
+    return await new Promise((r) => this.event.once('interact', r));
+  }
+
+  interact() {
+    this.event.emit('interact');
   }
 
   /**

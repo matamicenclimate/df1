@@ -1,5 +1,8 @@
+import { useContext } from 'react';
+import { CauseContext, CauseContextType } from '@/context/CauseContext';
 import { NFTListed } from '@/lib/api/nfts';
 import algoLogo from '../../../assets/algoLogo.svg';
+import { Cause } from '@/lib/api/causes';
 
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
 
@@ -16,6 +19,9 @@ function isLoading(props: CardProps): props is { loading: true } {
 }
 
 export const Card = (props: CardProps) => {
+  const causeContext = useContext(CauseContext);
+  const causes = causeContext?.data?.map((cause) => cause);
+
   if (isLoading(props)) {
     return (
       <div className="wrapper antialiased text-gray-900 max-w-[325px] animate-pulse">
@@ -49,6 +55,14 @@ export const Card = (props: CardProps) => {
     );
   }
   const { nft } = props;
+
+  const getCauseTitle = (causes: Cause[] | undefined, nft: NFTListed) => {
+    const cause: Cause | undefined = causes?.find(
+      (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
+    );
+    return cause?.title;
+  };
+
   return (
     <div className="wrapper antialiased text-gray-900 max-w-[325px]">
       <div>
@@ -74,7 +88,8 @@ export const Card = (props: CardProps) => {
             <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
               <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
               <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                {nft?.arc69?.properties?.cause}
+                {/* {nft?.arc69?.properties?.cause} */}
+                {getCauseTitle(causes, nft)}
               </p>
             </div>
             <h4 className="mt-1 text-lg font-dinpro font-normal uppercase leading-tight truncate">
