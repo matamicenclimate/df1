@@ -18,8 +18,8 @@ type State = (NFTListed | Asset)[];
 type Update = React.Dispatch<React.SetStateAction<(Asset | NFTListed)[]>>;
 
 async function tryGetManifest(setList: Update) {
-  const res = await retrying(net.core.get('assets'), 10);
-  console.log('???', res.data.assets);
+  const res = await retrying(net.core.get('assets'));
+  console.log('Current asset manifest:', res.data.assets);
   setList(res.data.assets);
 }
 

@@ -115,7 +115,7 @@ export function useMintAction(causes: Cause[] | undefined) {
           this.title = 'Your NFT has been successfully created!!';
           this.message = '';
 
-          goToPage(`/`);
+          goToPage(`/nft/${result.value.assetID}`);
           await new Promise((r) => setTimeout(r, 5000));
         }
 
