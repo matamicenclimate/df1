@@ -78,8 +78,11 @@ export const NftDetail = () => {
   const wallet = useContext(WalletContext);
   const now = Date.now() / 1000;
 
+  function updateNFTInfo() {
+    return tryGetNFTData(assetId, nft, setNft, setError);
+  }
   useEffect(() => {
-    tryGetNFTData(assetId, nft, setNft, setError);
+    updateNFTInfo();
   }, []);
   useEffect(() => {
     for (const data of nft) {
@@ -88,7 +91,7 @@ export const NftDetail = () => {
           clearTimeout(sideTimer);
         }
         sideTimer = setTimeout(() => {
-          tryGetNFTData(assetId, nft, setNft, setError);
+          updateNFTInfo();
         }, 1 * 60 * 1000);
       }
     }
@@ -179,6 +182,7 @@ export const NftDetail = () => {
         await algosdk.waitForConfirmation(client(), txId, 10);
         this.message = t('NFTDetail.dialog.bidFinishedSuccess');
         await fetchNfts();
+        await updateNFTInfo();
       } catch {
         this.message = t('NFTDetail.dialog.bidFinishedFail');
         await new Promise((r) => setTimeout(r, 1000));
