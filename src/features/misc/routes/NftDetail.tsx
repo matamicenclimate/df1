@@ -280,7 +280,8 @@ export const NftDetail = () => {
                     </div>
                     <div className="flex self-end">
                       <p className="text-xl text-climate-blue self-center">
-                        {detail.state.fold(detail.nft.arc69.properties.price, (_) => _.bid_amount)}
+                        {detail.state.fold(void 0, (_) => _.bid_amount) ??
+                          detail.nft.arc69.properties.price}
                       </p>
                       <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                     </div>
