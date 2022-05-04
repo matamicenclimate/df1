@@ -65,7 +65,7 @@ export default class ProcessDialog {
   /**
    * Creates an asynchronous block that stops the dialog once ended.
    */
-  async process(proc: (this: ProcessDialog) => Promise<void> | void) {
+  async process<A = void>(proc: (this: ProcessDialog) => Promise<A> | A) {
     this.start();
     try {
       return await proc.call(this);

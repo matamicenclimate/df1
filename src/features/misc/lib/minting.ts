@@ -23,32 +23,32 @@ const net = Container.get(NetworkClient);
  * Retrieves the NFT metadata.
  */
 export async function getNFTMetadata(data: NFTMetadataBackend) {
-  dialog.message = 'Uploading NFT to IPFS...';
-  dialog.title = 'Preparing NFT';
-  dialog.start();
-  const oneFile = data.properties.file;
-  const attribute = data.properties?.attributes?.reduce?.(
-    (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
-      acc[curr.trait_type] = curr.value;
-      return acc;
-    },
-    {}
-  );
-  delete data.properties.attributes;
-  const dataString = {
-    ...data,
-    properties: { ...data.properties, ...attribute },
-    file: undefined,
-  };
-  dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
-  dataString.properties.price = Number(dataString.properties.price);
-  const form = new FormData();
-  form.append('data', JSON.stringify(dataString));
-  form.append('file', oneFile, oneFile.name);
-  const res = await net.core.post('ipfs', form);
-  console.log('res.data', res.data);
-  dialog.stop();
-  return res.data;
+  return await dialog.process(async function () {
+    this.message = 'Uploading NFT to IPFS...';
+    this.title = 'Preparing NFT';
+    const oneFile = data.properties.file;
+    const attribute = data.properties?.attributes?.reduce?.(
+      (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
+        acc[curr.trait_type] = curr.value;
+        return acc;
+      },
+      {}
+    );
+    delete data.properties.attributes;
+    const dataString = {
+      ...data,
+      properties: { ...data.properties, ...attribute },
+      file: undefined,
+    };
+    dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
+    dataString.properties.price = Number(dataString.properties.price);
+    const form = new FormData();
+    form.append('data', JSON.stringify(dataString));
+    form.append('file', oneFile, oneFile.name);
+    const res = await net.core.post('ipfs', form);
+    console.log('res.data', res.data);
+    return res.data;
+  });
 }
 
 export type MintMeta = {
