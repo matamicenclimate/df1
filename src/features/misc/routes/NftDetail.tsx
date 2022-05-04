@@ -58,28 +58,41 @@ async function tryGetNFTData(
     } = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
     const appId = nft.arc69.properties.app_id;
     if (appId == null) {
-      return setError('No app');
+      return setNft({ state: none(), nft });
     }
     const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
-    setNft({ state, nft });
+    setNft({ state: some(state), nft });
   } catch (err) {
     setError(err);
   }
 }
 
+let sideTimer: NodeJS.Timeout | null = null;
 export const NftDetail = () => {
   const { t } = useTranslation();
   const causeContext = useContext(CauseContext);
   const causes = causeContext?.data?.map((cause) => cause);
-  const { ipnft: assetId } = useParams();
+  const { ipnft: assetId } = useParams() as { ipnft: string };
   const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
   const [error, setError, resetError] = useOptionalState<unknown>();
   const wallet = useContext(WalletContext);
   const now = Date.now() / 1000;
 
   useEffect(() => {
-    tryGetNFTData(assetId as string, nft, setNft, setError);
+    tryGetNFTData(assetId, nft, setNft, setError);
   }, []);
+  useEffect(() => {
+    for (const data of nft) {
+      if (!data.state.isDefined()) {
+        if (sideTimer != null) {
+          clearTimeout(sideTimer);
+        }
+        sideTimer = setTimeout(() => {
+          tryGetNFTData(assetId, nft, setNft, setError);
+        }, 1 * 60 * 1000);
+      }
+    }
+  }, [nft]);
 
   /** The deposit fee value. */
   const depositTxCount = 7;
@@ -100,8 +113,10 @@ export const NftDetail = () => {
     }
     const appAddr = algosdk.getApplicationAddress(appId);
     let previousBid: option<string> = none();
-    const state = nft.value.state;
-    if (state == null) return;
+    if (!nft.value.state.isDefined()) {
+      throw new Error('Attemptint to bid when the state is not set. Contact support.');
+    }
+    const state = nft.value.state.get();
     if (!isZeroAccount(state.bid_account)) {
       previousBid = some(algosdk.encodeAddress(state.bid_account));
     }
@@ -261,48 +276,60 @@ export const NftDetail = () => {
                     </div>
                     <div className="flex self-end">
                       <p className="text-xl text-climate-blue self-center">
-                        {detail.state.bid_amount ?? detail.nft.arc69.properties.price}
+                        {detail.state.fold(detail.nft.arc69.properties.price, (_) => _.bid_amount)}
                       </p>
                       <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                     </div>
                   </div>
-                  <div className="buttons">
-                    <Button
-                      disabled={
-                        wallet?.userWallet?.account == null ||
-                        wallet?.userWallet?.account == '' ||
-                        detail.nft.creator === wallet?.userWallet?.account ||
-                        detail.state.end < now
-                      }
-                      onClick={doPlaceABid}
-                      className="w-full text-2xl text-climate-white mt-8 font-dinpro"
-                    >
-                      <span>
+                  {detail.state.fold(
+                    <div>
+                      <h4>The asset is being processed</h4>
+                      <p>Wait some time before it gets ready.</p>
+                    </div>,
+                    () => null
+                  )}
+                  <Fold
+                    option={detail.state}
+                    as={(state) => (
+                      <div className="buttons">
+                        <Button
+                          disabled={
+                            wallet?.userWallet?.account == null ||
+                            wallet?.userWallet?.account == '' ||
+                            detail.nft.creator === wallet?.userWallet?.account ||
+                            state.end < now
+                          }
+                          onClick={doPlaceABid}
+                          className="w-full text-2xl text-climate-white mt-8 font-dinpro"
+                        >
+                          <span>
+                            <Match>
+                              <Case of={detail.nft.creator === wallet?.userWallet?.account}>
+                                This is your own NFT
+                              </Case>
+                              <Case
+                                of={
+                                  wallet?.userWallet?.account == null ||
+                                  wallet?.userWallet?.account == ''
+                                }
+                              >
+                                Connect your wallet
+                              </Case>
+                              <Case of={state.end < now}>The auction has ended</Case>
+                              <Case of="default">Place Bid</Case>
+                            </Match>
+                          </span>
+                        </Button>
                         <Match>
-                          <Case of={detail.nft.creator === wallet?.userWallet?.account}>
-                            This is your own NFT
+                          <Case of={state.end < now}>
+                            <span className="text-gray-500 text-sm">
+                              Ended {new Date(state.end * 1000).toLocaleString()}
+                            </span>
                           </Case>
-                          <Case
-                            of={
-                              wallet?.userWallet?.account == null ||
-                              wallet?.userWallet?.account == ''
-                            }
-                          >
-                            Connect your wallet
-                          </Case>
-                          <Case of={detail.state.end < now}>The auction has ended</Case>
-                          <Case of="default">Place Bid</Case>
                         </Match>
-                      </span>
-                    </Button>
-                    <Match>
-                      <Case of={detail.state.end < now}>
-                        <span className="text-gray-500 text-sm">
-                          Ended {new Date(detail.state.end * 1000).toLocaleString()}
-                        </span>
-                      </Case>
-                    </Match>
-                  </div>
+                      </div>
+                    )}
+                  />
                 </div>
               </div>
             </div>
