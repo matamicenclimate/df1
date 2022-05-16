@@ -11,6 +11,7 @@ import { Asset } from '@common/src/lib/api/entities';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import { AuctionAppState } from '@common/src/lib/types';
 import { useTranslation } from 'react-i18next';
+import { none, some } from '@octantis/option';
 
 const net = Container.get(NetworkClient);
 
@@ -18,7 +19,12 @@ type State = (NFTListed | Asset)[];
 type Update = React.Dispatch<React.SetStateAction<(Asset | NFTListed)[]>>;
 
 async function tryGetManifest(setList: Update) {
-  const res = await retrying(net.core.get('assets'));
+  const res = await retrying(net.core.get('assets'), undefined, (err) => {
+    if (err.response?.status === 404) {
+      return some({ assets: [] });
+    }
+    return none();
+  });
   console.log('Current asset manifest:', res.data.assets);
   setList(res.data.assets);
 }
