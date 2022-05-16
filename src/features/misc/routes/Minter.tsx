@@ -7,7 +7,7 @@ import { ImageUploader } from '@/componentes/ImageUploader/ImageUploader';
 import { Wallet } from 'algorand-session-wallet';
 import { NFTMetadataBackend } from '@/lib/type';
 import { InputGenerator } from '@/componentes/InputGenerator/InputGenerator';
-import { CauseContext } from '@/context/CauseContext';
+import { useCauseContext } from '@/context/CauseContext';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
 import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
 import { some } from '@octantis/option';
@@ -47,8 +47,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   const setStartDate = bind(setDates, 'start');
   const setEndDate = bind(setDates, 'end');
   const [checked, setChecked] = useState<boolean>(false);
-  const causeContext = useContext(CauseContext);
-  const causes = causeContext?.data;
+  const { causes } = useCauseContext();
   const mintNFT = useMintAction(causes);
   const config = useContext(Configuration.Context);
 

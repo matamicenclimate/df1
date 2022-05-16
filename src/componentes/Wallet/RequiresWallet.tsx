@@ -1,4 +1,4 @@
-import { WalletContext } from '@/context/WalletContext';
+import { useWalletContext, WalletContext } from '@/context/WalletContext';
 import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
 import { Wallet } from 'algorand-session-wallet';
 import { useContext } from 'react';
@@ -32,15 +32,11 @@ function hasProps<T>(value: Record<string, T>): value is Record<'props', T> {
  * This component ensures that account is not an empty string, also.
  */
 export function RequiresWallet<T extends RequiredProps>({ element, ...props }: Props<T>) {
-  const ctx = useContext(WalletContext);
-  if (
-    ctx?.userWallet?.account == null ||
-    ctx.userWallet.account === '' ||
-    ctx.userWallet.wallet == null
-  ) {
+  const { walletAccount, wallet } = useWalletContext();
+  if (walletAccount == null || walletAccount === '' || wallet == null) {
     return <ConnectWallet />;
   }
-  const data = { wallet: ctx.userWallet.wallet, account: ctx.userWallet.account };
+  const data = { wallet: wallet, account: walletAccount };
   const Element = element as (props: Record<string, unknown>) => JSX.Element;
   if (hasProps(props)) {
     return <Element {...{ ...data, ...props }} />;

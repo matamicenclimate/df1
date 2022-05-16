@@ -3,7 +3,7 @@ import React, { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Dialog } from '@/componentes/Dialog/Dialog';
-import { WalletContext } from '@/context/WalletContext';
+import { useWalletContext, WalletContext } from '@/context/WalletContext';
 import { Dropdown } from '@/componentes/Dropdown/Dropdown';
 
 const ps = {
@@ -31,10 +31,11 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
 
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
-  const userWalletContext = useContext(WalletContext);
+  const { setUserWallet } = useWalletContext();
 
   function handleContextWalletAcct(sw: SessionWallet) {
-    return userWalletContext?.setUserWallet({
+    if (!setUserWallet) return;
+    return setUserWallet({
       wallet: sw.wallet,
       account: optionSelected ? optionSelected : sw.getDefaultAccount(),
     });

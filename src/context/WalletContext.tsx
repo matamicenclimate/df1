@@ -1,4 +1,4 @@
-import { useState, createContext, useEffect } from 'react';
+import { useState, createContext, useEffect, useContext } from 'react';
 import { Wallet } from 'algorand-session-wallet';
 import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
 import SessionWalletAccountProvider from '../service/impl/SessionWalletAccountProvider';
@@ -39,4 +39,19 @@ export const UserContextProvider = ({ children }: WalletContextProviderProps) =>
       {children}
     </WalletContext.Provider>
   );
+};
+
+export const useWalletContext = () => {
+  const walletContext = useContext(WalletContext);
+  const userWallet = walletContext?.userWallet;
+  const walletAccount = userWallet?.account;
+  const wallet = userWallet?.wallet;
+  const setUserWallet = walletContext?.setUserWallet;
+
+  return {
+    userWallet,
+    setUserWallet,
+    walletAccount,
+    wallet,
+  };
 };

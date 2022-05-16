@@ -1,8 +1,8 @@
 import { Button } from '@/componentes/Elements/Button/Button';
-import { CauseContext, CauseContextType } from '@/context/CauseContext';
+import { useCauseContext } from '@/context/CauseContext';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import algoLogo from '../../../assets/algoLogo.svg';
 import algosdk from 'algosdk';
@@ -12,7 +12,7 @@ import * as WalletAccountProvider from '@common/src/services/WalletAccountProvid
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
 import '@common/src/lib/binary/extension';
-import { WalletContext } from '@/context/WalletContext';
+import { useWalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
 import { fetchNfts } from '@/lib/NFTFetching';
 import Fold from '@/componentes/Generic/Fold';
@@ -70,12 +70,12 @@ async function tryGetNFTData(
 let sideTimer: NodeJS.Timeout | null = null;
 export const NftDetail = () => {
   const { t } = useTranslation();
-  const causeContext = useContext(CauseContext);
-  const causes = causeContext?.data?.map((cause) => cause);
+  const { causes } = useCauseContext();
   const { ipnft: assetId } = useParams() as { ipnft: string };
   const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
   const [error, setError, resetError] = useOptionalState<unknown>();
-  const wallet = useContext(WalletContext);
+  const { wallet, walletAccount } = useWalletContext();
+
   const now = Date.now() / 1000;
 
   function updateNFTInfo() {
@@ -145,7 +145,7 @@ export const NftDetail = () => {
       if (Number.isNaN(aId)) {
         throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
       }
-      if (wallet?.userWallet?.wallet == null) {
+      if (wallet == null) {
         return alert(t('NFTDetail.dialog.alertConnectWallet'));
       }
       // this.title = `Placing a bid (${bidAmount} μAlgo)`;
@@ -173,7 +173,7 @@ export const NftDetail = () => {
       });
       const optTxn = await Container.get(OptInService).createOptInRequest(aId);
       const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
-      const signedTxn = await wallet.userWallet.wallet.signTxn(txns);
+      const signedTxn = await wallet.signTxn(txns);
       const { txId } = await client()
         .sendRawTransaction(signedTxn.map((tx) => tx.blob))
         .do();
@@ -299,9 +299,9 @@ export const NftDetail = () => {
                       <div className="buttons">
                         <Button
                           disabled={
-                            wallet?.userWallet?.account == null ||
-                            wallet?.userWallet?.account == '' ||
-                            detail.nft.creator === wallet?.userWallet?.account ||
+                            walletAccount == null ||
+                            walletAccount == '' ||
+                            detail.nft.creator === walletAccount ||
                             state.end < now
                           }
                           onClick={doPlaceABid}
@@ -309,15 +309,10 @@ export const NftDetail = () => {
                         >
                           <span>
                             <Match>
-                              <Case of={detail.nft.creator === wallet?.userWallet?.account}>
+                              <Case of={detail.nft.creator === walletAccount}>
                                 This is your own NFT
                               </Case>
-                              <Case
-                                of={
-                                  wallet?.userWallet?.account == null ||
-                                  wallet?.userWallet?.account == ''
-                                }
-                              >
+                              <Case of={walletAccount == null || walletAccount == ''}>
                                 Connect your wallet
                               </Case>
                               <Case of={state.end < now}>The auction has ended</Case>

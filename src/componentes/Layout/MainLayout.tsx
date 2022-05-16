@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom';
 import { Footer } from '@/componentes/Footer/Footer';
 import { AlgoWalletConnector } from '../Wallet/AlgoWalletConnector';
 import climateTradeLogo from '../../assets/cliamteTradeLogo.svg';
-import { WalletFundsContext } from '@/context/WalletFundsContext';
-import { useContext } from 'react';
-import { WalletContext } from '@/context/WalletContext';
+import { useWalletFundsContext } from '@/context/WalletFundsContext';
+import { useWalletContext } from '@/context/WalletContext';
 import { Tab } from './Tab';
 import BalanceDisplay from './BalanceDisplay';
 
@@ -14,9 +13,9 @@ interface MainLayoutProps {
 }
 
 export const Navbar = () => {
-  const walletFundsContext = useContext(WalletFundsContext);
-  const walletContext = useContext(WalletContext);
-  const userWallet = walletContext?.userWallet?.account;
+  const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
+  const { walletAccount } = useWalletContext();
+
   return (
     <nav className="p-4 border flex gap-4 justify-evenly items-center font-dinpro text-sm">
       <li>
@@ -29,7 +28,11 @@ export const Navbar = () => {
       <Tab to="/my-nfts">My NFTs</Tab>
       <li className="flex flex-col">
         <AlgoWalletConnector isNavbar />
-        <BalanceDisplay wallet={userWallet} funds={walletFundsContext} />
+        <BalanceDisplay
+          wallet={walletAccount}
+          balanceAlgo={balanceAlgo}
+          balanceAlgoUSD={balanceAlgoUSD}
+        />
       </li>
       {/* <div className="flex gap-4">
         {auth.user && (
