@@ -1,16 +1,15 @@
-import { useContext, useEffect, useState } from 'react';
-import { CauseContext, CauseContextType } from '@/context/CauseContext';
+import { useEffect, useState } from 'react';
+import { useCauseContext } from '@/context/CauseContext';
 import { Cause } from '@/lib/api/causes';
 
 type CauseDetailProps = { nftDetailCause: string | undefined };
 
 export const CauseDetail = ({ nftDetailCause }: CauseDetailProps) => {
   const [cause, setCause] = useState<Cause>();
-  const causeContext = useContext(CauseContext);
-  const { data, isLoading, error } = causeContext as CauseContextType;
+  const { causes } = useCauseContext();
 
   const getCause = () => {
-    const cause = data?.find((cause) => cause.title === nftDetailCause);
+    const cause = causes?.find((cause) => cause.title === nftDetailCause);
     setCause(cause);
   };
 

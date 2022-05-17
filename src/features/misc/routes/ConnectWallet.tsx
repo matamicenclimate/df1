@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
-import { WalletContext } from '@/context/WalletContext';
+import { useWalletContext, WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import algosigner from '../../../assets/algosigner.svg';
 import myalgo from '../../../assets/myalgo.svg';
@@ -26,10 +26,11 @@ export const ConnectWallet = () => {
 
   const [optionSelected] = useState<string | undefined>();
 
-  const userWalletContext = useContext(WalletContext);
+  const { setUserWallet } = useWalletContext();
 
   function handleContextWalletAcct(sw: SessionWallet) {
-    return userWalletContext?.setUserWallet({
+    if (!setUserWallet) return;
+    return setUserWallet({
       wallet: sw.wallet,
       account: optionSelected ? optionSelected : sw.getDefaultAccount(),
     });

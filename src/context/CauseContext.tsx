@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import { httpClientCauses } from '@/lib/httpClient';
 import { useQuery } from 'react-query';
 import { Cause } from '@/lib/api/causes';
@@ -26,4 +26,11 @@ export const CauseContextProvider = ({ children }: CauseContextProviderProps) =>
   return (
     <CauseContext.Provider value={{ data, isLoading, error }}>{children}</CauseContext.Provider>
   );
+};
+
+export const useCauseContext = () => {
+  const causeContext = useContext(CauseContext);
+  return {
+    causes: causeContext?.data?.map((cause) => cause),
+  };
 };

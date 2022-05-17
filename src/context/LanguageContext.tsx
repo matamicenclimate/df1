@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export type LanguageContextType = {
   languageSelected: string | undefined;
@@ -24,4 +24,13 @@ export const LanguageContextProvider = ({ children }: LanguageContextProviderPro
       {children}
     </LanguageContext.Provider>
   );
+};
+
+export const useLanguageContext = () => {
+  const languangeContext = useContext(LanguageContext);
+
+  return {
+    languageSelected: languangeContext?.languageSelected,
+    setLanguageSelected: languangeContext?.setLanguageSelected,
+  };
 };

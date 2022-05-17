@@ -1,8 +1,8 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { client } from '@/lib/algorand';
-import { WalletContext } from './WalletContext';
+import { useWalletContext } from './WalletContext';
 
 export type WalletFunds = {
   balanceAlgo: number | undefined;
@@ -37,15 +37,14 @@ const fetchAlgoUsd = async () => {
 
 export const WalletFundsContextProvider = ({ children }: WalletFundsContextProviderProps) => {
   const { data, isLoading, error } = useQuery<WalletFundsContextType>('algoBalance', fetchAlgoUsd);
-  const walletContext = useContext(WalletContext);
-  const account = walletContext?.userWallet?.account;
+  const { walletAccount } = useWalletContext();
 
   const [balanceAlgo, setBalanceAlgo] = useState<number>();
   const [balanceAlgoUSD, setBalanceAlgoUSD] = useState<number>();
 
   useEffect(() => {
-    getBalanceAccount(account);
-  }, [account, data]);
+    getBalanceAccount(walletAccount);
+  }, [walletAccount, data]);
 
   const getBalanceAccount = async (account?: string) => {
     if (account != null) {
@@ -67,4 +66,13 @@ export const WalletFundsContextProvider = ({ children }: WalletFundsContextProvi
   };
 
   return <WalletFundsContext.Provider value={walletFunds}>{children}</WalletFundsContext.Provider>;
+};
+
+export const useWalletFundsContext = () => {
+  const walletFundsContext = useContext(WalletFundsContext);
+
+  return {
+    balanceAlgo: walletFundsContext?.balanceAlgo,
+    balanceAlgoUSD: walletFundsContext?.balanceAlgoUSD,
+  };
 };

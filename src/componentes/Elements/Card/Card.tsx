@@ -1,5 +1,4 @@
-import { useContext } from 'react';
-import { CauseContext, CauseContextType } from '@/context/CauseContext';
+import { useCauseContext } from '@/context/CauseContext';
 import { NFTListed } from '@/lib/api/nfts';
 import algoLogo from '../../../assets/algoLogo.svg';
 import { Cause } from '@/lib/api/causes';
@@ -19,8 +18,7 @@ function isLoading(props: CardProps): props is { loading: true } {
 }
 
 export const Card = (props: CardProps) => {
-  const causeContext = useContext(CauseContext);
-  const causes = causeContext?.data?.map((cause) => cause);
+  const { causes } = useCauseContext();
 
   if (isLoading(props)) {
     return (
