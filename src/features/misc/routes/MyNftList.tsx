@@ -134,8 +134,8 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
   </div>
 );
 
-function isAsset(assetOrNft: Asset | Nft): assetOrNft is Asset {
-  return typeof (assetOrNft as unknown as Record<string, unknown>)['asset-id'] === 'number';
+function isAsset(value: Asset | Nft): value is Asset {
+  return typeof (value as unknown as Record<string, unknown>).assetId === 'number';
 }
 const net = Container.get(NetworkClient);
 
@@ -172,8 +172,8 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       );
       setNfts(
         res.data.assets.reduce((map, asset) => {
-          if (asset.amount > 0) {
-            map[asset['asset-id'].toString()] = asset;
+          if (asset.amount ?? 0 > 0) {
+            map[asset.assetId.toString()] = asset;
           }
           return map;
         }, {} as Record<string, Asset | Nft>)
@@ -192,7 +192,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       }, 3000);
     } else {
       const ad = pending.shift();
-      const id = ad?.['asset-id']?.toString();
+      const id = ad?.assetId?.toString();
       if (id == null) {
         throw new Error(`Invalid data payload! This shouldn't be happening!`);
       }
@@ -255,7 +255,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                 }}
                 rows={[...Object.values(nfts)].map((nft) => {
                   if (isAsset(nft)) {
-                    const id = nft['asset-id'].toString();
+                    const id = nft['assetId'].toString();
                     return {
                       $id: id,
                       $class: 'animate-pulse',

@@ -24,12 +24,12 @@ async function tryGetManifest(setList: Update) {
 }
 
 function isAsset(asset: State[number]): asset is Asset {
-  return (asset as Asset)['asset-id'] != null;
+  return (asset as Asset)['assetId'] != null;
 }
 
 function getId(asset: State[number]) {
   if (isAsset(asset)) {
-    return asset['asset-id'];
+    return asset['assetId'];
   }
   return asset.id;
 }
@@ -40,7 +40,7 @@ async function tryUpdateOne(list: State, setList: Update) {
     const asset = list[found] as Asset;
     const clone = [...list];
     const data = await retrying(
-      net.core.get('asset/:id', { params: { id: asset['asset-id'].toString() } }),
+      net.core.get('asset/:id', { params: { id: asset['assetId'].toString() } }),
       10
     );
     const id = data.data.value.arc69.properties.app_id;
