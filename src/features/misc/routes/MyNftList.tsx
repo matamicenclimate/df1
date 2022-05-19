@@ -4,7 +4,7 @@ import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
-import { Asset, Nft } from '@common/src/lib/api/entities';
+import { RekeyAccountRecord, Nft } from '@common/src/lib/api/entities';
 import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
@@ -134,7 +134,7 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
   </div>
 );
 
-function isAsset(value: Asset | Nft): value is Asset {
+function isAsset(value: RekeyAccountRecord | Nft): value is RekeyAccountRecord {
   return typeof (value as unknown as Record<string, unknown>).assetId === 'number';
 }
 const net = Container.get(NetworkClient);
@@ -146,7 +146,7 @@ const net = Container.get(NetworkClient);
 export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
-  const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
+  const [nfts, setNfts] = useState<Record<string, Nft | RekeyAccountRecord>>({});
   const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
   const [info, setInfo] = useState('');
   useEffect(() => {
@@ -172,18 +172,18 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       );
       setNfts(
         res.data.assets.reduce((map, asset) => {
-          if (asset.amount ?? 0 > 0) {
+          if (!asset.isClosedAuction) {
             map[asset.assetId.toString()] = asset;
           }
           return map;
-        }, {} as Record<string, Asset | Nft>)
+        }, {} as Record<string, RekeyAccountRecord | Nft>)
       );
     })();
   }, []);
   useEffect(() => {
     const size = Object.keys(nfts).length;
     if (size === 0) return;
-    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as Asset[];
+    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as RekeyAccountRecord[];
     setInfo(`Loaded ${size - pending.length} out of ${size} total assets...`);
     if (pending.length === 0) {
       setInfo(`Done! All assets loaded!`);
