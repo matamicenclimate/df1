@@ -4,7 +4,7 @@ import { metadataNFTType } from './type';
 import { Wallet } from 'algorand-session-wallet';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import { Failure, Result, Success } from '@/features/misc/lib/MintingState';
+import { Failure, Result, Success } from '@common/src/lib/Result';
 
 const mdhash = DigestProvider.get();
 const dialog = Container.get(ProcessDialog);

@@ -14,7 +14,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { useTranslation } from 'react-i18next';
 import Container from 'typedi';
 import { useNavigate } from 'react-router-dom';
-import { Failure, Result, Success } from './MintingState';
+import { Failure, Result, Success } from '@common/src/lib/Result';
 import { retrying } from '@common/src/lib/net';
 
 const dialog = Container.get(ProcessDialog);
