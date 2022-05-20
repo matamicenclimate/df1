@@ -1,17 +1,17 @@
 export interface Cause {
-  title: string;
-  description: string;
-  imageUrl: string;
-  wallet: string;
-  deletedAt: string | null;
-  id: string;
-  createdAt: string;
-  updatedAt: string;
+  title: string | undefined;
+  description?: string;
+  imageUrl?: string;
+  wallet?: string;
+  deletedAt?: string | null;
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CausePostBody {
-  title: string;
-  description: string;
-  wallet: string;
-  imageUrl: string;
+  title: string | undefined;
+  description: string | undefined;
+  wallet: string | undefined;
+  imageUrl: string | undefined;
 }

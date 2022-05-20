@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Footer } from '@/componentes/Footer/Footer';
 import { AlgoWalletConnector } from '../Wallet/AlgoWalletConnector';
-import climateTradeLogo from '../../assets/cliamteTradeLogo.svg';
+import climateTradeLogo from '../../assets/climateTradeLogo.svg';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
 import { useWalletContext } from '@/context/WalletContext';
 import { Tab } from './Tab';
@@ -56,8 +56,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="mx-auto flex flex-col">
       <Navbar />
-      {/* <div className="pb-12 pt-12 bg-custom-white flex-1">{children}</div> */}
-      <div className="pt-12 bg-custom-white flex-1 pb-80">{children}</div>
+      <div className="pt-12 bg-climate-action-light flex-1 pb-80">{children}</div>
       <Footer />
     </div>
   );
