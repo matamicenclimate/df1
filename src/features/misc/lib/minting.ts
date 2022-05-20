@@ -14,7 +14,8 @@ import { Wallet } from 'algorand-session-wallet';
 import { useTranslation } from 'react-i18next';
 import Container from 'typedi';
 import { useNavigate } from 'react-router-dom';
-import { NftCreation } from './MintingState';
+import { Failure, Result, Success } from './MintingState';
+import { retrying } from '@common/src/lib/net';
 
 const dialog = Container.get(ProcessDialog);
 
@@ -61,6 +62,27 @@ export type MintMeta = {
   };
 };
 
+async function tryCreateAuction(
+  asset: AssetInfo,
+  account: string,
+  info: MintMeta
+): Promise<Result<{ appIndex: number }>> {
+  try {
+    const result = await retrying(
+      net.core.post('create-auction', {
+        assetId: asset.assetID,
+        creatorWallet: account,
+        causePercentage: info.cause.part ?? 30,
+        startDate: info.start.toISOString(),
+        endDate: info.end.toISOString(),
+      })
+    );
+    return new Success(result.data);
+  } catch (err) {
+    return new Failure(err as Error);
+  }
+}
+
 /**
  * Creates a bound in-place mint action that can be used to mint a new
  * NFT from a react component.
@@ -87,49 +109,52 @@ export function useMintAction(causes: Cause[] | undefined) {
     await dialog.process(async function () {
       this.title = 'Uploading to blockchain';
       this.message = 'Creating the NFT data...';
-      let nftCreationStatus!: NftCreation;
+      let nftCreationStatus!: Result<AssetInfo>;
       {
         const tryCreate = () => createNFT(algodClient, account, data, wallet);
         nftCreationStatus = await tryCreate();
         let attempts = 0;
-        while (nftCreationStatus.notDone) {
+        while (nftCreationStatus.failed) {
           if (attempts++ > 3) throw nftCreationStatus.reason;
           nftCreationStatus = await tryCreate();
         }
       }
-      const asset = nftCreationStatus.asset;
+      const asset = nftCreationStatus.result;
       console.log('result from createNFT', asset);
 
       this.message = 'Opting in...';
-      const optResult = await net.core.post('opt-in', {
-        assetId: asset.assetID,
-      });
+      const optResult = await retrying(
+        net.core.post('opt-in', {
+          assetId: asset.assetID,
+        }),
+        100
+      );
       console.info('Asset opted-in:', optResult);
+
       const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
         optResult.data.targetAccount,
         asset.assetID,
         new Uint8Array()
       );
-      console.info('Asset transfer to app:', transfer);
+      if (transfer.failed) {
+        throw transfer.reason;
+      }
+      console.info('Asset transfer to app:', transfer.result.txId);
       this.message = 'Creating auction...';
-      const tx = await net.core.post('create-auction', {
-        assetId: asset.assetID,
-        creatorWallet: account,
-        causePercentage: info.cause.part ?? 30,
-        startDate: info.start.toISOString(),
-        endDate: info.end.toISOString(),
-      });
-
-      console.info('Auction program was created:', tx.data);
-      if (tx.data.appIndex) {
+      const tx = await tryCreateAuction(asset, account, info);
+      if (tx.failed) {
+        console.error('Asset transfer to app failed:', tx.reason);
+        // TBD
+        throw null;
+      }
+      console.info('Auction program was created:', tx.result.appIndex);
+      if (tx.result.appIndex) {
         this.title = 'Your NFT has been successfully created!!';
         this.message = '';
 
         goToPage(`/nft/${asset.assetID}`);
         await new Promise((r) => setTimeout(r, 5000));
       }
-
-      return;
 
       return console.warn(
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."

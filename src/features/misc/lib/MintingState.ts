@@ -1,18 +1,12 @@
-import { AssetInfo } from '@/lib/nft';
-
-export class NftCreationFailed {
-  notDone = true as const;
+// Base polytopes //
+export class Failure {
+  failed = true as const;
   constructor(readonly reason: Error) {}
 }
 
-export class NftCreationSucceed {
-  notDone = false as const;
-  constructor(readonly asset: AssetInfo) {}
+export class Success<A> {
+  failed = false as const;
+  constructor(readonly result: A) {}
 }
 
-export type NftCreation = NftCreationFailed | NftCreationSucceed;
-
-// Leaf/terminal states //
-export abstract class MintResult {}
-
-export class FailedNoReason extends MintResult {}
+export type Result<A> = Failure | Success<A>;

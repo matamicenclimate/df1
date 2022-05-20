@@ -1,15 +1,10 @@
 import algosdk from 'algosdk';
 import * as DigestProvider from '@common/src/services/DigestProvider';
-import { metadataNFTType, NFTMetadataBackend } from './type';
+import { metadataNFTType } from './type';
 import { Wallet } from 'algorand-session-wallet';
-import { none, option, some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import {
-  NftCreation,
-  NftCreationFailed,
-  NftCreationSucceed,
-} from '@/features/misc/lib/MintingState';
+import { Failure, Result, Success } from '@/features/misc/lib/MintingState';
 
 const mdhash = DigestProvider.get();
 const dialog = Container.get(ProcessDialog);
@@ -176,10 +171,10 @@ export async function createNFT(
   account: string,
   metadat: metadataNFTType,
   wallet: Wallet
-): Promise<NftCreation> {
+): Promise<Result<AssetInfo>> {
   try {
     const info = await createAsset(algodClient, account, metadat, wallet);
-    return new NftCreationSucceed(info);
+    return new Success(info);
   } catch (err: any) {
     console.log('Failed to process NFT creation!', err);
 
@@ -190,6 +185,6 @@ export async function createNFT(
       await dialog.interaction();
     }
 
-    return new NftCreationFailed(err);
+    return new Failure(err);
   }
 }
