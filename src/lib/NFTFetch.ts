@@ -1,11 +1,10 @@
+import { Nft } from '@common/src/lib/api/entities';
 import { AuctionAppState } from '@common/src/lib/types';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import Container from 'typedi';
-import { NFTListed } from './api/nfts';
-import { httpClient } from './httpClient';
 
-export async function asAppDataIfPossible(element: NFTListed) {
+export async function asAppDataIfPossible(element: Nft) {
   const id = element.arc69.properties.app_id;
   if (id == null) {
     return null;
@@ -32,7 +31,7 @@ const client = Container.get(NetworkClient);
  * that was associated to it on-chain.
  */
 export async function fetchNfts() {
-  const list: NFTListed[] = [];
+  const list: Nft[] = [];
   const ofList = await client.core.get('nfts').then((_) => _.data);
   for (const data of ofList) {
     const out = await asAppDataIfPossible(data);
