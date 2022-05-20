@@ -4,7 +4,7 @@ import { metadataNFTType } from './type';
 import { Wallet } from 'algorand-session-wallet';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import { Failure, Result, Success } from '@common/src/lib/Result';
+import { failure, Result, success } from '@common/src/lib/Result';
 
 const mdhash = DigestProvider.get();
 const dialog = Container.get(ProcessDialog);
@@ -174,7 +174,7 @@ export async function createNFT(
 ): Promise<Result<AssetInfo>> {
   try {
     const info = await createAsset(algodClient, account, metadat, wallet);
-    return new Success(info);
+    return success(info);
   } catch (err: any) {
     console.log('Failed to process NFT creation!', err);
 
@@ -185,6 +185,6 @@ export async function createNFT(
       await dialog.interaction();
     }
 
-    return new Failure(err);
+    return failure(err);
   }
 }

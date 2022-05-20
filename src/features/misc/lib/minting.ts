@@ -14,7 +14,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { useTranslation } from 'react-i18next';
 import Container from 'typedi';
 import { useNavigate } from 'react-router-dom';
-import { Failure, Result, Success } from '@common/src/lib/Result';
+import { failure, Result, success } from '@common/src/lib/Result';
 import { retrying } from '@common/src/lib/net';
 
 const dialog = Container.get(ProcessDialog);
@@ -77,9 +77,9 @@ async function tryCreateAuction(
         endDate: info.end.toISOString(),
       })
     );
-    return new Success(result.data);
+    return success(result.data);
   } catch (err) {
-    return new Failure(err as Error);
+    return failure(err as Error);
   }
 }
 
