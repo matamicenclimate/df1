@@ -1,4 +1,4 @@
-import climateTradeLogo from '../../assets/cliamteTradeLogo.svg';
+import climateTradeLogo from '../../assets/climateTradeLogo.svg';
 import { DropdownLanguage } from '../DropdownLanguage/DropdownLanguage';
 
 export const Footer = () => {

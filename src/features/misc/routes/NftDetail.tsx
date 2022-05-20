@@ -13,7 +13,6 @@ import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
 import '@common/src/lib/binary/extension';
 import { useWalletContext } from '@/context/WalletContext';
-import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
 import { fetchNfts } from '@/lib/NFTFetching';
 import Fold from '@/componentes/Generic/Fold';
 import OptInService from '@common/src/services/OptInService';
@@ -26,8 +25,9 @@ import NftDetailPreview from '../components/NftDetailPreview';
 import { useTranslation } from 'react-i18next';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
-import { Cause } from '@/lib/api/causes';
+import { Cause, CausePostBody } from '@/lib/api/causes';
 import { NFTListed } from '@/lib/api/nfts';
+import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -191,11 +191,11 @@ export const NftDetail = () => {
     });
   }
 
-  const getCauseTitle = (causes: Cause[] | undefined, nft: NFTListed) => {
+  const getCause = (causes: Cause[] | undefined, nft: NFTListed) => {
     const cause: Cause | undefined = causes?.find(
       (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
     );
-    return cause?.title;
+    return cause as CausePostBody;
   };
 
   return (
@@ -228,7 +228,12 @@ export const NftDetail = () => {
                       </h4>
                     </div>
                     <div className="w-[650px]">
-                      <CauseDetail nftDetailCause={detail.nft.arc69.properties.cause} />
+                      <CauseDetail
+                        title={getCause(causes, detail.nft)?.title}
+                        imageUrl={getCause(causes, detail.nft)?.imageUrl}
+                        description={getCause(causes, detail.nft)?.description}
+                        wallet={getCause(causes, detail.nft)?.wallet}
+                      />
                     </div>
                   </div>
                   <div className="image w-[650px] h-[580px]">
@@ -247,8 +252,8 @@ export const NftDetail = () => {
                 </div>
               </div>
             </div>
-            <div className="right-40 col-span-1">
-              <div className="rounded-xl p-5 h-[715px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
+            <div className="right-4 col-span-1">
+              <div className="rounded-xl p-5 h-[690px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
                 <div className="image w-[330px] h-[345px]">
                   <NftDetailPreview nft={nft} />
                 </div>
@@ -258,7 +263,7 @@ export const NftDetail = () => {
                       <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
                         <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
                         <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-                          {getCauseTitle(causes, detail.nft)}
+                          {getCause(causes, detail.nft)?.title}
                         </p>
                       </div>
                       <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
