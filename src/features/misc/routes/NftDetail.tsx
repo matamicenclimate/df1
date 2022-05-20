@@ -14,7 +14,7 @@ import ProcessDialog from '@/service/ProcessDialog';
 import '@common/src/lib/binary/extension';
 import { useWalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
-import { fetchNfts } from '@/lib/NFTFetching';
+import { fetchNfts } from '@/lib/NFTFetch';
 import Fold from '@/componentes/Generic/Fold';
 import OptInService from '@common/src/services/OptInService';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
 import { Cause } from '@/lib/api/causes';
-import { NFTListed } from '@/lib/api/nfts';
+import { Nft } from '@common/src/lib/api/entities';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -191,7 +191,7 @@ export const NftDetail = () => {
     });
   }
 
-  const getCauseTitle = (causes: Cause[] | undefined, nft: NFTListed) => {
+  const getCauseTitle = (causes: Cause[] | undefined, nft: Nft) => {
     const cause: Cause | undefined = causes?.find(
       (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
     );
