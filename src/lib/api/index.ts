@@ -1,5 +1,4 @@
 import { IPFSResponse } from './ipfs';
-import { NFTListed } from './nfts';
 import { Cause, CausePostBody } from './causes';
 
 export type Endpoints = Record<
@@ -9,7 +8,7 @@ export type Endpoints = Record<
 
 export interface CoreAPI extends Endpoints {
   get: {
-    nfts: { response: NFTListed[] };
+    nfts: { response: unknown[] };
     healthz: { response: { status: 'ok' } };
   };
   post: {
