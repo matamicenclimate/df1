@@ -4,7 +4,7 @@ import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
-import { RekeyAccountRecord, Nft } from '@common/src/lib/api/entities';
+import { Asset, Nft } from '@common/src/lib/api/entities';
 import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
@@ -134,8 +134,8 @@ const createProfile = (account: string, wallet: Wallet, state: UserState) => (
   </div>
 );
 
-function isAsset(value: RekeyAccountRecord | Nft): value is RekeyAccountRecord {
-  return typeof (value as unknown as Record<string, unknown>).assetId === 'number';
+function isAsset(value: Asset | Nft): value is Asset {
+  return typeof (value as unknown as Record<string, unknown>)['asset-id'] === 'number';
 }
 const net = Container.get(NetworkClient);
 
@@ -146,7 +146,7 @@ const net = Container.get(NetworkClient);
 export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
-  const [nfts, setNfts] = useState<Record<string, Nft | RekeyAccountRecord>>({});
+  const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
   const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
   const [info, setInfo] = useState('');
   useEffect(() => {
@@ -163,7 +163,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
     (async () => {
       setInfo(`Preloading assets...`);
       const res = await retrying(
-        net.core.get('assets', {
+        net.core.get('my-assets', {
           query: {
             wallet: account,
           },
@@ -172,18 +172,16 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       );
       setNfts(
         res.data.assets.reduce((map, asset) => {
-          if (!asset.isClosedAuction) {
-            map[asset.assetId.toString()] = asset;
-          }
+            map[asset['asset-id'].toString()] = asset;
           return map;
-        }, {} as Record<string, RekeyAccountRecord | Nft>)
+        }, {} as Record<string, Asset | Nft>)
       );
     })();
   }, []);
   useEffect(() => {
     const size = Object.keys(nfts).length;
     if (size === 0) return;
-    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as RekeyAccountRecord[];
+    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as Asset[];
     setInfo(`Loaded ${size - pending.length} out of ${size} total assets...`);
     if (pending.length === 0) {
       setInfo(`Done! All assets loaded!`);
@@ -192,7 +190,10 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       }, 3000);
     } else {
       const ad = pending.shift();
-      const id = ad?.assetId?.toString();
+      if (!ad) {
+        throw new Error(`Invalid data payload! This shouldn't be happening!`);
+      }
+      const id = ad['asset-id'].toString();
       if (id == null) {
         throw new Error(`Invalid data payload! This shouldn't be happening!`);
       }
@@ -255,7 +256,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                 }}
                 rows={[...Object.values(nfts)].map((nft) => {
                   if (isAsset(nft)) {
-                    const id = nft['assetId'].toString();
+                    const id = nft['asset-id'].toString();
                     return {
                       $id: id,
                       $class: 'animate-pulse',
@@ -282,16 +283,17 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                       cause: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
                       status: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
                     };
+                  } else {
+                    const id = nft.id.toString();
+                    return {
+                      $id: id,
+                      $class: '',
+                      name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
+                      price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
+                      cause: <NftCause id={nft.arc69.properties.cause} />,
+                      status: <NftStatus status={nft.arc69.properties.app_id ? 'bidding' : 'sold'} />,
+                    };
                   }
-                  const id = nft.id.toString();
-                  return {
-                    $id: id,
-                    $class: '',
-                    name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
-                    price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
-                    cause: <NftCause id={nft.arc69.properties.cause} />,
-                    status: <NftStatus status={nft.arc69.properties.app_id ? 'bidding' : 'sold'} />,
-                  };
                 })}
               />
             </div>
