@@ -3,7 +3,7 @@
     "basicInfo": "Basic Info",
     "nftTitle": "NFT Title",
     "nftCreator": "NFT Creator",
-    "nftPrice": "NFT Price",
+    "nftPrice": "NFT Price in Algos",
     "nftDescription": "NFT Description",
     "fieldRequired": "This field is required",
     "nftCause": "Select Cause",

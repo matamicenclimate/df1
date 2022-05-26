@@ -41,10 +41,12 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
       file: undefined,
     };
     dataString.properties.causePercentage = Number(dataString.properties.causePercentage);
-    dataString.properties.price = Number(dataString.properties.price);
+    dataString.properties.price = algosToMicroalgos(Number(dataString.properties.price));
+
     const form = new FormData();
     form.append('data', JSON.stringify(dataString));
     form.append('file', oneFile, oneFile.name);
+
     const res = await net.core.post('ipfs', form);
     console.log('res.data', res.data);
     return res.data;
@@ -126,4 +128,12 @@ export function useMintAction(causes: Cause[] | undefined) {
       );
     });
   };
+}
+
+export function algosToMicroalgos(num: number) {
+  return num * 1000000;
+}
+
+export function microalgosToAlgos(num: number) {
+  return num / 1000000;
 }
