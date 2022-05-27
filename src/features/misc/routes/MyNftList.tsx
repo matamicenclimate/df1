@@ -234,7 +234,11 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     placeholder="Search"
                   />
                   <Link to="/mint">
-                    <Button className="basis-1/3" size="sm" variant="inverted">
+                    <Button
+                      className="basis-1/3 hover:text-climate-blue"
+                      size="sm"
+                      variant="inverted"
+                    >
                       + Mint new NFT
                     </Button>
                   </Link>

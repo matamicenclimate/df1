@@ -1,9 +1,15 @@
-import { Button } from '@/componentes/Elements/Button/Button';
 import NetworkClient from '@common/src/services/NetworkClient';
-import axios from 'axios';
+
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Container from 'typedi';
+import { destroyAsset } from '../../../lib/nft';
+import { useWalletContext } from '@/context/WalletContext';
+import { client } from '@/lib/algorand';
+import { Wallet } from 'algorand-session-wallet';
+import { Dialog } from '@/componentes/Dialog/Dialog';
+import { Button } from '@/componentes/Elements/Button/Button';
+import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 
 export interface NftStatusProps {
   status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending';
@@ -39,6 +45,10 @@ export default function NftStatus({
   creatorWallet,
 }: NftStatusProps) {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [openSpinner, setOpenSpinner] = useState<boolean>(false);
+  const { wallet } = useWalletContext();
+  const algodClient = client();
   const color = colors[status];
 
   async function handleListing() {
@@ -48,10 +58,23 @@ export default function NftStatus({
       creatorWallet,
     };
     console.log('body', body);
-    // const res = await net.core.post('direct-listing', body);
-    // console.log('res.data', res.data);
-    // return res.data;
+    const res = await net.core.post('direct-listing', body);
+    console.log('res.data', res.data);
+    return res.data;
   }
+
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
+  async function confirmedDelete() {
+    console.log('delete this shit');
+
+    setOpenSpinner(true);
+    await destroyAsset(algodClient, creatorWallet, assetId, wallet as Wallet);
+    refreshPage();
+  }
+
   return (
     <div className={clsx('flex justify-between items-center', className)}>
       <div
@@ -77,9 +100,35 @@ export default function NftStatus({
             <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border">
               Start Auction
             </li>
-            <li className="cursor-pointer p-3 rounded text-red-400 hover:text-climate-blue hover:bg-climate-border">
+            <li
+              className="cursor-pointer p-3 rounded text-red-400 hover:text-climate-blue hover:bg-climate-border"
+              onClick={() => setIsOpen(true)}
+            >
               Delete NFT
             </li>
+            {isOpen && (
+              <Dialog
+                closeButton
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                title="Delete Asset?"
+                subtitle=""
+                claim="Are you sure you want to delete this asset?"
+              >
+                {openSpinner ? (
+                  <div className="flex justify-center mt-3">
+                    <Spinner size="lg" />
+                  </div>
+                ) : (
+                  <>
+                    <Button className="mr-4" onClick={confirmedDelete}>
+                      Confirm
+                    </Button>
+                    <Button onClick={() => setIsOpen(false)}>Cancel</Button>
+                  </>
+                )}
+              </Dialog>
+            )}
           </ul>
         )}
       </div>

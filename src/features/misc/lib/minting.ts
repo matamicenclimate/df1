@@ -90,8 +90,15 @@ export function useMintAction(causes: Cause[] | undefined) {
       this.message = 'Creating the NFT data...';
       const result = await createNFT(algodClient, account, data, wallet);
       console.log('result from createNFT', result);
+      if (result) {
+        this.title = 'Your NFT has been successfully created!!';
+        this.message = '';
 
-      return result;
+        goToPage(`/my-nfts`);
+        await new Promise((r) => setTimeout(r, 5000));
+      }
+
+      // return result;
 
       // if (result.isDefined()) {
       //   this.message = 'Opting in...';
@@ -129,6 +136,7 @@ export function useMintAction(causes: Cause[] | undefined) {
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
       );
     });
+    // goToPage(`/my-nfts`);
   };
 }
 
