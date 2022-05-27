@@ -63,28 +63,28 @@ export const Minter = ({ wallet, account }: MinterProps) => {
    */
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
     (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
-    for (const diff of diffFrom(dates.start, dates.end)) {
-      if (diff.past || !diff.valid) {
-        setDateErrors({});
-        if (diff.past) {
-          setDateErrors((d) => ({ ...d, start: "Start date can't be in the past." }));
-        }
-        if (!diff.valid) {
-          setDateErrors((d) => ({ ...d, end: 'End date must be later than start date.' }));
-        }
-        return;
-      }
-      const meta = await getNFTMetadata(data);
-      const info = {
-        start: diff.start,
-        end: diff.end,
-        cause: {
-          id: meta.arc69.properties.cause,
-          part: meta.arc69.properties.causePercentage,
-        },
-      };
-      mintNFT(meta, info, wallet, account);
-    }
+    // for (const diff of diffFrom(dates.start, dates.end)) {
+    //   if (diff.past || !diff.valid) {
+    //     setDateErrors({});
+    //     if (diff.past) {
+    //       setDateErrors((d) => ({ ...d, start: "Start date can't be in the past." }));
+    //     }
+    //     if (!diff.valid) {
+    //       setDateErrors((d) => ({ ...d, end: 'End date must be later than start date.' }));
+    //     }
+    //     return;
+    //   }
+    const meta = await getNFTMetadata(data);
+    const info = {
+      // start: diff.start,
+      // end: diff.end,
+      cause: {
+        id: meta.arc69.properties.cause,
+        part: meta.arc69.properties.causePercentage,
+      },
+    };
+    mintNFT(meta, info, wallet, account);
+    // }
   };
 
   return (
@@ -136,7 +136,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 <ErrorHint on={errors.properties?.causePercentage} text="Minter.selectPercentage" />
               </div>
             </div>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+            {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
               <div className="flex justify-evenly py-6">
                 <div className="flex flex-col w-full mr-1">
                   <label className="font-dinpro font-normal text-base py-3">Auction start</label>
@@ -157,7 +157,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   <ErrorHint on={dateErrors.end} text={dateErrors.end ?? ''} />
                 </div>
               </div>
-            </LocalizationProvider>
+            </LocalizationProvider> */}
 
             <div>
               <Controller
