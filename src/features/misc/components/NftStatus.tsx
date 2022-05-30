@@ -10,6 +10,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
+import { AuctionLogic } from '@common/src/services/AuctionLogic';
 
 export interface NftStatusProps {
   status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending';
@@ -52,6 +53,14 @@ export default function NftStatus({
   const color = colors[status];
 
   async function handleListing() {
+    const optResult = await net.core.post('opt-in', { assetId });
+    console.info('Asset opted-in:', optResult);
+    const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
+      optResult.data.targetAccount,
+      assetId,
+      new Uint8Array()
+    );
+    console.info('Asset transfer to app:', transfer);
     const body = {
       assetId,
       causePercentage,

@@ -104,6 +104,45 @@ export const NftDetail = () => {
   /** The extra amount of money needed for future transactions. */
   const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
 
+  async function doBuyNFT() {
+    return await Container.get(ProcessDialog).process(async function () {
+      this.message = 'Preparing NFT...';
+      const aId = Number(assetId);
+      if (Number.isNaN(aId)) {
+        throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
+      }
+      if (wallet == null) {
+        return alert(t('NFTDetail.dialog.alertConnectWallet'));
+      }
+      if (!nft.isDefined()) {
+        return alert('Nope.avi');
+      }
+      const appId = nft.value.nft.arc69.properties.app_id;
+      if (appId == null) {
+        return alert(t('NFTDetail.dialog.attemptError'));
+      }
+      /** @TODO Logic check amounts before app call. */
+      const account = WalletAccountProvider.get().account;
+      const optTxn = await Container.get(OptInService).createOptInRequest(aId);
+      const callTxn = await algosdk.makeApplicationCallTxnFromObject({
+        from: account.addr,
+        appIndex: appId,
+        onComplete: algosdk.OnApplicationComplete.NoOpOC,
+        appArgs: ['bid'.toBytes()],
+        foreignAssets: [aId],
+        suggestedParams: await client().getTransactionParams().do(),
+      });
+      const txns = algosdk.assignGroupID([optTxn, callTxn]);
+      const signedTxn = await wallet.signTxn(txns);
+      const { txId } = await client()
+        .sendRawTransaction(signedTxn.map((tx) => tx.blob))
+        .do();
+      console.log('Transaction result (After buy):', txId);
+      this.message = 'Done!';
+      await new Promise((r) => setTimeout(r, 1000));
+    });
+  }
+
   // Test: Place a bid!
   async function doPlaceABid() {
     const dialog = Container.get(ProcessDialog);
@@ -335,6 +374,7 @@ export const NftDetail = () => {
                       </div>
                     )}
                   />
+                  <Button onClick={doBuyNFT}>Buy</Button>
                 </div>
               </div>
             </div>
