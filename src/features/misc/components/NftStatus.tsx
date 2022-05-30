@@ -68,8 +68,6 @@ export default function NftStatus({
   };
 
   async function confirmedDelete() {
-    console.log('delete this shit');
-
     setOpenSpinner(true);
     await destroyAsset(algodClient, creatorWallet, assetId, wallet as Wallet);
     refreshPage();
@@ -80,7 +78,7 @@ export default function NftStatus({
       <div
         className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
       >
-        {text[status] ?? status}
+        {/* {text[status] ?? status} */}
       </div>
       <div>
         <span
