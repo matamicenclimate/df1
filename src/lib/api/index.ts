@@ -23,6 +23,7 @@ export interface CoreAPI extends Endpoints {
     };
     'activate-auction': { body: { appId: number; assetId: number }; response: unknown };
     ipfs: { response: IPFSResponse; body: FormData };
+    'direct-listing': { response: any; body: any };
     '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
   };
 }

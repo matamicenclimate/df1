@@ -172,7 +172,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       );
       setNfts(
         res.data.assets.reduce((map, asset) => {
-            map[asset['asset-id'].toString()] = asset;
+          map[asset['asset-id'].toString()] = asset;
           return map;
         }, {} as Record<string, Asset | Nft>)
       );
@@ -234,7 +234,11 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     placeholder="Search"
                   />
                   <Link to="/mint">
-                    <Button className="basis-1/3" size="sm" variant="inverted">
+                    <Button
+                      className="basis-1/3 hover:text-climate-blue"
+                      size="sm"
+                      variant="inverted"
+                    >
                       + Mint new NFT
                     </Button>
                   </Link>
@@ -250,7 +254,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                 order={['name', 'price', 'cause', 'status']}
                 header={{
                   name: 'NFT Name',
-                  price: 'Price / Type',
+                  price: 'Price',
                   cause: 'Cause',
                   status: 'Status',
                 }}
@@ -289,9 +293,16 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                       $id: id,
                       $class: '',
                       name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
-                      price: <NftPrice price={nft.arc69.properties.price} type="auction" />,
+                      price: <NftPrice price={nft.arc69.properties.price} />,
                       cause: <NftCause id={nft.arc69.properties.cause} />,
-                      status: <NftStatus status={nft.arc69.properties.app_id ? 'bidding' : 'sold'} />,
+                      status: (
+                        <NftStatus
+                          assetId={nft.id}
+                          creatorWallet={account}
+                          causePercentage={nft.arc69.properties.causePercentage}
+                          status={nft.arc69.properties.app_id ? 'bidding' : 'sold'}
+                        />
+                      ),
                     };
                   }
                 })}
