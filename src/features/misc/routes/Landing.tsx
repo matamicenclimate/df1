@@ -8,6 +8,7 @@ import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { RekeyAccountRecord } from '@common/src/lib/api/entities';
 import { useTranslation } from 'react-i18next';
+import { count, gas } from '@common/src/lib/opaqueTransactions';
 
 const net = Container.get(NetworkClient);
 
@@ -30,6 +31,9 @@ export const Landing = () => {
 
   return (
     <MainLayout>
+      <h3>
+        L = {count} :: {gas}
+      </h3>
       <div className="flex justify-center">
         <div className="p-4">
           <h2 className="font-normal font-dinpro text-4xl">NFTs marketplace</h2>
