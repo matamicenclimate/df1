@@ -132,7 +132,14 @@ export const NftDetail = () => {
         foreignAssets: [aId],
         suggestedParams: await client().getTransactionParams().do(),
       });
-      const txns = algosdk.assignGroupID([optTxn, callTxn]);
+      const appAddr = algosdk.getApplicationAddress(appId);
+      const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+        from: account.addr,
+        to: appAddr,
+        amount: nft.value.nft.arc69.properties.price,
+        suggestedParams: await client().getTransactionParams().do(),
+      });
+      const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
       const signedTxn = await wallet.signTxn(txns);
       const { txId } = await client()
         .sendRawTransaction(signedTxn.map((tx) => tx.blob))

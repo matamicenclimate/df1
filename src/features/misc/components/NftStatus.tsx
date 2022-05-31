@@ -1,4 +1,5 @@
 import NetworkClient from '@common/src/services/NetworkClient';
+import { AuctionLogic } from '@common/src/services/AuctionLogic';
 
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -10,7 +11,6 @@ import { Wallet } from 'algorand-session-wallet';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
-import { AuctionLogic } from '@common/src/services/AuctionLogic';
 
 export interface NftStatusProps {
   status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending';
