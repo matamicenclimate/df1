@@ -123,12 +123,23 @@ export const NftDetail = () => {
       }
       /** @TODO Logic check amounts before app call. */
       const account = WalletAccountProvider.get().account;
-      const optTxn = await Container.get(OptInService).createOptInRequest(aId);
+      console.log('sending nft data for call', {
+        address: account.addr,
+        appId,
+        aId
+      })
+      const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
+      const state = nft.get().state.get()
       const callTxn = await algosdk.makeApplicationCallTxnFromObject({
         from: account.addr,
         appIndex: appId,
         onComplete: algosdk.OnApplicationComplete.NoOpOC,
         appArgs: ['bid'.toBytes()],
+        accounts: [
+          algosdk.encodeAddress(state.cause),
+          algosdk.encodeAddress(state.creator),
+          algosdk.encodeAddress(state.seller),
+        ],
         foreignAssets: [aId],
         suggestedParams: await client().getTransactionParams().do(),
       });
@@ -136,16 +147,29 @@ export const NftDetail = () => {
       const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: account.addr,
         to: appAddr,
-        amount: nft.value.nft.arc69.properties.price,
+        amount: nft.value.nft.arc69.properties.price + computedExtraFees,
         suggestedParams: await client().getTransactionParams().do(),
       });
-      const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
+      console.log('sending nft data for pay txn', {
+        address: account.addr,
+        appAddr,
+        amount: nft.value.nft.arc69.properties.price + computedExtraFees,
+        aId
+      })
+
+      const txns = algosdk.assignGroupID([optTxn, payTxn, callTxn]);
       const signedTxn = await wallet.signTxn(txns);
       const { txId } = await client()
         .sendRawTransaction(signedTxn.map((tx) => tx.blob))
         .do();
-      console.log('Transaction result (After buy):', txId);
-      this.message = 'Done!';
+      try {
+        await algosdk.waitForConfirmation(client(), txId, 10);
+        await fetchNfts();
+        await updateNFTInfo();
+      } catch {
+        this.message = t('NFTDetail.dialog.bidFinishedFail');
+        await new Promise((r) => setTimeout(r, 1000));
+      }
       await new Promise((r) => setTimeout(r, 1000));
     });
   }
