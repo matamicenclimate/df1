@@ -128,10 +128,10 @@ export const NftDetail = () => {
       console.log('sending nft data for call', {
         address: account.addr,
         appId,
-        aId
-      })
+        aId,
+      });
       const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
-      const state = nft.get().state.get()
+      const state = nft.get().state.get();
       const callTxn = await algosdk.makeApplicationCallTxnFromObject({
         from: account.addr,
         appIndex: appId,
@@ -146,8 +146,6 @@ export const NftDetail = () => {
         suggestedParams: await client().getTransactionParams().do(),
       });
       const appAddr = algosdk.getApplicationAddress(appId);
-      const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
-      console.log('state', state);
 
       const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: account.addr,
@@ -159,8 +157,8 @@ export const NftDetail = () => {
         address: account.addr,
         appAddr,
         amount: nft.value.nft.arc69.properties.price + computedExtraFees,
-        aId
-      })
+        aId,
+      });
 
       const txns = algosdk.assignGroupID([optTxn, payTxn, callTxn]);
       const signedTxn = await wallet.signTxn(txns);
@@ -169,6 +167,11 @@ export const NftDetail = () => {
         .do();
       try {
         await algosdk.waitForConfirmation(client(), txId, 10);
+        await net.core.post('sell-asset/:id', undefined, {
+          params: {
+            id: aId.toString(),
+          },
+        });
         await fetchNfts();
         await updateNFTInfo();
       } catch {
