@@ -28,6 +28,7 @@ import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
 import { Nft } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
+import { microalgosToAlgos } from '../lib/minting';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -107,6 +108,7 @@ export const NftDetail = () => {
   async function doBuyNFT() {
     return await Container.get(ProcessDialog).process(async function () {
       this.message = 'Preparing NFT...';
+
       const aId = Number(assetId);
       if (Number.isNaN(aId)) {
         throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
@@ -133,6 +135,9 @@ export const NftDetail = () => {
         suggestedParams: await client().getTransactionParams().do(),
       });
       const appAddr = algosdk.getApplicationAddress(appId);
+      const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
+      console.log('state', state);
+
       const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         from: account.addr,
         to: appAddr,
@@ -332,7 +337,7 @@ export const NftDetail = () => {
                     <div className="flex self-end">
                       <p className="text-xl text-climate-blue self-center">
                         {detail.state.fold(void 0, (_) => _.bid_amount) ??
-                          detail.nft.arc69.properties.price}
+                          microalgosToAlgos(detail.nft.arc69.properties.price)}
                       </p>
                       <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                     </div>

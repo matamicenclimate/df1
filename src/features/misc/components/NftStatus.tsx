@@ -53,6 +53,7 @@ export default function NftStatus({
   const color = colors[status];
 
   async function handleListing() {
+    setOpenDropdown(false);
     const optResult = await net.core.post('opt-in', { assetId });
     console.info('Asset opted-in:', optResult);
     const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
@@ -76,7 +77,9 @@ export default function NftStatus({
     window.location.reload();
   };
 
-  async function confirmedDelete() {
+  // async function confirmedDelete() {
+  async function handleDelete() {
+    setOpenDropdown(false);
     setOpenSpinner(true);
     await destroyAsset(algodClient, creatorWallet, assetId, wallet as Wallet);
     refreshPage();
@@ -107,36 +110,39 @@ export default function NftStatus({
             <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border">
               Start Auction
             </li>
+            <li className="cursor-pointer text-climate-informative-yellow p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border">
+              Delist NFT
+            </li>
             <li
               className="cursor-pointer p-3 rounded text-red-400 hover:text-climate-blue hover:bg-climate-border"
               onClick={() => setIsOpen(true)}
             >
               Delete NFT
             </li>
-            {isOpen && (
-              <Dialog
-                closeButton
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                title="Delete Asset?"
-                subtitle=""
-                claim="Are you sure you want to delete this asset?"
-              >
-                {openSpinner ? (
-                  <div className="flex justify-center mt-3">
-                    <Spinner size="lg" />
-                  </div>
-                ) : (
-                  <>
-                    <Button className="mr-4" onClick={confirmedDelete}>
-                      Confirm
-                    </Button>
-                    <Button onClick={() => setIsOpen(false)}>Cancel</Button>
-                  </>
-                )}
-              </Dialog>
-            )}
           </ul>
+        )}
+        {isOpen && (
+          <Dialog
+            closeButton
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            title="Delete Asset"
+            subtitle=""
+            claim="Are you sure you want to delete this asset?"
+          >
+            {openSpinner ? (
+              <div className="flex justify-center mt-3">
+                <Spinner size="lg" />
+              </div>
+            ) : (
+              <>
+                <Button className="mr-4" onClick={handleDelete}>
+                  Confirm
+                </Button>
+                <Button onClick={() => setIsOpen(false)}>Cancel</Button>
+              </>
+            )}
+          </Dialog>
         )}
       </div>
     </div>
