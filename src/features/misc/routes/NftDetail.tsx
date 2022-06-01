@@ -167,9 +167,9 @@ export const NftDetail = () => {
         .do();
       try {
         await algosdk.waitForConfirmation(client(), txId, 10);
-        await net.core.post('sell-asset/:id', undefined, {
+        await net.core.delete('sell-asset/:appId', {
           params: {
-            id: aId.toString(),
+            appId: appId.toString(),
           },
         });
         await fetchNfts();
