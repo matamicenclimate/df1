@@ -106,7 +106,8 @@ export const NftDetail = () => {
   const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
 
   async function doBuyNFT() {
-    return await Container.get(ProcessDialog).process(async function () {
+    const dialog = Container.get(ProcessDialog);
+    return await dialog.process(async function () {
       this.message = 'Preparing NFT...';
 
       const aId = Number(assetId);

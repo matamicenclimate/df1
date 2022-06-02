@@ -1,0 +1,72 @@
+import { Button } from '@/componentes/Elements/Button/Button';
+import { Nft } from '@common/src/lib/api/entities';
+import { microalgosToAlgos } from '../../lib/minting';
+import './mycssfile.css';
+import Container from 'typedi';
+import ProcessDialog from '@/service/ProcessDialog';
+import { useState } from 'react';
+import NetworkClient from '@common/src/services/NetworkClient';
+import { useNavigate } from 'react-router-dom';
+import { AuctionLogic } from '@common/src/services/AuctionLogic';
+import { Dialog } from '@/componentes/Dialog/Dialog';
+
+type FirstTabProps = {
+  nft: Nft;
+  assetId: number;
+  causePercentage: number;
+  creatorWallet: string;
+};
+const net = Container.get(NetworkClient);
+const dialog = Container.get(ProcessDialog);
+
+const FirstTab = ({ nft, assetId, causePercentage, creatorWallet }: FirstTabProps) => {
+  const goToPage = useNavigate();
+
+  async function handleListing() {
+    console.log('not working');
+
+    return await dialog.process(async function () {
+      this.title = 'Processing NFT';
+      this.message = 'Preparing NFT...';
+      console.log('working');
+      const optResult = await net.core.post('opt-in', { assetId });
+      console.info('Asset opted-in:', optResult);
+      this.message = 'Opting in...';
+      const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
+        optResult.data.targetAccount,
+        assetId,
+        new Uint8Array()
+      );
+      console.info('Asset transfer to app:', transfer);
+      const body = {
+        assetId,
+        causePercentage,
+        creatorWallet,
+      };
+      console.log('body', body);
+      this.message = 'Listing NFT...';
+      const res = await net.core.post('direct-listing', body);
+      console.log('res.data', res.data);
+      if (res) {
+        this.title = 'Your NFT has been successfully listed!';
+        this.message = '';
+
+        goToPage(`/`);
+        await new Promise((r) => setTimeout(r, 5000));
+      }
+      return res.data;
+    });
+  }
+
+  return (
+    <div className="relative">
+      <p className="text-center h-52 pt-14">
+        Listing NFT for {microalgosToAlgos(nft.arc69.properties.price)} Algo?
+      </p>
+      <div className="absolute bottom-0 right-0 mt-6 text-right">
+        <Button onClick={handleListing}>Confirm</Button>
+      </div>
+    </div>
+  );
+};
+export default FirstTab;

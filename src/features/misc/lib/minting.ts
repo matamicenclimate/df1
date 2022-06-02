@@ -16,7 +16,6 @@ import Container from 'typedi';
 import { useNavigate } from 'react-router-dom';
 
 const dialog = Container.get(ProcessDialog);
-
 const net = Container.get(NetworkClient);
 
 /**

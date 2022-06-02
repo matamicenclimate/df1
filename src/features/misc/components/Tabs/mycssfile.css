@@ -1,0 +1,16 @@
+ul.nav {
+  margin: 0 auto 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #003a6c;
+  border-radius: 2rem;
+  padding-left: 0px;
+  @media (max-width: 768px) {
+    width: 90%;
+  }
+}
+ul.nav li.active {
+  background: #003a6c;
+  color: #fff;
+}

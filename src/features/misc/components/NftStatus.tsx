@@ -1,9 +1,5 @@
-import NetworkClient from '@common/src/services/NetworkClient';
-import { AuctionLogic } from '@common/src/services/AuctionLogic';
-
-import clsx from 'clsx';
 import { useState } from 'react';
-import Container from 'typedi';
+import clsx from 'clsx';
 import { destroyAsset } from '../../../lib/nft';
 import { useWalletContext } from '@/context/WalletContext';
 import { client } from '@/lib/algorand';
@@ -11,6 +7,8 @@ import { Wallet } from 'algorand-session-wallet';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
+import Tabs from './Tabs/Tabs';
+import { Nft } from '@common/src/lib/api/entities';
 
 export interface NftStatusProps {
   status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending';
@@ -22,6 +20,7 @@ export interface NftStatusProps {
   assetId: number;
   causePercentage: number;
   creatorWallet: string;
+  nft: Nft;
 }
 
 const colors = {
@@ -36,53 +35,36 @@ const text = {
 
 type ByStatus = { [D in NftStatusProps['status']]: string };
 
-const net = Container.get(NetworkClient);
-
 export default function NftStatus({
   status,
   className,
   assetId,
   causePercentage,
   creatorWallet,
+  nft,
 }: NftStatusProps) {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showSellingOptions, setShowSellingOptions] = useState<boolean>(false);
   const [openSpinner, setOpenSpinner] = useState<boolean>(false);
   const { wallet } = useWalletContext();
   const algodClient = client();
   const color = colors[status];
 
-  async function handleListing() {
-    setOpenDropdown(false);
-    const optResult = await net.core.post('opt-in', { assetId });
-    console.info('Asset opted-in:', optResult);
-    const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
-      optResult.data.targetAccount,
-      assetId,
-      new Uint8Array()
-    );
-    console.info('Asset transfer to app:', transfer);
-    const body = {
-      assetId,
-      causePercentage,
-      creatorWallet,
-    };
-    console.log('body', body);
-    const res = await net.core.post('direct-listing', body);
-    console.log('res.data', res.data);
-    return res.data;
-  }
-
   const refreshPage = () => {
     window.location.reload();
   };
 
-  // async function confirmedDelete() {
   async function handleDelete() {
     setOpenDropdown(false);
     setOpenSpinner(true);
     await destroyAsset(algodClient, creatorWallet, assetId, wallet as Wallet);
     refreshPage();
+  }
+
+  function handleTabs() {
+    setOpenDropdown(!openDropdown);
+    setShowSellingOptions(true);
   }
 
   return (
@@ -101,14 +83,14 @@ export default function NftStatus({
         </span>
         {openDropdown && (
           <ul className="mt-3 absolute font-dinpro text-climate-black-title bg-climate-action-light rounded shadow-lg">
-            <li
-              className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border "
-              onClick={() => handleListing()}
-            >
-              Sell NFT
+            <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border ">
+              Edit NFT
             </li>
-            <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border">
-              Start Auction
+            <li
+              onClick={() => handleTabs()}
+              className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border "
+            >
+              List NFT
             </li>
             <li className="cursor-pointer text-climate-informative-yellow p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border">
               Delist NFT
@@ -142,6 +124,24 @@ export default function NftStatus({
                 <Button onClick={() => setIsOpen(false)}>Cancel</Button>
               </>
             )}
+          </Dialog>
+        )}
+        {showSellingOptions && (
+          <Dialog
+            closeButton
+            isOpen={showSellingOptions}
+            setIsOpen={setShowSellingOptions}
+            title="List NFT for sale"
+            subtitle=""
+            claim=""
+          >
+            <Tabs
+              status={status}
+              assetId={assetId}
+              causePercentage={causePercentage}
+              creatorWallet={creatorWallet}
+              nft={nft}
+            />
           </Dialog>
         )}
       </div>
