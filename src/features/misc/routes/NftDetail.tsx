@@ -5,18 +5,12 @@ import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import algoLogo from '../../../assets/algoLogo.svg';
-import algosdk from 'algosdk';
-import { client } from '@/lib/algorand';
 import { none, option, some } from '@octantis/option';
-import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
 import Container from 'typedi';
-import ProcessDialog from '@/service/ProcessDialog';
 import '@common/src/lib/binary/extension';
 import { useWalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
-import { fetchNfts } from '@/lib/NFTFetch';
 import Fold from '@/componentes/Generic/Fold';
-import OptInService from '@common/src/services/OptInService';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
 import { Case, Match } from '@/componentes/Generic/Match';
 import { AuctionAppState } from '@common/src/lib/types';
@@ -29,6 +23,7 @@ import { retrying } from '@common/src/lib/net';
 import { Nft } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
 import { microalgosToAlgos } from '../lib/minting';
+import { useNFTPurchasingActions } from '../lib/detail';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -37,13 +32,6 @@ const getDateObj = (mintingDate: any) => {
   const year = date.getFullYear();
   return `Minted on ${day} ${monthName} ${year}`;
 };
-
-/**
- * Returns true if the passed array is all-zero.
- */
-function isZeroAccount(account: Uint8Array) {
-  return account.reduce((a, b) => a + b, 0) === 0;
-}
 
 const net = Container.get(NetworkClient);
 
@@ -98,177 +86,7 @@ export const NftDetail = () => {
     }
   }, [nft]);
 
-  /** The deposit fee value. */
-  const depositTxCount = 7;
-  /** Base transactions that will be paid immediately. None atm. */
-  const baseTxFees = 0;
-  /** The extra amount of money needed for future transactions. */
-  const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
-
-  async function doBuyNFT() {
-    const dialog = Container.get(ProcessDialog);
-    return await dialog.process(async function () {
-      this.message = 'Preparing NFT...';
-
-      const aId = Number(assetId);
-      if (Number.isNaN(aId)) {
-        throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
-      }
-      if (wallet == null) {
-        return alert(t('NFTDetail.dialog.alertConnectWallet'));
-      }
-      if (!nft.isDefined()) {
-        return alert('Nope.avi');
-      }
-      const appId = nft.value.nft.arc69.properties.app_id;
-      if (appId == null) {
-        return alert(t('NFTDetail.dialog.attemptError'));
-      }
-      /** @TODO Logic check amounts before app call. */
-      const account = WalletAccountProvider.get().account;
-      console.log('sending nft data for call', {
-        address: account.addr,
-        appId,
-        aId,
-      });
-      const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
-      const state = nft.get().state.get();
-      const callTxn = await algosdk.makeApplicationCallTxnFromObject({
-        from: account.addr,
-        appIndex: appId,
-        onComplete: algosdk.OnApplicationComplete.NoOpOC,
-        appArgs: ['bid'.toBytes()],
-        accounts: [
-          algosdk.encodeAddress(state.cause),
-          algosdk.encodeAddress(state.creator),
-          algosdk.encodeAddress(state.seller),
-        ],
-        foreignAssets: [aId],
-        suggestedParams: await client().getTransactionParams().do(),
-      });
-      const appAddr = algosdk.getApplicationAddress(appId);
-
-      const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-        from: account.addr,
-        to: appAddr,
-        amount: nft.value.nft.arc69.properties.price + computedExtraFees,
-        suggestedParams: await client().getTransactionParams().do(),
-      });
-      console.log('sending nft data for pay txn', {
-        address: account.addr,
-        appAddr,
-        amount: nft.value.nft.arc69.properties.price + computedExtraFees,
-        aId,
-      });
-
-      const txns = algosdk.assignGroupID([optTxn, payTxn, callTxn]);
-      const signedTxn = await wallet.signTxn(txns);
-      const { txId } = await client()
-        .sendRawTransaction(signedTxn.map((tx) => tx.blob))
-        .do();
-      try {
-        await algosdk.waitForConfirmation(client(), txId, 10);
-        await net.core.delete('sell-asset/:appId', {
-          params: {
-            appId: appId.toString(),
-          },
-        });
-        await fetchNfts();
-        await updateNFTInfo();
-      } catch {
-        this.message = t('NFTDetail.dialog.bidFinishedFail');
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-      await new Promise((r) => setTimeout(r, 1000));
-    });
-  }
-
-  // Test: Place a bid!
-  async function doPlaceABid() {
-    const dialog = Container.get(ProcessDialog);
-    if (!nft.isDefined()) {
-      return alert(t('NFTDetail.dialog.bidError'));
-    }
-    const appId = nft.value.nft.arc69.properties.app_id;
-    if (appId == null) {
-      return alert(t('NFTDetail.dialog.attemptError'));
-    }
-    const appAddr = algosdk.getApplicationAddress(appId);
-    let previousBid: option<string> = none();
-    if (!nft.value.state.isDefined()) {
-      throw new Error('Attemptint to bid when the state is not set. Contact support.');
-    }
-    const state = nft.value.state.get();
-    if (!isZeroAccount(state.bid_account)) {
-      previousBid = some(algosdk.encodeAddress(state.bid_account));
-    }
-    console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-    const minRequired = (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 10);
-    let bidAmount = 0;
-    while (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
-      const result = prompt(
-        `Enter a bid amount (At least ${minRequired}!):`,
-        minRequired.toString()
-      );
-      if (result === null) {
-        return alert('Aborting the bidding process');
-      }
-      bidAmount = Number(result);
-      if (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
-        alert(t('NFTDetail.dialog.bidErrorAmount'));
-      }
-    }
-    const account = WalletAccountProvider.get().account;
-    await dialog.process(async function () {
-      const aId = Number(assetId);
-      if (Number.isNaN(aId)) {
-        throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
-      }
-      if (wallet == null) {
-        return alert(t('NFTDetail.dialog.alertConnectWallet'));
-      }
-      // this.title = `Placing a bid (${bidAmount} μAlgo)`;
-      this.title = t('NFTDetail.dialog.placingBid');
-      this.message = t('NFTDetail.dialog.makingPayment');
-      const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-        from: account.addr,
-        to: appAddr,
-        amount: bidAmount + computedExtraFees,
-        suggestedParams: await client().getTransactionParams().do(),
-      });
-      this.message = t('NFTDetail.dialog.makingAppCall');
-      console.log(`Smart contract wallet: ${appAddr}`);
-      console.log(
-        `Using this smart contract: https://testnet.algoexplorer.io/application/${appId}`
-      );
-      const callTxn = await algosdk.makeApplicationCallTxnFromObject({
-        from: account.addr,
-        appIndex: appId,
-        onComplete: algosdk.OnApplicationComplete.NoOpOC,
-        appArgs: ['bid'.toBytes()],
-        foreignAssets: [state.nft_id],
-        accounts: previousBid.fold([], (s) => [s]),
-        suggestedParams: await client().getTransactionParams().do(),
-      });
-      const optTxn = await Container.get(OptInService).createOptInRequest(aId);
-      const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
-      const signedTxn = await wallet.signTxn(txns);
-      const { txId } = await client()
-        .sendRawTransaction(signedTxn.map((tx) => tx.blob))
-        .do();
-      this.message = t('NFTDetail.dialog.waintingConf');
-      try {
-        await algosdk.waitForConfirmation(client(), txId, 10);
-        this.message = t('NFTDetail.dialog.bidFinishedSuccess');
-        await fetchNfts();
-        await updateNFTInfo();
-      } catch {
-        this.message = t('NFTDetail.dialog.bidFinishedFail');
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-      await new Promise((r) => setTimeout(r, 1000));
-    });
-  }
+  const { doBuyNFT, doPlaceABid } = useNFTPurchasingActions(assetId, wallet, nft, updateNFTInfo);
 
   const getCause = (causes: Cause[] | undefined, nft: Nft) => {
     const cause: Cause | undefined = causes?.find(
