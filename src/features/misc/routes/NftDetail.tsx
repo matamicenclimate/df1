@@ -1,10 +1,8 @@
-import { Button } from '@/componentes/Elements/Button/Button';
 import { useCauseContext } from '@/context/CauseContext';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import algoLogo from '../../../assets/algoLogo.svg';
 import { none, option, some } from '@octantis/option';
 import Container from 'typedi';
 import '@common/src/lib/binary/extension';
@@ -12,7 +10,6 @@ import { useWalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
 import Fold from '@/componentes/Generic/Fold';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
-import { Case, Match } from '@/componentes/Generic/Match';
 import { AuctionAppState } from '@common/src/lib/types';
 import useOptionalState from '@/hooks/useOptionalState';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
@@ -22,8 +19,8 @@ import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
 import { Nft } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
-import { microalgosToAlgos } from '../lib/minting';
 import { useNFTPurchasingActions } from '../lib/detail';
+import { BuyAndBidButtons } from '../components/components/NftDetailSub';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -86,7 +83,7 @@ export const NftDetail = () => {
     }
   }, [nft]);
 
-  const { doBuyNFT, doPlaceABid } = useNFTPurchasingActions(assetId, wallet, nft, updateNFTInfo);
+  const nftActions = useNFTPurchasingActions(assetId, wallet, nft, updateNFTInfo);
 
   const getCause = (causes: Cause[] | undefined, nft: Nft) => {
     const cause: Cause | undefined = causes?.find(
@@ -171,68 +168,7 @@ export const NftDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="offerBid flex justify-between py-7">
-                    <div className="flex flex-col">
-                      <label
-                        className="font-sanspro text-climate-gray-artist text-sm pb-4"
-                        htmlFor="title"
-                      >
-                        Offer Bid
-                      </label>
-                    </div>
-                    <div className="flex self-end">
-                      <p className="text-xl text-climate-blue self-center">
-                        {detail.state.fold(void 0, (_) => _.bid_amount) ??
-                          microalgosToAlgos(detail.nft.arc69.properties.price)}
-                      </p>
-                      <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
-                    </div>
-                  </div>
-                  {detail.state.fold(
-                    <div>
-                      <h4>The asset is being processed</h4>
-                      <p>Wait some time before it gets ready.</p>
-                    </div>,
-                    () => null
-                  )}
-                  <Fold
-                    option={detail.state}
-                    as={(state) => (
-                      <div className="buttons">
-                        <Button
-                          disabled={
-                            walletAccount == null ||
-                            walletAccount == '' ||
-                            detail.nft.creator === walletAccount ||
-                            state.end < now
-                          }
-                          onClick={doPlaceABid}
-                          className="w-full text-2xl text-climate-white mt-8 font-dinpro"
-                        >
-                          <span>
-                            <Match>
-                              <Case of={detail.nft.creator === walletAccount}>
-                                This is your own NFT
-                              </Case>
-                              <Case of={walletAccount == null || walletAccount == ''}>
-                                Connect your wallet
-                              </Case>
-                              <Case of={state.end < now}>The auction has ended</Case>
-                              <Case of="default">Place Bid</Case>
-                            </Match>
-                          </span>
-                        </Button>
-                        <Match>
-                          <Case of={state.end < now}>
-                            <span className="text-gray-500 text-sm">
-                              Ended {new Date(state.end * 1000).toLocaleString()}
-                            </span>
-                          </Case>
-                        </Match>
-                      </div>
-                    )}
-                  />
-                  <Button onClick={doBuyNFT}>Buy</Button>
+                  <BuyAndBidButtons nft={detail.nft} state={detail.state} actions={nftActions} />
                 </div>
               </div>
             </div>
