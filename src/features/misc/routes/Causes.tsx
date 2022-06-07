@@ -8,10 +8,9 @@ const Causes = () => {
 
   return (
     <MainLayout>
-      <h1 className="text-center p-10">Causes</h1>
-      <div className="flex justify-center">
+      <div className="py-10 flex justify-center">
         {causes?.map((cause: CausePostBody) => (
-          <div key={cause?.title}>
+          <div className="w-[400px]" key={cause?.title}>
             <CauseDetail
               title={cause?.title}
               imageUrl={cause?.imageUrl}

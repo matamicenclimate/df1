@@ -301,7 +301,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                           assetId={nft.id}
                           creatorWallet={account}
                           causePercentage={nft.arc69.properties.causePercentage}
-                          status={nft.arc69.properties.app_id ? 'bidding' : 'sold'}
+                          status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
                         />
                       ),
                     };
