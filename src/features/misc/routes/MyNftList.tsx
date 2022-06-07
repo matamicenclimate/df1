@@ -297,6 +297,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                       cause: <NftCause id={nft.arc69.properties.cause} />,
                       status: (
                         <NftStatus
+                          nft={nft}
                           assetId={nft.id}
                           creatorWallet={account}
                           causePercentage={nft.arc69.properties.causePercentage}

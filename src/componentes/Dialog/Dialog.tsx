@@ -35,11 +35,17 @@ export const Dialog = ({
   return (
     <HUIDialog
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={unit}
       className="fixed z-10 inset-0 overflow-y-auto h-screen flex items-center"
     >
       {/* Use the overlay to style a dim backdrop for your dialog */}
       <HUIDialog.Overlay className="fixed inset-0 bg-black opacity-30 backdrop-blur" />
+      <div
+        style={{ position: 'absolute', width: '100vw', height: '100vh', border: '1px solid red' }}
+        onClick={() => setIsOpen(false)}
+      >
+        {' '}
+      </div>
       {/* <HUIDialog.Overlay className="fixed inset-0 backdrop-opacity-20" /> */}
       <div className="min-w-[560px] relative bg-white rounded-2xl max-w-sm w-full mx-auto p-7">
         <HUIDialog.Title className="text-3xl climate-black-title">{title}</HUIDialog.Title>

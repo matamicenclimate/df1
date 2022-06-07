@@ -6,6 +6,7 @@ import useOptionalState from '@/hooks/useOptionalState';
 import { useEffect } from 'react';
 import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
+import { microalgosToAlgos } from '@/features/misc/lib/minting';
 
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
 
@@ -87,7 +88,6 @@ export const Card = (props: CardProps) => {
                 <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
                   <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
                   <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                    {/* {nft?.arc69?.properties?.cause} */}
                     {getCauseTitle(causes, nft)}
                   </p>
                 </div>
@@ -98,7 +98,9 @@ export const Card = (props: CardProps) => {
                   {info.arc69?.properties?.artist}
                 </div>
                 <div className="flex">
-                  <p className="text-xl text-climate-blue ">{info.arc69?.properties?.price}</p>
+                  <p className="text-xl text-climate-blue ">
+                    {microalgosToAlgos(info.arc69?.properties?.price)}
+                  </p>
                   <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                 </div>
                 <div className="text-base text-climate-gray">

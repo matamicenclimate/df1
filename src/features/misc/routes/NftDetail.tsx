@@ -1,24 +1,15 @@
-import { Button } from '@/componentes/Elements/Button/Button';
 import { useCauseContext } from '@/context/CauseContext';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import algoLogo from '../../../assets/algoLogo.svg';
-import algosdk from 'algosdk';
-import { client } from '@/lib/algorand';
 import { none, option, some } from '@octantis/option';
-import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
 import Container from 'typedi';
-import ProcessDialog from '@/service/ProcessDialog';
 import '@common/src/lib/binary/extension';
 import { useWalletContext } from '@/context/WalletContext';
 import { CauseDetail } from '@/componentes/CauseDetail/CauseDetail';
-import { fetchNfts } from '@/lib/NFTFetch';
 import Fold from '@/componentes/Generic/Fold';
-import OptInService from '@common/src/services/OptInService';
 import { TransactionOperation } from '@common/src/services/TransactionOperation';
-import { Case, Match } from '@/componentes/Generic/Match';
 import { AuctionAppState } from '@common/src/lib/types';
 import useOptionalState from '@/hooks/useOptionalState';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
@@ -28,6 +19,8 @@ import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
 import { Nft } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
+import { useNFTPurchasingActions } from '../lib/detail';
+import { BuyAndBidButtons } from '../components/components/NftDetailSub';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);
@@ -37,31 +30,34 @@ const getDateObj = (mintingDate: any) => {
   return `Minted on ${day} ${monthName} ${year}`;
 };
 
-/**
- * Returns true if the passed array is all-zero.
- */
-function isZeroAccount(account: Uint8Array) {
-  return account.reduce((a, b) => a + b, 0) === 0;
-}
-
 const net = Container.get(NetworkClient);
+
+const getAppId = async (id: string) => {
+  const res = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
+  const nft = res.data.value;
+  const appId = res.data.value.arc69.properties.app_id;
+  return [nft, appId] as const;
+};
 
 async function tryGetNFTData(
   id: string,
-  nft: option<CurrentNFTInfo>,
+  current: option<CurrentNFTInfo>,
   setNft: (nft: CurrentNFTInfo) => void,
   setError: (err: unknown) => void
 ) {
+  let info = current.flatMap((s) => s.info);
+  let state: CurrentNFTInfo['state'] = none();
   try {
-    const {
-      data: { value: nft },
-    } = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
-    const appId = nft.arc69.properties.app_id;
-    if (appId == null) {
-      return setNft({ state: none(), nft });
+    const [nft, appId] = await getAppId(id);
+    if (appId != null) {
+      const req = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
+      state = some(req);
     }
-    const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
-    setNft({ state: some(state), nft });
+    if (!info.isDefined()) {
+      const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
+      info = some(res.data);
+    }
+    setNft({ info, state, nft });
   } catch (err) {
     setError(err);
   }
@@ -97,99 +93,7 @@ export const NftDetail = () => {
     }
   }, [nft]);
 
-  /** The deposit fee value. */
-  const depositTxCount = 7;
-  /** Base transactions that will be paid immediately. None atm. */
-  const baseTxFees = 0;
-  /** The extra amount of money needed for future transactions. */
-  const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
-
-  // Test: Place a bid!
-  async function doPlaceABid() {
-    const dialog = Container.get(ProcessDialog);
-    if (!nft.isDefined()) {
-      return alert(t('NFTDetail.dialog.bidError'));
-    }
-    const appId = nft.value.nft.arc69.properties.app_id;
-    if (appId == null) {
-      return alert(t('NFTDetail.dialog.attemptError'));
-    }
-    const appAddr = algosdk.getApplicationAddress(appId);
-    let previousBid: option<string> = none();
-    if (!nft.value.state.isDefined()) {
-      throw new Error('Attemptint to bid when the state is not set. Contact support.');
-    }
-    const state = nft.value.state.get();
-    if (!isZeroAccount(state.bid_account)) {
-      previousBid = some(algosdk.encodeAddress(state.bid_account));
-    }
-    console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-    const minRequired = (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 10);
-    let bidAmount = 0;
-    while (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
-      const result = prompt(
-        `Enter a bid amount (At least ${minRequired}!):`,
-        minRequired.toString()
-      );
-      if (result === null) {
-        return alert('Aborting the bidding process');
-      }
-      bidAmount = Number(result);
-      if (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
-        alert(t('NFTDetail.dialog.bidErrorAmount'));
-      }
-    }
-    const account = WalletAccountProvider.get().account;
-    await dialog.process(async function () {
-      const aId = Number(assetId);
-      if (Number.isNaN(aId)) {
-        throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
-      }
-      if (wallet == null) {
-        return alert(t('NFTDetail.dialog.alertConnectWallet'));
-      }
-      // this.title = `Placing a bid (${bidAmount} μAlgo)`;
-      this.title = t('NFTDetail.dialog.placingBid');
-      this.message = t('NFTDetail.dialog.makingPayment');
-      const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-        from: account.addr,
-        to: appAddr,
-        amount: bidAmount + computedExtraFees,
-        suggestedParams: await client().getTransactionParams().do(),
-      });
-      this.message = t('NFTDetail.dialog.makingAppCall');
-      console.log(`Smart contract wallet: ${appAddr}`);
-      console.log(
-        `Using this smart contract: https://testnet.algoexplorer.io/application/${appId}`
-      );
-      const callTxn = await algosdk.makeApplicationCallTxnFromObject({
-        from: account.addr,
-        appIndex: appId,
-        onComplete: algosdk.OnApplicationComplete.NoOpOC,
-        appArgs: ['bid'.toBytes()],
-        foreignAssets: [state.nft_id],
-        accounts: previousBid.fold([], (s) => [s]),
-        suggestedParams: await client().getTransactionParams().do(),
-      });
-      const optTxn = await Container.get(OptInService).createOptInRequest(aId);
-      const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
-      const signedTxn = await wallet.signTxn(txns);
-      const { txId } = await client()
-        .sendRawTransaction(signedTxn.map((tx) => tx.blob))
-        .do();
-      this.message = t('NFTDetail.dialog.waintingConf');
-      try {
-        await algosdk.waitForConfirmation(client(), txId, 10);
-        this.message = t('NFTDetail.dialog.bidFinishedSuccess');
-        await fetchNfts();
-        await updateNFTInfo();
-      } catch {
-        this.message = t('NFTDetail.dialog.bidFinishedFail');
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-      await new Promise((r) => setTimeout(r, 1000));
-    });
-  }
+  const nftActions = useNFTPurchasingActions(assetId, wallet, nft, updateNFTInfo);
 
   const getCause = (causes: Cause[] | undefined, nft: Nft) => {
     const cause: Cause | undefined = causes?.find(
@@ -274,67 +178,7 @@ export const NftDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="offerBid flex justify-between py-7">
-                    <div className="flex flex-col">
-                      <label
-                        className="font-sanspro text-climate-gray-artist text-sm pb-4"
-                        htmlFor="title"
-                      >
-                        Offer Bid
-                      </label>
-                    </div>
-                    <div className="flex self-end">
-                      <p className="text-xl text-climate-blue self-center">
-                        {detail.state.fold(void 0, (_) => _.bid_amount) ??
-                          detail.nft.arc69.properties.price}
-                      </p>
-                      <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
-                    </div>
-                  </div>
-                  {detail.state.fold(
-                    <div>
-                      <h4>The asset is being processed</h4>
-                      <p>Wait some time before it gets ready.</p>
-                    </div>,
-                    () => null
-                  )}
-                  <Fold
-                    option={detail.state}
-                    as={(state) => (
-                      <div className="buttons">
-                        <Button
-                          disabled={
-                            walletAccount == null ||
-                            walletAccount == '' ||
-                            detail.nft.creator === walletAccount ||
-                            state.end < now
-                          }
-                          onClick={doPlaceABid}
-                          className="w-full text-2xl text-climate-white mt-8 font-dinpro"
-                        >
-                          <span>
-                            <Match>
-                              <Case of={detail.nft.creator === walletAccount}>
-                                This is your own NFT
-                              </Case>
-                              <Case of={walletAccount == null || walletAccount == ''}>
-                                Connect your wallet
-                              </Case>
-                              <Case of={state.end < now}>The auction has ended</Case>
-                              <Case of="default">Place Bid</Case>
-                            </Match>
-                          </span>
-                        </Button>
-                        <Match>
-                          <Case of={state.end < now}>
-                            <span className="text-gray-500 text-sm">
-                              Ended {new Date(state.end * 1000).toLocaleString()}
-                            </span>
-                          </Case>
-                        </Match>
-                      </div>
-                    )}
-                  />
+                  <BuyAndBidButtons nft={detail.nft} state={detail} actions={nftActions} />
                 </div>
               </div>
             </div>
