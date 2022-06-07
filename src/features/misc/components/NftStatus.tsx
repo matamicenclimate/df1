@@ -11,7 +11,7 @@ import Tabs from './Tabs/Tabs';
 import { Nft } from '@common/src/lib/api/entities';
 
 export interface NftStatusProps {
-  status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending';
+  status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending' | 'available';
   onEdit?: () => void;
   onDuplicate?: () => void;
   onSend?: () => void;
@@ -26,11 +26,13 @@ export interface NftStatusProps {
 const colors = {
   bidding: 'climate-informative-green',
   sold: 'climate-informative-yellow',
+  available: 'climate-gray-light',
 } as ByStatus;
 
 const text = {
-  bidding: 'Pending',
+  bidding: 'Listed',
   sold: 'Sold',
+  available: 'Not Listed',
 } as ByStatus;
 
 type ByStatus = { [D in NftStatusProps['status']]: string };
@@ -72,7 +74,7 @@ export default function NftStatus({
       <div
         className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
       >
-        {/* {text[status] ?? status} */}
+        {text[status] ?? status}
       </div>
       <div>
         <span
