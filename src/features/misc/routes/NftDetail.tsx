@@ -32,22 +32,32 @@ const getDateObj = (mintingDate: any) => {
 
 const net = Container.get(NetworkClient);
 
+const getAppId = async (id: string) => {
+  const res = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
+  const nft = res.data.value;
+  const appId = res.data.value.arc69.properties.app_id;
+  return [nft, appId] as const;
+};
+
 async function tryGetNFTData(
   id: string,
-  nft: option<CurrentNFTInfo>,
+  current: option<CurrentNFTInfo>,
   setNft: (nft: CurrentNFTInfo) => void,
   setError: (err: unknown) => void
 ) {
+  let info = current.flatMap((s) => s.info);
+  let state: CurrentNFTInfo['state'] = none();
   try {
-    const {
-      data: { value: nft },
-    } = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
-    const appId = nft.arc69.properties.app_id;
-    if (appId == null) {
-      return setNft({ state: none(), nft });
+    const [nft, appId] = await getAppId(id);
+    if (appId != null) {
+      const req = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
+      state = some(req);
     }
-    const state = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
-    setNft({ state: some(state), nft });
+    if (!info.isDefined()) {
+      const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
+      info = some(res.data);
+    }
+    setNft({ info, state, nft });
   } catch (err) {
     setError(err);
   }
@@ -168,7 +178,7 @@ export const NftDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <BuyAndBidButtons nft={detail.nft} state={detail.state} actions={nftActions} />
+                  <BuyAndBidButtons nft={detail.nft} state={detail} actions={nftActions} />
                 </div>
               </div>
             </div>
