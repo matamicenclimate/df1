@@ -26,6 +26,7 @@ export const Navbar = () => {
       <Tab to="/">Explore</Tab>
       <Tab to="/mint">Mint</Tab>
       <Tab to="/my-nfts">My NFTs</Tab>
+      <Tab to="/causes">Causes</Tab>
       <li className="flex flex-col">
         <AlgoWalletConnector isNavbar />
         <BalanceDisplay
