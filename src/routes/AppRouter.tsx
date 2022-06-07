@@ -5,6 +5,7 @@ import { Minter } from '@/features/misc/routes/Minter';
 import { NftDetail } from '@/features/misc/routes/NftDetail';
 import MyNftList from '@/features/misc/routes/MyNftList';
 import { RequiresWallet } from '@/componentes/Wallet/RequiresWallet';
+import Causes from '@/features/misc/routes/Causes';
 
 export const AppRouter = () => {
   const element = useRoutes([
@@ -20,6 +21,10 @@ export const AppRouter = () => {
     {
       path: '/my-nfts',
       element: <RequiresWallet element={MyNftList} />,
+    },
+    {
+      path: '/causes',
+      element: <Causes />,
     },
     {
       path: '*',

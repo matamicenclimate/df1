@@ -5,10 +5,9 @@ export const CauseDetail = ({ imageUrl, title, description, wallet }: CausePostB
   return (
     <div>
       <div className="flex box-border border-solid border border-climate-border p-5 rounded-xl">
-        {/* <img className="w-11 h-11 rounded-lg" src={imageUrl || climateTradeLogo} /> */}
         <img
           onError={({ currentTarget }) => {
-            currentTarget.onerror = null; // prevents looping
+            currentTarget.onerror = null;
             currentTarget.src = climateLogo;
           }}
           src={imageUrl}
@@ -18,6 +17,9 @@ export const CauseDetail = ({ imageUrl, title, description, wallet }: CausePostB
         <div className="flex flex-col font-sanspro">
           <p className="pl-5 text-base text-climate-black-text">{title}</p>
           <p className="pl-5 text-sm text-climate-gray-artist">{description}</p>
+          <p className="pl-5 text-sm text-climate-gray-artist">
+            {wallet?.slice(0, 8)}...{wallet?.slice(-8)}
+          </p>
         </div>
       </div>
     </div>
