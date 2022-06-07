@@ -141,6 +141,7 @@ export default function NftStatus({
               causePercentage={causePercentage}
               creatorWallet={creatorWallet}
               nft={nft}
+              setIsOpen={setShowSellingOptions}
             />
           </Dialog>
         )}

@@ -15,16 +15,17 @@ type FirstTabProps = {
   assetId: number;
   causePercentage: number;
   creatorWallet: string;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const net = Container.get(NetworkClient);
 const dialog = Container.get(ProcessDialog);
 
-const FirstTab = ({ nft, assetId, causePercentage, creatorWallet }: FirstTabProps) => {
+const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: FirstTabProps) => {
   const goToPage = useNavigate();
 
   async function handleListing() {
-    console.log('not working');
-
+    // setConfirmation()
+    setIsOpen(false);
     return await dialog.process(async function () {
       this.title = 'Processing NFT';
       this.message = 'Preparing NFT...';
@@ -60,7 +61,7 @@ const FirstTab = ({ nft, assetId, causePercentage, creatorWallet }: FirstTabProp
 
   return (
     <div className="relative">
-      <p className="text-center h-52 pt-14">
+      <p className="text-center h-52 pt-14 font-bold">
         Listing NFT for {microalgosToAlgos(nft.arc69.properties.price)} Algo?
       </p>
       <div className="absolute bottom-0 right-0 mt-6 text-right">

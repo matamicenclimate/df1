@@ -11,9 +11,10 @@ type TabsProps = {
   causePercentage: number;
   creatorWallet: string;
   nft: Nft;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Tabs = ({ status, assetId, causePercentage, creatorWallet, nft }: TabsProps) => {
+const Tabs = ({ status, assetId, causePercentage, creatorWallet, nft, setIsOpen }: TabsProps) => {
   console.log('status', status);
   console.log('assetId', assetId);
   console.log('causePercentage', causePercentage);
@@ -61,6 +62,7 @@ const Tabs = ({ status, assetId, causePercentage, creatorWallet, nft }: TabsProp
             assetId={assetId}
             causePercentage={causePercentage}
             creatorWallet={creatorWallet}
+            setIsOpen={setIsOpen}
           />
         ) : (
           <SecondTab />
