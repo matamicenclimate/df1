@@ -61,7 +61,13 @@ const Tabs = ({ status, assetId, causePercentage, creatorWallet, nft, setIsOpen 
             setIsOpen={setIsOpen}
           />
         ) : (
-          <SecondTab />
+          <SecondTab
+            nft={nft}
+            assetId={assetId}
+            causePercentage={causePercentage}
+            creatorWallet={creatorWallet}
+            setIsOpen={setIsOpen}
+          />
         )}
       </div>
     </div>

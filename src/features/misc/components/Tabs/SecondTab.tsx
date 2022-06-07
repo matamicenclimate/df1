@@ -8,6 +8,12 @@ import ErrorHint from '@/componentes/Form/ErrorHint';
 
 import './mycssfile.css';
 import { Button } from '@/componentes/Elements/Button/Button';
+import Container from 'typedi';
+import ProcessDialog from '@/service/ProcessDialog';
+import NetworkClient from '@common/src/services/NetworkClient';
+import { AuctionLogic } from '@common/src/services/AuctionLogic';
+import { Nft } from '@common/src/lib/api/entities';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 const defaultOffset = 24 * 60 * 60 * 1000;
 
@@ -19,14 +25,98 @@ type Nullable<T> = { [P in keyof T]?: T[P] | null };
 type DateErrors = { start?: string; end?: string };
 type Dates = { start: Date; end: Date };
 
-const SecondTab = () => {
+/** Quick nemonic validation for two dates (difference check). */
+function validateDates(dates: Nullable<Dates>): true | 'past' | 'reverse' | 'invalid' {
+  for (const diff of diffFrom(dates.start, dates.end)) {
+    if (diff.past || !diff.valid) {
+      if (diff.past) {
+        return 'past';
+      }
+      if (!diff.valid) {
+        return 'reverse';
+      }
+    }
+    return true;
+  }
+  return 'invalid';
+}
+
+async function handleCreateAuction(
+  assetId: number,
+  dates: Nullable<Dates>,
+  creatorWallet: string,
+  causePercentage: number,
+  goToPage: NavigateFunction
+) {
+  const dialog = Container.get(ProcessDialog);
+  const auctions = Container.get(AuctionLogic);
+  const net = Container.get(NetworkClient);
+  return await dialog.process(async function () {
+    this.message = 'Opting in...';
+    const optResult = await net.core.post('opt-in', { assetId });
+    console.info('Asset opted-in:', optResult);
+    const transfer = await auctions.makeTransferToAccount(
+      optResult.data.targetAccount,
+      assetId,
+      new Uint8Array()
+    );
+    console.info('Asset transfer to app:', transfer);
+    this.message = 'Creating auction...';
+    const tx = await net.core.post('create-auction', {
+      assetId: assetId,
+      creatorWallet: creatorWallet,
+      causePercentage: causePercentage ?? 50,
+      startDate: dates!.start!.toISOString(),
+      endDate: dates!.end!.toISOString(),
+    });
+    console.info('Auction program was created:', tx.data);
+    console.info('Auction program was created:', tx);
+    if (tx.data.appIndex) {
+      this.title = 'Your NFT has been successfully created!!';
+      this.message = '';
+      goToPage(`/nft/${assetId}`);
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+  });
+}
+
+type SecondTabProps = {
+  nft: Nft;
+  assetId: number;
+  causePercentage: number;
+  creatorWallet: string;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: SecondTabProps) => {
   const [dateErrors, setDateErrors] = useState<DateErrors>({});
   const [dates, setDates] = useState<Nullable<Dates>>({
     start: new Date(),
     end: new Date(Date.now() + defaultOffset),
   });
+  const goToPage = useNavigate();
   const setStartDate = bind(setDates, 'start');
   const setEndDate = bind(setDates, 'end');
+  async function handleConfirm() {
+    const result = validateDates(dates);
+    if (result === true) {
+      setIsOpen(false);
+      await handleCreateAuction(assetId, dates, creatorWallet, causePercentage, goToPage);
+      return;
+    }
+    setDateErrors({});
+    switch (result) {
+      case 'invalid':
+        setDateErrors({ start: 'Not a valid input!' });
+        break;
+      case 'past':
+        setDateErrors((d) => ({ ...d, start: "Start date can't be in the past." }));
+        break;
+      case 'reverse':
+        setDateErrors((d) => ({ ...d, end: 'End date must be later than start date.' }));
+        break;
+    }
+  }
   return (
     <div className="SecondTab">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -52,7 +142,7 @@ const SecondTab = () => {
         </div>
       </LocalizationProvider>
       <div className=" mt-6 text-right">
-        <Button>Confirm</Button>
+        <Button onClick={handleConfirm}>Confirm</Button>
       </div>
     </div>
   );
