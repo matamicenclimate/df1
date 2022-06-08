@@ -74,15 +74,12 @@ export default function NftStatus({
 
   async function getAssetInfo(id: string) {
     const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
-    console.log('res', res.data);
     setAssetInfo({ ...nft, assetInfo: { ...res.data } });
   }
 
   useEffect(() => {
     getAssetInfo(assetId.toString());
   }, []);
-
-  console.log('assetInfo', assetInfo);
 
   return (
     <div className={clsx('flex justify-between items-center', className)}>
@@ -107,9 +104,9 @@ export default function NftStatus({
         </span>
         {openDropdown && (
           <ul className="mt-3 absolute font-dinpro text-climate-black-title bg-climate-action-light rounded shadow-lg">
-            <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border ">
+            {/* <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border ">
               Edit NFT
-            </li>
+            </li> */}
             <li
               onClick={() => handleTabs()}
               className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border "
