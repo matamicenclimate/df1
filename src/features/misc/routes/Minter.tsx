@@ -15,11 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
 import ErrorHint from '@/componentes/Form/ErrorHint';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import TextField from '@mui/material/TextField';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { diffFrom } from '@common/src/lib/dates';
 import Configuration from '@/context/ConfigContext';
 
 export type MinterProps = {
@@ -27,25 +22,8 @@ export type MinterProps = {
   account: string;
 };
 
-const defaultOffset = 24 * 60 * 60 * 1000;
-
-function bind<A>(dispatch: React.Dispatch<React.SetStateAction<A>>, key: keyof A) {
-  return (data: A[typeof key]) => dispatch((old) => ({ ...old, [key]: data }));
-}
-
-type Nullable<T> = { [P in keyof T]?: T[P] | null };
-type DateErrors = { start?: string; end?: string };
-type Dates = { start: Date; end: Date };
-
 export const Minter = ({ wallet, account }: MinterProps) => {
   const { t } = useTranslation();
-  const [dates, setDates] = useState<Nullable<Dates>>({
-    start: new Date(),
-    end: new Date(Date.now() + defaultOffset),
-  });
-  const [dateErrors, setDateErrors] = useState<DateErrors>({});
-  const setStartDate = bind(setDates, 'start');
-  const setEndDate = bind(setDates, 'end');
   const [checked, setChecked] = useState<boolean>(false);
   const { causes } = useCauseContext();
   const mintNFT = useMintAction(causes);
@@ -58,33 +36,16 @@ export const Minter = ({ wallet, account }: MinterProps) => {
     formState: { errors },
   } = useForm<NFTMetadataBackend>();
 
-  /**
-   * This handles the submit of the data.
-   */
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
     (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
-    // for (const diff of diffFrom(dates.start, dates.end)) {
-    //   if (diff.past || !diff.valid) {
-    //     setDateErrors({});
-    //     if (diff.past) {
-    //       setDateErrors((d) => ({ ...d, start: "Start date can't be in the past." }));
-    //     }
-    //     if (!diff.valid) {
-    //       setDateErrors((d) => ({ ...d, end: 'End date must be later than start date.' }));
-    //     }
-    //     return;
-    //   }
     const meta = await getNFTMetadata(data);
     const info = {
-      // start: diff.start,
-      // end: diff.end,
       cause: {
         id: meta.arc69.properties.cause,
         part: meta.arc69.properties.causePercentage,
       },
     };
     mintNFT(meta, info, wallet, account);
-    // }
   };
 
   return (
@@ -136,29 +97,6 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 <ErrorHint on={errors.properties?.causePercentage} text="Minter.selectPercentage" />
               </div>
             </div>
-            {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <div className="flex justify-evenly py-6">
-                <div className="flex flex-col w-full mr-1">
-                  <label className="font-dinpro font-normal text-base py-3">Auction start</label>
-                  <DateTimePicker
-                    renderInput={(_) => <TextField {..._} className="bg-white " />}
-                    onChange={setStartDate}
-                    value={dates.start}
-                  />
-                  <ErrorHint on={dateErrors.start} text={dateErrors.start ?? ''} />
-                </div>
-                <div className="flex flex-col w-full ml-1">
-                  <label className="font-dinpro font-normal text-base py-3">Auction end</label>
-                  <DateTimePicker
-                    renderInput={(_) => <TextField {..._} className="bg-white" />}
-                    onChange={setEndDate}
-                    value={dates.end}
-                  />
-                  <ErrorHint on={dateErrors.end} text={dateErrors.end ?? ''} />
-                </div>
-              </div>
-            </LocalizationProvider> */}
-
             <div>
               <Controller
                 control={control}

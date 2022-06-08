@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { destroyAsset } from '../../../lib/nft';
 import { useWalletContext } from '@/context/WalletContext';
@@ -8,7 +8,9 @@ import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import Tabs from './Tabs/Tabs';
-import { Nft } from '@common/src/lib/api/entities';
+import { Nft, NftAssetInfo } from '@common/src/lib/api/entities';
+import NetworkClient from '@common/src/services/NetworkClient';
+import Container from 'typedi';
 
 export interface NftStatusProps {
   status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending' | 'available';
@@ -49,6 +51,7 @@ export default function NftStatus({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showSellingOptions, setShowSellingOptions] = useState<boolean>(false);
   const [openSpinner, setOpenSpinner] = useState<boolean>(false);
+  const [assetInfo, setAssetInfo] = useState<NftAssetInfo>();
   const { wallet } = useWalletContext();
   const algodClient = client();
   const color = colors[status];
@@ -69,12 +72,28 @@ export default function NftStatus({
     setShowSellingOptions(true);
   }
 
+  async function getAssetInfo(id: string) {
+    const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
+    setAssetInfo({ ...nft, assetInfo: { ...res.data } });
+  }
+
+  useEffect(() => {
+    getAssetInfo(assetId.toString());
+  }, []);
+
   return (
     <div className={clsx('flex justify-between items-center', className)}>
       <div
         className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
       >
-        {text[status] ?? status}
+        {/* {text[status] ?? status} */}
+        {assetInfo?.assetInfo.type === 'direct-listing' ? (
+          <p>Direct Buy</p>
+        ) : assetInfo?.assetInfo.type === 'create-auction' ? (
+          <p>Auction</p>
+        ) : (
+          'Not Listed'
+        )}
       </div>
       <div>
         <span
@@ -85,9 +104,9 @@ export default function NftStatus({
         </span>
         {openDropdown && (
           <ul className="mt-3 absolute font-dinpro text-climate-black-title bg-climate-action-light rounded shadow-lg">
-            <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border ">
+            {/* <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border ">
               Edit NFT
-            </li>
+            </li> */}
             <li
               onClick={() => handleTabs()}
               className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border "

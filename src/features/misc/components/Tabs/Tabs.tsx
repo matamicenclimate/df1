@@ -14,13 +14,7 @@ type TabsProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const Tabs = ({ status, assetId, causePercentage, creatorWallet, nft, setIsOpen }: TabsProps) => {
-  console.log('status', status);
-  console.log('assetId', assetId);
-  console.log('causePercentage', causePercentage);
-  console.log('creatorWallet', creatorWallet);
-  console.log('nft', nft);
-
+const Tabs = ({ assetId, causePercentage, creatorWallet, nft, setIsOpen }: TabsProps) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const handleTab1 = () => {
     setActiveTab('tab1');
