@@ -15,6 +15,7 @@ import { asTable, at, extracting, matches, parseKVFormat } from '@common/src/lib
 import NetworkClient from '@common/src/services/NetworkClient';
 import Container from 'typedi';
 import Configuration from './context/ConfigContext';
+import ScrollToTop from './hooks/ScrollToTop';
 
 function configOptions(str: string) {
   return parseKVFormat(str)
@@ -31,6 +32,7 @@ axios
     ReactDOM.render(
       <React.StrictMode>
         <BrowserRouter>
+          <ScrollToTop />
           <App config={config} />
         </BrowserRouter>
       </React.StrictMode>,

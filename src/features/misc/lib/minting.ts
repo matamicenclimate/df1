@@ -8,7 +8,6 @@ import { createNFT } from '@/lib/nft';
 import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
 import ProcessDialog from '@/service/ProcessDialog';
 import { DateLike } from '@common/src/lib/dates';
-import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { Wallet } from 'algorand-session-wallet';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +23,7 @@ const net = Container.get(NetworkClient);
 export async function getNFTMetadata(data: NFTMetadataBackend) {
   return await dialog.process(async function () {
     this.message = 'Uploading NFT to IPFS...';
-    this.title = 'Preparing NFT';
+    this.title = 'Minting NFT..';
     const oneFile = data.properties.file;
     const attribute = data.properties?.attributes?.reduce?.(
       (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
@@ -90,52 +89,16 @@ export function useMintAction(causes: Cause[] | undefined) {
       const result = await createNFT(algodClient, account, data, wallet);
       console.log('result from createNFT', result);
       if (result) {
-        this.title = 'Your NFT has been successfully created!!';
+        this.title = t('Minter.dialog.dialogNFTCreatedSuccess');
         this.message = '';
 
         goToPage(`/my-nfts`);
         await new Promise((r) => setTimeout(r, 5000));
       }
-
-      // return result;
-
-      // if (result.isDefined()) {
-      //   this.message = 'Opting in...';
-      //   const optResult = await net.core.post('opt-in', {
-      //     assetId: result.value.assetID,
-      //   });
-      //   console.info('Asset opted-in:', optResult);
-      //   const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
-      //     optResult.data.targetAccount,
-      //     result.value.assetID,
-      //     new Uint8Array()
-      //   );
-      //   console.info('Asset transfer to app:', transfer);
-      //   this.message = 'Creating auction...';
-      //   const tx = await net.core.post('create-auction', {
-      //     assetId: result.value.assetID,
-      //     creatorWallet: account,
-      //     causePercentage: info.cause.part ?? 30,
-      //     startDate: info.start.toISOString(),
-      //     endDate: info.end.toISOString(),
-      //   });
-
-      //   console.info('Auction program was created:', tx.data);
-      //   if (tx.data.appIndex) {
-      //     this.title = 'Your NFT has been successfully created!!';
-      //     this.message = '';
-
-      //     goToPage(`/nft/${result.value.assetID}`);
-      //     await new Promise((r) => setTimeout(r, 5000));
-      //   }
-
-      //   return;
-      // }
       return console.warn(
         "Can't opt-in this asset: No data returned at creation-time! This is a no-op, but it may indicate a problem."
       );
     });
-    // goToPage(`/my-nfts`);
   };
 }
 
