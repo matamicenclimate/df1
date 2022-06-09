@@ -4,11 +4,10 @@ import { microalgosToAlgos } from '../../lib/minting';
 import './mycssfile.css';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import { useState } from 'react';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
-import { Dialog } from '@/componentes/Dialog/Dialog';
+import { useTranslation } from 'react-i18next';
 
 type FirstTabProps = {
   nft: Nft;
@@ -22,9 +21,9 @@ const dialog = Container.get(ProcessDialog);
 
 const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: FirstTabProps) => {
   const goToPage = useNavigate();
+  const { t } = useTranslation();
 
   async function handleListing() {
-    // setConfirmation()
     setIsOpen(false);
     return await dialog.process(async function () {
       this.title = 'Processing NFT';
@@ -49,7 +48,7 @@ const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: F
       const res = await net.core.post('direct-listing', body);
       console.log('res.data', res.data);
       if (res) {
-        this.title = 'Your NFT has been successfully listed!';
+        this.title = t('Minter.dialog.dialogNFTListedSuccess');
         this.message = '';
 
         goToPage(`/`);

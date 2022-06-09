@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { diffFrom } from '@common/src/lib/dates';
 import ErrorHint from '@/componentes/Form/ErrorHint';
-
+import { useTranslation } from 'react-i18next';
 import './mycssfile.css';
 import { Button } from '@/componentes/Elements/Button/Button';
 import Container from 'typedi';
@@ -41,45 +41,6 @@ function validateDates(dates: Nullable<Dates>): true | 'past' | 'reverse' | 'inv
   return 'invalid';
 }
 
-async function handleCreateAuction(
-  assetId: number,
-  dates: Nullable<Dates>,
-  creatorWallet: string,
-  causePercentage: number,
-  goToPage: NavigateFunction
-) {
-  const dialog = Container.get(ProcessDialog);
-  const auctions = Container.get(AuctionLogic);
-  const net = Container.get(NetworkClient);
-  return await dialog.process(async function () {
-    this.message = 'Opting in...';
-    const optResult = await net.core.post('opt-in', { assetId });
-    console.info('Asset opted-in:', optResult);
-    const transfer = await auctions.makeTransferToAccount(
-      optResult.data.targetAccount,
-      assetId,
-      new Uint8Array()
-    );
-    console.info('Asset transfer to app:', transfer);
-    this.message = 'Creating auction...';
-    const tx = await net.core.post('create-auction', {
-      assetId: assetId,
-      creatorWallet: creatorWallet,
-      causePercentage: causePercentage ?? 50,
-      startDate: dates!.start!.toISOString(),
-      endDate: dates!.end!.toISOString(),
-    });
-    console.info('Auction program was created:', tx.data);
-    console.info('Auction program was created:', tx);
-    if (tx.data.appIndex) {
-      this.title = 'Your NFT has been successfully created!!';
-      this.message = '';
-      goToPage(`/nft/${assetId}`);
-      await new Promise((r) => setTimeout(r, 5000));
-    }
-  });
-}
-
 type SecondTabProps = {
   nft: Nft;
   assetId: number;
@@ -89,6 +50,7 @@ type SecondTabProps = {
 };
 
 const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: SecondTabProps) => {
+  const { t } = useTranslation();
   const [dateErrors, setDateErrors] = useState<DateErrors>({});
   const [dates, setDates] = useState<Nullable<Dates>>({
     start: new Date(),
@@ -97,6 +59,46 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
   const goToPage = useNavigate();
   const setStartDate = bind(setDates, 'start');
   const setEndDate = bind(setDates, 'end');
+
+  async function handleCreateAuction(
+    assetId: number,
+    dates: Nullable<Dates>,
+    creatorWallet: string,
+    causePercentage: number,
+    goToPage: NavigateFunction
+  ) {
+    const dialog = Container.get(ProcessDialog);
+    const auctions = Container.get(AuctionLogic);
+    const net = Container.get(NetworkClient);
+    return await dialog.process(async function () {
+      this.message = 'Opting in...';
+      const optResult = await net.core.post('opt-in', { assetId });
+      console.info('Asset opted-in:', optResult);
+      const transfer = await auctions.makeTransferToAccount(
+        optResult.data.targetAccount,
+        assetId,
+        new Uint8Array()
+      );
+      console.info('Asset transfer to app:', transfer);
+      this.message = 'Creating auction...';
+      const tx = await net.core.post('create-auction', {
+        assetId: assetId,
+        creatorWallet: creatorWallet,
+        causePercentage: causePercentage ?? 50,
+        startDate: dates!.start!.toISOString(),
+        endDate: dates!.end!.toISOString(),
+      });
+      console.info('Auction program was created:', tx.data);
+      console.info('Auction program was created:', tx);
+      if (tx.data.appIndex) {
+        this.title = t('Minter.dialog.dialogNFTListedSuccess');
+        this.message = '';
+        goToPage(`/nft/${assetId}`);
+        await new Promise((r) => setTimeout(r, 5000));
+      }
+    });
+  }
+
   async function handleConfirm() {
     const result = validateDates(dates);
     if (result === true) {
