@@ -55,6 +55,7 @@ async function tryGetNFTData(
     }
     if (!info.isDefined()) {
       const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
+      // @ts-expect-error TODO: nacho
       info = some(res.data);
     }
     setNft({ info, state, nft });

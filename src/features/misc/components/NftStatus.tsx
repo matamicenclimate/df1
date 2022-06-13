@@ -74,6 +74,7 @@ export default function NftStatus({
 
   async function getAssetInfo(id: string) {
     const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
+    // @ts-expect-error TODO: idk
     setAssetInfo({ ...nft, assetInfo: { ...res.data } });
   }
 

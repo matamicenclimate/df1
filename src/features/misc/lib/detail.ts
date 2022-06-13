@@ -10,6 +10,7 @@ import algosdk from 'algosdk';
 import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { fetchNfts } from '@/lib/NFTFetch';
+import directListingAbi from '@common/src/abi/direct-listing.abi';
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
@@ -82,7 +83,7 @@ export function useNFTPurchasingActions(
           from: account.addr,
           appIndex: appId,
           onComplete: algosdk.OnApplicationComplete.NoOpOC,
-          appArgs: ['bid'.toBytes()],
+          appArgs: [directListingAbi.getMethodByName('on_bid').getSelector()],
           accounts: [
             algosdk.encodeAddress(state.cause),
             algosdk.encodeAddress(state.creator),
