@@ -5,6 +5,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { none, option, some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
+import { AlgorandGatewayProvider } from '@common/src/blockchain/algorand/AlgorandGateway';
 
 const mdhash = DigestProvider.get();
 const dialog = Container.get(ProcessDialog);
@@ -20,6 +21,7 @@ async function createAsset<A extends Record<string, any> = any>(
   meta: A,
   wallet: Wallet
 ) {
+  const sdk = AlgorandGatewayProvider.gateway;
   dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
   const status = await algodClient.status().do();
@@ -51,7 +53,7 @@ async function createAsset<A extends Record<string, any> = any>(
     assetName: assetName,
     assetURL: url,
     assetMetadataHash: metadataHash,
-    note: algosdk.encodeObj(meta),
+    note: (await sdk.encodeObject({ object: meta })).payload,
     defaultFrozen,
     freeze: freezeAddr,
     manager: managerAddr,
