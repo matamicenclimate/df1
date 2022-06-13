@@ -1,4 +1,5 @@
 import './i18n/config';
+import '@common/src/blockchain/algorand/algosdk/index';
 import { AppProvider } from '@/providers/AppProvider';
 import { AppRouter } from './routes/AppRouter';
 import AppGuard from './componentes/AppGuard';
