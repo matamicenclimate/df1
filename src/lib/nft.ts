@@ -46,39 +46,30 @@ async function createAsset<A extends Record<string, any> = any>(
   const total = 1; // how many of this asset there will be
   const metadataHash = mdhash.digest(meta);
   dialog.message = 'Sending NFT data...';
-  const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
-    from: account,
-    total: total,
-    decimals: decimals,
-    assetName: assetName,
-    assetURL: url,
-    assetMetadataHash: metadataHash,
-    note: (await sdk.encodeObject({ object: meta })).payload,
-    defaultFrozen,
-    freeze: freezeAddr,
-    manager: managerAddr,
-    clawback: clawbackAddr,
-    reserve: reserveAddr,
-    suggestedParams: params,
+  const op = await sdk.createAsset({
+    owner: account,
+    amount: 1,
+    name: assetName,
+    url,
+    metadata: {
+      payload: meta,
+      checksum: metadataHash,
+    },
   });
-  const [s_create_txn] = await wallet.signTxn([txn]);
+  const opSigned = await sdk.signOperation(op);
   dialog.message = 'Sending NFT data...';
-  const { txId } = await algodClient
-    .sendRawTransaction(
-      [s_create_txn].map((t) => {
-        return t.blob;
-      })
-    )
-    .do();
+  const opCommited = await sdk.commitOperation(opSigned);
   dialog.message = 'Waiting for confirmation...';
-  const confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 10);
-  console.log('Transaction ' + txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
-  const assetID = confirmedTxn['asset-index'];
-  console.log('AssetID = ' + assetID);
+  const opConfirmed = await sdk.confirmOperation(opCommited);
+  // console.log('Transaction ' + opConfirmed.operation.id + ' confirmed in round ' + confirmedTxn['confirmed-round']);
+  // const assetID = confirmedTxn['asset-index'];
+  // console.log('AssetID = ' + assetID);
+  console.log('Operation confirmed:', opConfirmed.operation);
+  const assetID = Number(opConfirmed.operation.data?.['asset-index'] ?? -1);
   await printCreatedAsset(algodClient, account, assetID);
   await printAssetHolding(algodClient, account, assetID);
   const assetInfo: AssetInfo = {
-    transactionId: txId,
+    transactionId: Number(opConfirmed.operation.id),
     assetID: assetID,
   };
   return assetInfo;
