@@ -9,7 +9,7 @@
     "nftCause": "Seleccionar Causa",
     "nftCausePercentage": "Porcentaje Causa",
     "selectCause": "Seleccionar una causa",
-    "selectPercentage": "El porcentaje minimo es 50%",
+    "selectPercentage": "El porcentaje tiene que ser de entre 50% y 90%",
     "nftDetails": "Detalle NFT",
     "uploadResources": "Subir Archivo",
     "uploadFile": "Puedes mintear jpg, gif, mov, mp4, cad, pdf",
