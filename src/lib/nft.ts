@@ -1,6 +1,6 @@
 import algosdk from 'algosdk';
 import * as DigestProvider from '@common/src/services/DigestProvider';
-import { metadataNFTType, NFTMetadataBackend } from './type';
+import { metadataNFTType } from './type';
 import { Wallet } from 'algorand-session-wallet';
 import { none, option, some } from '@octantis/option';
 import Container from 'typedi';
@@ -21,32 +21,26 @@ async function createAsset<A extends Record<string, any> = any>(
   meta: A,
   wallet: Wallet
 ) {
-  const sdk = AlgorandGatewayProvider.gateway;
+  const chain = AlgorandGatewayProvider.gateway;
   dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
-  const status = await algodClient.status().do();
+  const { available } = await chain.nodeIsAvailable({});
+  if (!available) {
+    throw new Error(`Can't connect to the blockchain node.`);
+  }
   //Check account balance
   dialog.message = 'Retrieving account information...';
   const accountInfo = await algodClient.accountInformation(account).do();
   const startingAmount = accountInfo.amount;
   console.log('User account balance: microAlgos', startingAmount);
   // Construct the transaction
-  const params = await algodClient.getTransactionParams().do();
-  const defaultFrozen = false;
   // Friendly name of the asset
   const assetName = meta.title;
   // Optional string pointing to a URL relating to the asset
   const url = meta.url;
-  const managerAddr = account;
-  const reserveAddr = account;
-  const freezeAddr = account;
-  const clawbackAddr = account;
-  // integer number of decimals for asset unit calculation
-  const decimals = 0;
-  const total = 1; // how many of this asset there will be
   const metadataHash = mdhash.digest(meta);
   dialog.message = 'Sending NFT data...';
-  const op = await sdk.createAsset({
+  const op = await chain.createAsset({
     owner: account,
     amount: 1,
     name: assetName,
@@ -56,11 +50,11 @@ async function createAsset<A extends Record<string, any> = any>(
       checksum: metadataHash,
     },
   });
-  const opSigned = await sdk.signOperation(op);
+  const opSigned = await chain.signOperation(op);
   dialog.message = 'Sending NFT data...';
-  const opCommited = await sdk.commitOperation(opSigned);
+  const opCommited = await chain.commitOperation(opSigned);
   dialog.message = 'Waiting for confirmation...';
-  const opConfirmed = await sdk.confirmOperation(opCommited);
+  const opConfirmed = await chain.confirmOperation(opCommited);
   // console.log('Transaction ' + opConfirmed.operation.id + ' confirmed in round ' + confirmedTxn['confirmed-round']);
   // const assetID = confirmedTxn['asset-index'];
   // console.log('AssetID = ' + assetID);
