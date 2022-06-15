@@ -30,9 +30,6 @@ async function createAsset<A extends Record<string, any> = any>(
   console.log('User account balance: microAlgos', startingAmount);
   // Construct the transaction
   const params = await algodClient.getTransactionParams().do();
-  console.log('account', account);
-  console.log('account', typeof account);
-
   const defaultFrozen = false;
   // Friendly name of the asset
   const assetName = meta.title;
