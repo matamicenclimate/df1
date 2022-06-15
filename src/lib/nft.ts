@@ -36,7 +36,7 @@ async function createAsset<A extends Record<string, any> = any>(
   // Optional string pointing to a URL relating to the asset
   const url = meta.url;
   const managerAddr = account;
-  const reserveAddr = undefined;
+  const reserveAddr = account;
   const freezeAddr = undefined;
   const clawbackAddr = undefined;
   // integer number of decimals for asset unit calculation
