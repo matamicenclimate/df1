@@ -30,15 +30,18 @@ async function createAsset<A extends Record<string, any> = any>(
   console.log('User account balance: microAlgos', startingAmount);
   // Construct the transaction
   const params = await algodClient.getTransactionParams().do();
+  console.log('account', account);
+  console.log('account', typeof account);
+
   const defaultFrozen = false;
   // Friendly name of the asset
   const assetName = meta.title;
   // Optional string pointing to a URL relating to the asset
   const url = meta.url;
-  const managerAddr = '';
-  const reserveAddr = '';
-  const freezeAddr = '';
-  const clawbackAddr = '';
+  const managerAddr = account;
+  const reserveAddr = undefined;
+  const freezeAddr = undefined;
+  const clawbackAddr = undefined;
   // integer number of decimals for asset unit calculation
   const decimals = 0;
   const total = 1; // how many of this asset there will be

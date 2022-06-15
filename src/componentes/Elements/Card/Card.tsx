@@ -66,7 +66,7 @@ export const Card = (props: CardProps) => {
       return (
         <div className="wrapper antialiased text-gray-900 max-w-[325px]">
           <div>
-          nft?.assetUrl && {nft?.assetUrl?.endsWith('.mp4') ? (
+            {nft?.assetUrl?.endsWith('.mp4') ? (
               <div className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]">
                 <video className=" min-h-[325px] max-h-[325px]" autoPlay loop muted>
                   <source src={nft.assetUrl} type="video/mp4" />
