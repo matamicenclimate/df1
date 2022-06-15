@@ -2,7 +2,6 @@
   Mint action related business logic.
 */
 import { InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator';
-import { client } from '@/lib/algorand';
 import { Cause } from '@/lib/api/causes';
 import { createNFT } from '@/lib/nft';
 import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
@@ -82,11 +81,10 @@ export function useMintAction(causes: Cause[] | undefined) {
     if (cause == null) {
       return alert('Invalid cause selected!');
     }
-    const algodClient = client();
     await dialog.process(async function () {
       this.title = 'Uploading to blockchain';
       this.message = 'Creating the NFT data...';
-      const result = await createNFT(algodClient, account, data, wallet);
+      const result = await createNFT(account, data, wallet);
       console.log('result from createNFT', result);
       if (result) {
         this.title = t('Minter.dialog.dialogNFTCreatedSuccess');

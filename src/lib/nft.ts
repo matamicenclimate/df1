@@ -4,10 +4,12 @@ import { Wallet } from 'algorand-session-wallet';
 import { None, Option, Some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
-import { AlgorandGatewayProvider } from '@common/src/blockchain/algorand/AlgorandGateway';
+import { BlockchainGatewayProvider } from '@common/src/blockchain';
+import { Data } from '@common/src/blockchain/Operation';
 
 const mdhash = DigestProvider.get();
 const dialog = Container.get(ProcessDialog);
+const chain = Container.get(BlockchainGatewayProvider).require();
 
 export interface AssetInfo {
   transactionId: number;
@@ -19,7 +21,6 @@ async function createAsset<A extends Record<string, any> = any>(
   meta: A,
   wallet: Wallet
 ) {
-  const chain = AlgorandGatewayProvider.gateway;
   dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
   const { available } = await chain.nodeIsAvailable({});
@@ -68,36 +69,19 @@ async function createAsset<A extends Record<string, any> = any>(
 }
 
 export async function destroyAsset(account: string, assetId: number, wallet: Wallet) {
-  const assetNumber = Number(assetId);
   // All of the created assets should now be back in the creators
   // Account so we can delete the asset.
   // If this is not the case the asset deletion will fail
-  const params = await algodClient.getTransactionParams().do();
-  const addr = account;
-  const txn = algosdk.makeAssetDestroyTxnWithSuggestedParamsFromObject({
-    from: addr,
-    note: undefined,
-    assetIndex: assetNumber,
-    suggestedParams: params,
-  });
-  console.log('txn', txn);
-
+  const op = await chain.destroyAsset({ asset: assetId, owner: account });
+  console.log('txn', op);
   dialog.subtitle = 'Waiting for user confirmation';
   dialog.highlight = true;
-  const [s_create_txn] = await wallet.signTxn([txn]);
-  console.log('[s_create_txn]', [s_create_txn]);
-
+  const signedOp = await chain.signOperation(op);
+  console.log(signedOp);
   dialog.subtitle = '';
   dialog.highlight = false;
-  const { txId } = await algodClient
-    .sendRawTransaction(
-      [s_create_txn].map((t) => {
-        return t.blob;
-      })
-    )
-    .do();
-  const confirmedTxn = await algosdk.waitForConfirmation(algodClient, txId, 10);
-  console.log('Transaction ' + txId + ' confirmed in round ' + confirmedTxn['confirmed-round']);
+  const commitedOp = await chain.commitOperation(signedOp);
+  const confirmedOp = await chain.confirmOperation(commitedOp);
   // The account3 and account1 should no longer contain the asset as it has been destroyed
   console.log('Asset ID: ' + assetId);
   console.log('AccountAddr = ' + account);
@@ -114,12 +98,12 @@ const printCreatedAsset = async function (account: any, assetid: any) {
   //    .assetID(assetIndex).do();
   // and in the loop below use this to extract the asset for a particular account
   // accountInfo['accounts'][idx][account]);
-  const accountInfo = await algodClient.accountInformation(account).do();
-  for (let idx = 0; idx < accountInfo['created-assets'].length; idx++) {
-    const scrutinizedAsset = accountInfo['created-assets'][idx];
-    if (scrutinizedAsset['index'] == assetid) {
-      console.log('AssetID = ' + scrutinizedAsset['index']);
-      const myparms = JSON.stringify(scrutinizedAsset['params'], undefined, 2);
+  const accountInfo = await chain.getAccountInformation({ address: account });
+  const assets = (accountInfo.data?.['created-assets'] as { index: number; params: Data }[]) ?? [];
+  for (const asset of assets) {
+    if (asset.index == assetid) {
+      console.log('AssetID = ' + asset.index);
+      const myparms = JSON.stringify(asset.params, undefined, 2);
       console.log('parms = ' + myparms);
       break;
     }
@@ -132,12 +116,13 @@ const printAssetHolding = async function (account: any, assetid: any) {
   //    .assetID(assetIndex).do();
   // and in the loop below use this to extract the asset for a particular account
   // accountInfo['accounts'][idx][account]);
-  const accountInfo = await algodClient.accountInformation(account).do();
-  for (let idx = 0; idx < accountInfo['assets'].length; idx++) {
-    const scrutinizedAsset = accountInfo['assets'][idx];
-    if (scrutinizedAsset['asset-id'] == assetid) {
-      const myassetholding = JSON.stringify(scrutinizedAsset, undefined, 2);
-      console.log('assetholdinginfo = ' + myassetholding);
+  const accountInfo = await chain.getAccountInformation({ address: account });
+  const assets = (accountInfo.data?.['created-assets'] as { index: number; params: Data }[]) ?? [];
+  for (const asset of assets) {
+    if (asset.index == assetid) {
+      console.log('AssetID = ' + asset.index);
+      const myparms = JSON.stringify(asset.params, undefined, 2);
+      console.log('parms = ' + myparms);
       break;
     }
   }
