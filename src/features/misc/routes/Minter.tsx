@@ -45,7 +45,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
         part: meta.arc69.properties.causePercentage,
       },
     };
-    mintNFT(meta, info, wallet, account);
+    mintNFT(meta, info, account);
   };
 
   return (
