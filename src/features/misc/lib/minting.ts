@@ -71,12 +71,7 @@ export function useMintAction(causes: Cause[] | undefined) {
   if (causes == null) {
     return () => alert('Causes not loaded yet.');
   }
-  return async function mintNFT(
-    data: metadataNFTType,
-    info: MintMeta,
-    wallet: Wallet,
-    account: string
-  ) {
+  return async function mintNFT(data: metadataNFTType, info: MintMeta, account: string) {
     const cause = causes.find((cause) => cause.id === info.cause.id);
     if (cause == null) {
       return alert('Invalid cause selected!');
@@ -84,7 +79,7 @@ export function useMintAction(causes: Cause[] | undefined) {
     await dialog.process(async function () {
       this.title = 'Uploading to blockchain';
       this.message = 'Creating the NFT data...';
-      const result = await createNFT(account, data, wallet);
+      const result = await createNFT(account, data);
       console.log('result from createNFT', result);
       if (result) {
         this.title = t('Minter.dialog.dialogNFTCreatedSuccess');

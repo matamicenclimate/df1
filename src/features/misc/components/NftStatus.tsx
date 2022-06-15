@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { destroyAsset } from '../../../lib/nft';
-import { useWalletContext } from '@/context/WalletContext';
-import { Wallet } from 'algorand-session-wallet';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
@@ -51,7 +49,6 @@ export default function NftStatus({
   const [showSellingOptions, setShowSellingOptions] = useState<boolean>(false);
   const [openSpinner, setOpenSpinner] = useState<boolean>(false);
   const [assetInfo, setAssetInfo] = useState<NftAssetInfo>();
-  const { wallet } = useWalletContext();
   const color = colors[status];
 
   const refreshPage = () => {
@@ -61,7 +58,7 @@ export default function NftStatus({
   async function handleDelete() {
     setOpenDropdown(false);
     setOpenSpinner(true);
-    await destroyAsset(creatorWallet, assetId, wallet as Wallet);
+    await destroyAsset(creatorWallet, assetId);
     refreshPage();
   }
 

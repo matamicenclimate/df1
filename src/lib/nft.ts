@@ -1,6 +1,5 @@
 import * as DigestProvider from '@common/src/services/DigestProvider';
 import { metadataNFTType } from './type';
-import { Wallet } from 'algorand-session-wallet';
 import { None, Option, Some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
@@ -16,11 +15,7 @@ export interface AssetInfo {
   assetID: number;
 }
 
-async function createAsset<A extends Record<string, any> = any>(
-  account: string,
-  meta: A,
-  wallet: Wallet
-) {
+async function createAsset<A extends Record<string, any> = any>(account: string, meta: A) {
   dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
   const { available } = await chain.nodeIsAvailable({});
@@ -68,7 +63,7 @@ async function createAsset<A extends Record<string, any> = any>(
   return assetInfo;
 }
 
-export async function destroyAsset(account: string, assetId: number, wallet: Wallet) {
+export async function destroyAsset(account: string, assetId: number) {
   // All of the created assets should now be back in the creators
   // Account so we can delete the asset.
   // If this is not the case the asset deletion will fail
@@ -133,11 +128,10 @@ const printAssetHolding = async function (account: any, assetid: any) {
  */
 export async function createNFT(
   account: string,
-  metadat: metadataNFTType,
-  wallet: Wallet
+  metadat: metadataNFTType
 ): Promise<Option<AssetInfo>> {
   try {
-    const info = await createAsset(account, metadat, wallet);
+    const info = await createAsset(account, metadat);
     return Some(info);
   } catch (err: any) {
     console.log('Failed to process NFT creation!', err);
