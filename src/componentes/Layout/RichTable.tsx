@@ -21,7 +21,10 @@ export function RichTable<T extends Dict[]>({ rows, header, order }: RichTablePr
             {first}
           </th>
           {center.map(([key, value]) => (
-            <th key={`${key}`} className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray">
+            <th
+              key={`${String(key)}`}
+              className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray"
+            >
               {value}
             </th>
           ))}
@@ -34,7 +37,7 @@ export function RichTable<T extends Dict[]>({ rows, header, order }: RichTablePr
         {rows.map((child) => (
           <tr key={child.$id} className={child.$class}>
             {order.map((k) => (
-              <td key={`${child.$id}/${k}`} className="p-2 pl-6 pr-6">
+              <td key={`${child.$id}/${String(k)}`} className="p-2 pl-6 pr-6">
                 {child[k]}
               </td>
             ))}
