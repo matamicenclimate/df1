@@ -128,10 +128,10 @@ const printAssetHolding = async function (account: any, assetid: any) {
  */
 export async function createNFT(
   account: string,
-  metadat: metadataNFTType
+  metadata: metadataNFTType
 ): Promise<Option<AssetInfo>> {
   try {
-    const info = await createAsset(account, metadat);
+    const info = await createAsset(account, metadata);
     return Some(info);
   } catch (err: any) {
     console.log('Failed to process NFT creation!', err);
