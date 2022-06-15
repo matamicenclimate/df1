@@ -1,8 +1,7 @@
-import algosdk from 'algosdk';
 import * as DigestProvider from '@common/src/services/DigestProvider';
 import { metadataNFTType } from './type';
 import { Wallet } from 'algorand-session-wallet';
-import { none, option, some } from '@octantis/option';
+import { None, Option, Some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
 import { AlgorandGatewayProvider } from '@common/src/blockchain/algorand/AlgorandGateway';
@@ -16,7 +15,6 @@ export interface AssetInfo {
 }
 
 async function createAsset<A extends Record<string, any> = any>(
-  algodClient: algosdk.Algodv2,
   account: string,
   meta: A,
   wallet: Wallet
@@ -30,8 +28,8 @@ async function createAsset<A extends Record<string, any> = any>(
   }
   //Check account balance
   dialog.message = 'Retrieving account information...';
-  const accountInfo = await algodClient.accountInformation(account).do();
-  const startingAmount = accountInfo.amount;
+  const accountInfo = await chain.getAccountInformation({ address: account });
+  const startingAmount = accountInfo.balance ?? -1;
   console.log('User account balance: microAlgos', startingAmount);
   // Construct the transaction
   // Friendly name of the asset
@@ -55,13 +53,13 @@ async function createAsset<A extends Record<string, any> = any>(
   const opCommited = await chain.commitOperation(opSigned);
   dialog.message = 'Waiting for confirmation...';
   const opConfirmed = await chain.confirmOperation(opCommited);
-  // console.log('Transaction ' + opConfirmed.operation.id + ' confirmed in round ' + confirmedTxn['confirmed-round']);
   // const assetID = confirmedTxn['asset-index'];
-  // console.log('AssetID = ' + assetID);
   console.log('Operation confirmed:', opConfirmed.operation);
+  // console.log('Transaction ' + opConfirmed.operation.id + ' confirmed in round ' + confirmedTxn['confirmed-round']);
   const assetID = Number(opConfirmed.operation.data?.['asset-index'] ?? -1);
-  await printCreatedAsset(algodClient, account, assetID);
-  await printAssetHolding(algodClient, account, assetID);
+  console.log('AssetID = ' + assetID);
+  await printCreatedAsset(account, assetID);
+  await printAssetHolding(account, assetID);
   const assetInfo: AssetInfo = {
     transactionId: Number(opConfirmed.operation.id),
     assetID: assetID,
@@ -69,12 +67,7 @@ async function createAsset<A extends Record<string, any> = any>(
   return assetInfo;
 }
 
-export async function destroyAsset(
-  algodClient: algosdk.Algodv2,
-  account: string,
-  assetId: number,
-  wallet: Wallet
-) {
+export async function destroyAsset(account: string, assetId: number, wallet: Wallet) {
   const assetNumber = Number(assetId);
   // All of the created assets should now be back in the creators
   // Account so we can delete the asset.
@@ -108,14 +101,14 @@ export async function destroyAsset(
   // The account3 and account1 should no longer contain the asset as it has been destroyed
   console.log('Asset ID: ' + assetId);
   console.log('AccountAddr = ' + account);
-  await printCreatedAsset(algodClient, account, assetId);
-  await printAssetHolding(algodClient, account, assetId);
+  await printCreatedAsset(account, assetId);
+  await printAssetHolding(account, assetId);
 
   // return;
 }
 
 // Function used to print created asset for account and assetid
-const printCreatedAsset = async function (algodClient: any, account: any, assetid: any) {
+const printCreatedAsset = async function (account: any, assetid: any) {
   // note: if you have an indexer instance available it is easier to just use this
   //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
@@ -133,7 +126,7 @@ const printCreatedAsset = async function (algodClient: any, account: any, asseti
   }
 };
 // Function used to print asset holding for account and assetid
-const printAssetHolding = async function (algodClient: any, account: any, assetid: any) {
+const printAssetHolding = async function (account: any, assetid: any) {
   // note: if you have an indexer instance available it is easier to just use this
   //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
@@ -154,14 +147,13 @@ const printAssetHolding = async function (algodClient: any, account: any, asseti
  * Starts the creation of an asset.
  */
 export async function createNFT(
-  algodClient: algosdk.Algodv2,
   account: string,
   metadat: metadataNFTType,
   wallet: Wallet
-): Promise<option<AssetInfo>> {
+): Promise<Option<AssetInfo>> {
   try {
-    const info = await createAsset(algodClient, account, metadat, wallet);
-    return some(info);
+    const info = await createAsset(account, metadat, wallet);
+    return Some(info);
   } catch (err: any) {
     console.log('Failed to process NFT creation!', err);
 
@@ -172,6 +164,6 @@ export async function createNFT(
       await dialog.interaction();
     }
 
-    return none();
+    return None();
   }
 }

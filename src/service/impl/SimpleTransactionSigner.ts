@@ -1,5 +1,5 @@
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
-import { none, option } from '@octantis/option';
+import { None, Option } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
 import { Transaction } from 'algosdk';
 
@@ -9,14 +9,14 @@ function die(): never {
 
 @TransactionSigner.declare()
 export default class SimpleTransactionSigner implements TransactionSigner.type {
-  wallet: option<Wallet> = none();
+  wallet: Option<Wallet> = None();
 
   async signTransaction(transaction: Transaction): Promise<Uint8Array>;
   async signTransaction(transaction: Transaction[]): Promise<Uint8Array[]>;
   async signTransaction(
     transaction: Transaction | Transaction[]
   ): Promise<Uint8Array | Uint8Array[]> {
-    if (this.wallet.isDefined()) {
+    if (this.wallet.defined) {
       if (transaction instanceof Array) {
         return (await this.wallet.value.signTxn(transaction)).map((_) => _.blob);
       }
