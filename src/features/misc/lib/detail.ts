@@ -11,6 +11,7 @@ import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
+import { algosToMicroalgos, microalgosToAlgos } from './minting';
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
@@ -144,9 +145,18 @@ export function useNFTPurchasingActions(
         previousBid = some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-      const minRequired = (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 10);
+      console.log('statestatestate', state);
+
+      const minRequired = microalgosToAlgos(
+        (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 1000000)
+      );
+
       let bidAmount = 0;
-      while (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
+      while (
+        bidAmount < microalgosToAlgos(minRequired) ||
+        Number.isNaN(bidAmount) ||
+        !Number.isFinite(bidAmount)
+      ) {
         const result = prompt(
           `Enter a bid amount (At least ${minRequired}!):`,
           minRequired.toString()
@@ -155,6 +165,9 @@ export function useNFTPurchasingActions(
           return alert('Aborting the bidding process');
         }
         bidAmount = Number(result);
+        console.log('bid Amount', bidAmount);
+        console.log('minRequired', minRequired);
+
         if (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
           alert(t('NFTDetail.dialog.bidErrorAmount'));
         }
