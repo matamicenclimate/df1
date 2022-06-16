@@ -26,7 +26,8 @@
       "dialogIpfs": "Uploading NFT to IPFS...",
       "dialogPrepNft": "Preparing NFT",
       "dialogNFTCreatedSuccess": "Your NFT has been successfully created",
-      "dialogNFTListedSuccess": "Your NFT has been successfully listed"
+      "dialogNFTListedSuccess": "Your NFT has been successfully listed",
+      "dialogNFTBuySuccess": "You have successfully purchased the NFT!"
     }
   },
   "NFTDetail": {
