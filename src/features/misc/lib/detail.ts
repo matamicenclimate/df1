@@ -9,7 +9,7 @@ import CurrentNFTInfo from '../state/CurrentNFTInfo';
 import algosdk from 'algosdk';
 import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
-import { fetchNfts } from '@/lib/NFTFetch';
+import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
 
 /** The deposit fee value. */
@@ -47,6 +47,7 @@ export function useNFTPurchasingActions(
   nft: option<CurrentNFTInfo>,
   updateNFTInfo: () => Promise<void>
 ) {
+  const goToPage = useNavigate();
   if (wallet == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
   }
@@ -69,6 +70,7 @@ export function useNFTPurchasingActions(
   return {
     async doBuyNFT() {
       return await dialog.process(async function () {
+        this.title = 'Processing NFT purchase';
         this.message = 'Preparing NFT...';
         /** @TODO Logic check amounts before app call. */
         const account = WalletAccountProvider.get().account;
@@ -119,8 +121,11 @@ export function useNFTPurchasingActions(
               appId: appId.toString(),
             },
           });
-          await fetchNfts();
           await updateNFTInfo();
+          this.title = t('Minter.dialog.dialogNFTBuySuccess');
+          this.message = '';
+
+          goToPage(`/my-nfts`);
         } catch {
           this.message = t('NFTDetail.dialog.bidFinishedFail');
           await new Promise((r) => setTimeout(r, 1000));
@@ -196,7 +201,6 @@ export function useNFTPurchasingActions(
         try {
           await algosdk.waitForConfirmation(client(), txId, 10);
           this.message = t('NFTDetail.dialog.bidFinishedSuccess');
-          await fetchNfts();
           await updateNFTInfo();
         } catch {
           this.message = t('NFTDetail.dialog.bidFinishedFail');
