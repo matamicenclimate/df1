@@ -4,7 +4,9 @@ import * as WalletAccountProvider from '@common/src/services/WalletAccountProvid
 import SessionWalletAccountProvider from '../service/impl/SessionWalletAccountProvider';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
 import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
-import { some } from '@octantis/option';
+import { Some } from '@octantis/option';
+import WalletProvider from '@/service/WalletProvider';
+import Container from 'typedi';
 
 export type UserWallet = {
   wallet: Wallet | undefined;
@@ -27,7 +29,8 @@ export const UserContextProvider = ({ children }: WalletContextProviderProps) =>
 
   useEffect(() => {
     if (userWallet == null || userWallet.account == null || userWallet.wallet == null) return;
-    (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(userWallet.wallet);
+    (TransactionSigner.get() as SimpleTransactionSigner).wallet = Some(userWallet.wallet);
+    Container.get(WalletProvider).wallet = Some(userWallet.wallet);
     (WalletAccountProvider.get() as SessionWalletAccountProvider).account = {
       addr: userWallet.account,
       sk: Uint8Array.from([]),

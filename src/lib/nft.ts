@@ -34,30 +34,30 @@ async function createAsset<A extends Record<string, any> = any>(account: string,
   const url = meta.url;
   const metadataHash = mdhash.digest(meta);
   dialog.message = 'Sending NFT data...';
-  const op = await chain.createAsset({
-    owner: account,
-    amount: 1,
-    name: assetName,
-    url,
-    metadata: {
-      payload: meta,
-      checksum: metadataHash,
-    },
-  });
-  const opSigned = await chain.signOperation(op);
-  dialog.message = 'Sending NFT data...';
-  const opCommited = await chain.commitOperation(opSigned);
-  dialog.message = 'Waiting for confirmation...';
-  const opConfirmed = await chain.confirmOperation(opCommited);
-  // const assetID = confirmedTxn['asset-index'];
-  console.log('Operation confirmed:', opConfirmed.operation);
+  const {
+    operations: [result],
+  } = await chain
+    .createAsset({
+      owner: account,
+      amount: 1,
+      name: assetName,
+      url,
+      metadata: {
+        payload: meta,
+        checksum: metadataHash,
+      },
+    })
+    .then((ops) => ops.sign())
+    .then((ops) => ops.commit())
+    .then((ops) => ops.confirm());
+  console.log('Operation confirmed:', result);
   // console.log('Transaction ' + opConfirmed.operation.id + ' confirmed in round ' + confirmedTxn['confirmed-round']);
-  const assetID = Number(opConfirmed.operation.data?.['asset-index'] ?? -1);
+  const assetID = Number(result.data?.['asset-index'] ?? -1);
   console.log('AssetID = ' + assetID);
   await printCreatedAsset(account, assetID);
   await printAssetHolding(account, assetID);
   const assetInfo: AssetInfo = {
-    transactionId: Number(opConfirmed.operation.id),
+    transactionId: Number(result.id),
     assetID: assetID,
   };
   return assetInfo;
@@ -67,16 +67,18 @@ export async function destroyAsset(account: string, assetId: number) {
   // All of the created assets should now be back in the creators
   // Account so we can delete the asset.
   // If this is not the case the asset deletion will fail
-  const op = await chain.destroyAsset({ asset: assetId, owner: account });
-  console.log('txn', op);
   dialog.subtitle = 'Waiting for user confirmation';
   dialog.highlight = true;
-  const signedOp = await chain.signOperation(op);
-  console.log(signedOp);
+  const {
+    operations: [op],
+  } = await chain
+    .destroyAsset({ asset: assetId, owner: account })
+    .then((ops) => ops.sign())
+    .then((ops) => ops.commit())
+    .then((ops) => ops.confirm());
+  console.log('txn', op);
   dialog.subtitle = '';
   dialog.highlight = false;
-  const commitedOp = await chain.commitOperation(signedOp);
-  const confirmedOp = await chain.confirmOperation(commitedOp);
   // The account3 and account1 should no longer contain the asset as it has been destroyed
   console.log('Asset ID: ' + assetId);
   console.log('AccountAddr = ' + account);
