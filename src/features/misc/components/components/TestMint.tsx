@@ -126,9 +126,11 @@ if (process.env.NODE_ENV === 'development') {
             const dt = new DataTransfer();
             dt.items.add(file);
             const files = dt.files;
+            const text = lorem.filter((_) => Math.random() > 0.8).join('\n');
+            const title = lorem.find(() => Math.random() > 0.8) ?? lorem[lorem.length - 1];
             props.onMint({
               author: authors.pick() + ' ' + authors.pick(),
-              description: lorem.filter((_) => Math.random() > 0.8).join('\n'),
+              description: text.slice(0, Math.min(text.length, 500)),
               file: files,
               image_url: await get('https://picsum.photos/200'),
               ipnft: '00000',
@@ -139,7 +141,7 @@ if (process.env.NODE_ENV === 'development') {
                 file: files[0],
               },
               price: 9999,
-              title: lorem.find(() => Math.random() > 0.8) ?? lorem[lorem.length - 1],
+              title: title.slice(0, Math.min(32, title.length)),
               url: await get('https://picsum.photos/200'),
             });
           }}
