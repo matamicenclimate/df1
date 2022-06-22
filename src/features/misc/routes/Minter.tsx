@@ -10,12 +10,13 @@ import { InputGenerator } from '@/componentes/InputGenerator/InputGenerator';
 import { useCauseContext } from '@/context/CauseContext';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
 import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
-import { some } from '@octantis/option';
+import { Some } from '@octantis/option';
 import { useTranslation } from 'react-i18next';
 import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
 import ErrorHint from '@/componentes/Form/ErrorHint';
 import Configuration from '@/context/ConfigContext';
+import { TestMint } from '../components/components/TestMint';
 
 export type MinterProps = {
   wallet: Wallet;
@@ -37,7 +38,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   } = useForm<NFTMetadataBackend>();
 
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
-    (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
+    (TransactionSigner.get() as SimpleTransactionSigner).wallet = Some(wallet);
     const meta = await getNFTMetadata(data);
     const info = {
       cause: {
@@ -51,6 +52,11 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   return (
     <div>
       <MainLayout>
+        <TestMint
+          onMint={(data) => {
+            formSubmitHandler(data);
+          }}
+        />
         <div className="flex justify-center rounded m-auto">
           <Form
             onSubmit={handleSubmit(formSubmitHandler) as () => Promise<void>}

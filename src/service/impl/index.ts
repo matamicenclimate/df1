@@ -27,6 +27,10 @@ class OpSign implements OperationSigner {
   async sign(ops: UnsignedOperation[]): Promise<SignedOperation[]> {
     const chain = Container.get(BlockchainGatewayProvider).require();
     for (const wallet of this.provider.wallet) {
+      console.log(
+        `Test:`,
+        ops.map((o) => o.data)
+      );
       const out = await wallet.signTxn(ops.map((op) => op.data as any));
       return out.map((op) => new SignedOperation(chain, op.txID, op as any));
     }
