@@ -53,13 +53,9 @@ export const WalletFundsContextProvider = ({ children }: WalletFundsContextProvi
       const startingAmount = accountInfo.amount;
       const balanceAlgo = Number((startingAmount / 1000000).toFixed(2));
       setBalanceAlgo(balanceAlgo);
-      console.log('balanceAlgobalanceAlgobalanceAlgobalanceAlgo', balanceAlgo);
-      console.log('datadatadatadata', data);
 
       if (data !== undefined && balanceAlgo !== undefined) {
         const balanceUSD = Number((balanceAlgo * data?.algorand?.usd).toFixed(2));
-        console.log('balanceUSDbalanceUSDbalanceUSD', balanceUSD);
-
         setBalanceAlgoUSD(balanceUSD);
       }
     }
@@ -75,11 +71,6 @@ export const WalletFundsContextProvider = ({ children }: WalletFundsContextProvi
 
 export const useWalletFundsContext = () => {
   const walletFundsContext = useContext(WalletFundsContext);
-
-  console.log(
-    'walletFundsContextwalletFundsContextwalletFundsContextwalletFundsContext',
-    walletFundsContext
-  );
 
   return {
     balanceAlgo: walletFundsContext?.balanceAlgo,

@@ -46,10 +46,6 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
   const [user, setUser] = useState<option<UserState>>(none());
   const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
   const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
-
-  console.log('balanceAlgo', balanceAlgo);
-  console.log('balanceAlgoUSD', balanceAlgoUSD);
-
   const [info, setInfo] = useState('');
 
   useEffect(() => {
