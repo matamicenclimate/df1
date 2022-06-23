@@ -9,130 +9,28 @@ import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Container from 'typedi';
-import NftCause from '../components/NftCause';
-import NftName from '../components/NftName';
-import NftPrice from '../components/NftPrice';
-import NftStatus from '../components/NftStatus';
-
-function ProfileColumn({
-  children,
-  className,
-  ...props
-}: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
-  return (
-    <div className={`basis-1/3 pr-12 ${className ?? ''}`.trim()} {...props}>
-      {children}
-    </div>
-  );
-}
-
-function TransactionFrame({
-  children,
-  className,
-  ...props
-}: React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
-  return (
-    <div className={`basis-2/3 pl-12 ${className ?? ''}`.trim()} {...props}>
-      {children}
-    </div>
-  );
-}
+import NftCause from '../components/MyNftList/NftCause';
+import NftName from '../components/MyNftList/NftName';
+import NftPrice from '../components/MyNftList/NftPrice';
+import NftStatus from '../components/MyNftList/NftStatus';
+import { ProfileColumn } from '../components/MyNftList/ProfileColumn';
+import { ProfileLoading } from '../components/MyNftList/ProfileLoading';
+import { CreateProfile } from './CreateProfile';
+import { TransactionFrame } from '../components/MyNftList/TransactionFrame';
 
 export interface MyNftListProps {
   wallet: Wallet;
   account: string;
 }
 
-interface UserState {
+export interface UserState {
   balance: number;
   projects: number;
 }
-
-const ProfileLoading = () => (
-  <div className="flex p-4 flex-col items-center basis-1/2 shadow-lg rounded-xl bg-white animate-pulse">
-    <h5 className="text-lg font-dinpro font-normal rounded w-full bg-climate-action-light">
-      &nbsp;
-    </h5>
-    <p className="text-md m-2 font-normal font-dinpro w-full rounded bg-climate-action-light">
-      &nbsp;
-    </p>
-    <p className="text-sm font-normal font-dinpro w-full rounded bg-climate-action-light">
-      <a>&nbsp;</a>
-    </p>
-    <div className="flex pt-2 justify-evenly w-full">
-      <div className=" flex w-full flex-col items-center p-2">
-        <div className="bg-climate-action-light w-full rounded">&nbsp;</div>
-        <p className="font-sanspro text-xs bg-climate-action-light rounded w-full mt-2">&nbsp;</p>
-      </div>
-      <div className="flex w-full flex-col items-center p-2">
-        <div className="bg-climate-action-light w-full rounded">&nbsp;</div>
-        <p className="font-sanspro text-xs bg-climate-action-light rounded w-full mt-2">&nbsp;</p>
-      </div>
-    </div>
-    <div className="p-3 pt-4 w-full">
-      <hr />
-    </div>
-    <div className="flex justify-center w-full">
-      <a className="w-full p-1">
-        <Button className="m-1 w-full" size="sm">
-          &nbsp;
-        </Button>
-      </a>
-      <a className="w-full p-1">
-        <Button className="m-1 w-full" size="sm" variant="light">
-          &nbsp;
-        </Button>
-      </a>
-    </div>
-  </div>
-);
-
-const createProfile = (account: string, wallet: Wallet, state: UserState) => (
-  <div className="flex p-4 flex-col items-center basis-1/2 shadow-lg rounded-xl bg-white">
-    <h5 className="text-lg font-dinpro font-normal text-climate-black-text">
-      {wallet.displayName()}
-    </h5>
-    <p className="text-sm pb-2 font-normal font-dinpro text-climate-gray-light">
-      <a target="_blank" rel="noreferrer" href={`https://algoexplorer.io/address/${account}`}>
-        @{account.slice(0, 8)}...{account.slice(-8)}
-      </a>
-    </p>
-    <div className="flex pt-2 justify-evenly">
-      <div className=" flex flex-col items-center p-2">
-        <p>{state.balance} $</p>
-        <p className="font-sanspro text-xs text-climate-gray-artist">Total balance</p>
-      </div>
-      <div className="flex flex-col items-center p-2">
-        <p>{state.projects}</p>
-        <p className="font-sanspro text-xs text-climate-gray-artist">Projects backed</p>
-      </div>
-    </div>
-    <div className="p-3 pt-4 w-full">
-      <hr />
-    </div>
-    <div className="flex justify-center w-full">
-      <a className="w-full p-1">
-        <Button className="m-1 w-full" size="sm">
-          Mint NFT
-        </Button>
-      </a>
-      <a
-        className="w-full p-1"
-        target="_blank"
-        rel="noreferrer"
-        href={`https://algoexplorer.io/address/${account}`}
-      >
-        <Button className="m-1 w-full" size="sm" variant="light">
-          Wallet
-        </Button>
-      </a>
-    </div>
-  </div>
-);
 
 function isAsset(value: Asset | Nft): value is Asset {
   return typeof (value as unknown as Record<string, unknown>)['asset-id'] === 'number';
@@ -149,16 +47,18 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
   const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
   const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
   const [info, setInfo] = useState('');
+
   useEffect(() => {
     if (balanceAlgo != null) {
       setUser(
         some({
           projects: 0,
-          balance: balanceAlgoUSD ?? -1,
+          balance: balanceAlgoUSD ?? 0,
         })
       );
     }
-  }, [balanceAlgo]);
+  }, [balanceAlgo, balanceAlgoUSD]);
+
   useEffect(() => {
     (async () => {
       setInfo(`Preloading assets...`);
@@ -170,6 +70,9 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
         }),
         10
       );
+      if (res.data.assets.length === 0) {
+        setInfo('No asset found.');
+      }
       setNfts(
         res.data.assets.reduce((map, asset) => {
           map[asset['asset-id'].toString()] = asset;
@@ -181,8 +84,10 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
   useEffect(() => {
     const size = Object.keys(nfts).length;
     if (size === 0) return;
-    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as Asset[];
+    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)).reverse() as Asset[];
     setInfo(`Loaded ${size - pending.length} out of ${size} total assets...`);
+    console.log('pending', pending);
+
     if (pending.length === 0) {
       setInfo(`Done! All assets loaded!`);
       setTimeout(() => {
@@ -215,7 +120,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
         <ProfileColumn className="flex">
           <div className="basis-1/2">&nbsp;</div>
           <div className="basis-1/2">
-            {user.fold(<ProfileLoading />, (state) => createProfile(account, wallet, state))}
+            {user.fold(<ProfileLoading />, (state) => CreateProfile(account, wallet, state))}
           </div>
         </ProfileColumn>
         <TransactionFrame className="flex">
