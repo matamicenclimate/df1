@@ -54,7 +54,7 @@ export const WalletFundsContextProvider = ({ children }: WalletFundsContextProvi
       const balanceAlgo = Number((startingAmount / 1000000).toFixed(2));
       setBalanceAlgo(balanceAlgo);
 
-      if (data !== undefined && balanceAlgo !== undefined) {
+      if (data != null && balanceAlgo !== undefined) {
         const balanceUSD = Number((balanceAlgo * data?.algorand?.usd).toFixed(2));
         setBalanceAlgoUSD(balanceUSD);
       }
