@@ -1,4 +1,5 @@
 import { NFTMetadataBackend } from '@/lib/type';
+import { url } from 'inspector';
 import React from 'react';
 
 export interface TestMintProps {
@@ -121,8 +122,10 @@ if (process.env.NODE_ENV === 'development') {
         <button
           style={{ margin: '1rem', padding: '0.5rem', border: '1px solid black' }}
           onClick={async () => {
-            const data = 'Здесь текст для файла или положите в переменную Blob';
-            const file = new File([data], 'primer.txt', { type: 'text/plain' });
+            const imageUrl = await get('https://picsum.photos/200');
+            const mime = imageUrl.match(/\.([a-z]+)\?hmac=/)?.[1];
+            const data = await (await fetch(imageUrl)).blob();
+            const file = new File([data], 'picsum.' + mime, { type: `image/${mime}` });
             const dt = new DataTransfer();
             dt.items.add(file);
             const files = dt.files;
@@ -130,19 +133,19 @@ if (process.env.NODE_ENV === 'development') {
             const title = lorem.find(() => Math.random() > 0.8) ?? lorem[lorem.length - 1];
             props.onMint({
               author: authors.pick() + ' ' + authors.pick(),
-              description: text.slice(0, Math.min(text.length, 500)),
+              description: text.slice(0, Math.min(text.length, 128)),
               file: files,
-              image_url: await get('https://picsum.photos/200'),
+              image_url: imageUrl,
               ipnft: '00000',
               properties: {
                 cause: '6e2ce003-f976-4ea9-93d6-55af26a96352',
                 causePercentage: 50,
-                price: 0,
+                price: 9999,
                 file: files[0],
               },
               price: 9999,
               title: title.slice(0, Math.min(32, title.length)),
-              url: await get('https://picsum.photos/200'),
+              url: imageUrl,
             });
           }}
         >
