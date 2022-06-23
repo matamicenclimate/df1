@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import algoLogo from '@/assets/algoLogo.svg';
-import { microalgosToAlgos } from '../lib/minting';
+import { microalgosToAlgos } from '../../lib/minting';
 
 export interface NftPriceProps {
   price: number;

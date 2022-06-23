@@ -1,6 +1,6 @@
 import { useCauseContext } from '@/context/CauseContext';
 import { Cause } from '@/lib/api/causes';
-import climateLogo from '../../../assets/climateLogo.png';
+import climateLogo from '../../../../assets/climateLogo.png';
 
 export interface NftCauseProps {
   id: string;
