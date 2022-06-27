@@ -24,3 +24,4 @@ yarn-error.log*
 
 # Craco config output
 .webpack.conf.js
+*.wasm

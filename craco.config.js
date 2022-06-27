@@ -60,6 +60,16 @@ module.exports = {
           },
         ],
       });
+      conf.module.rules[1].oneOf.unshift({
+        test: /\.(c|cpp|cxx)$/,
+        use: {
+          loader: 'cpp-wasm-loader',
+          options: {
+            emccFlags: (flags) => [...flags, '-sERROR_ON_UNDEFINED_SYMBOLS=0'],
+          },
+        },
+      });
+      conf.resolve.extensions.push('.c', '.cpp');
       // This line dumps example configuration.
       // You may use it to crawl the configuration tree, in order to have a brief insight of it's structure.
       dumpObject('.webpack.conf.js', conf);

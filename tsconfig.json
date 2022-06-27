@@ -20,6 +20,6 @@
         "downlevelIteration": true
     },
     "include": ["src", "climate-nft-common/src"],
-    "exclude": ["node_modules", "*.teal"],
+    "exclude": ["node_modules", "*.teal", "*.cpp"],
     "extends": "./tsconfig.paths.json"
 }
