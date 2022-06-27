@@ -70,9 +70,7 @@ export const NftDetail = () => {
   const { ipnft: assetId } = useParams() as { ipnft: string };
   const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
   const [error, setError, resetError] = useOptionalState<unknown>();
-  const { wallet, walletAccount } = useWalletContext();
-
-  const now = Date.now() / 1000;
+  const { wallet } = useWalletContext();
 
   function updateNFTInfo() {
     return tryGetNFTData(assetId, nft, setNft, setError);
@@ -80,6 +78,7 @@ export const NftDetail = () => {
   useEffect(() => {
     updateNFTInfo();
   }, []);
+
   useEffect(() => {
     for (const data of nft) {
       if (!data.state.isDefined()) {

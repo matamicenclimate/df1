@@ -10,7 +10,7 @@ const Causes = () => {
     <MainLayout>
       <div className="py-10 flex justify-center">
         {causes?.map((cause: CausePostBody) => (
-          <div className="w-[400px]" key={cause?.title}>
+          <div className="px-4 w-[400px]" key={cause?.title}>
             <CauseDetail
               title={cause?.title}
               imageUrl={cause?.imageUrl}

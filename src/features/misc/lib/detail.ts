@@ -11,7 +11,8 @@ import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
-import { algosToMicroalgos, microalgosToAlgos } from './minting';
+import { microalgosToAlgos } from './minting';
+import { useWalletFundsContext } from '@/context/WalletFundsContext';
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
@@ -48,10 +49,12 @@ export function useNFTPurchasingActions(
   nft: option<CurrentNFTInfo>,
   updateNFTInfo: () => Promise<void>
 ) {
+  const { balanceAlgo } = useWalletFundsContext();
   const goToPage = useNavigate();
   if (wallet == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
   }
+
   const aId = Number(assetId);
   if (Number.isNaN(aId)) {
     return voidResult(() => {
@@ -62,6 +65,8 @@ export function useNFTPurchasingActions(
     return voidResult(() => alert('Nope.avi'));
   }
   const appId = nft.value.nft.arc69.properties.app_id;
+  const priceNft = nft.value.nft.arc69.properties.price;
+
   if (appId == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.attemptError')));
   }
@@ -70,16 +75,21 @@ export function useNFTPurchasingActions(
   // The buy action.
   return {
     async doBuyNFT() {
+      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft + computedExtraFees)) {
+        return await dialog.process(async function () {
+          this.title = 'No sufficient funds to purchase';
+          this.message = `Account balance has to be greater than ${microalgosToAlgos(
+            priceNft
+          )} Algos`;
+
+          return await new Promise((r) => setTimeout(r, 4000));
+        });
+      }
       return await dialog.process(async function () {
         this.title = 'Processing NFT purchase';
         this.message = 'Preparing NFT...';
         /** @TODO Logic check amounts before app call. */
         const account = WalletAccountProvider.get().account;
-        console.log('sending nft data for call', {
-          address: account.addr,
-          appId,
-          aId,
-        });
         const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
         const state = nft.get().state.get();
         const callTxn = await algosdk.makeApplicationCallTxnFromObject({
@@ -135,6 +145,17 @@ export function useNFTPurchasingActions(
       });
     },
     async doPlaceABid() {
+      console.log('computedExtraFees', computedExtraFees);
+      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft + computedExtraFees)) {
+        return await dialog.process(async function () {
+          this.title = 'No sufficient funds to place a bid';
+          this.message = `Account balance has to be greater than ${microalgosToAlgos(
+            priceNft
+          )} Algos`;
+
+          return await new Promise((r) => setTimeout(r, 4000));
+        });
+      }
       const appAddr = algosdk.getApplicationAddress(appId);
       let previousBid: option<string> = none();
       if (!nft.value.state.isDefined()) {
@@ -145,8 +166,6 @@ export function useNFTPurchasingActions(
         previousBid = some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-      console.log('statestatestate', state);
-
       const minRequired = microalgosToAlgos(
         (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 1000000)
       );
