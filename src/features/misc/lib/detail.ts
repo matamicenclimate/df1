@@ -12,6 +12,7 @@ import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
 import { algosToMicroalgos, microalgosToAlgos } from './minting';
+import { useWalletFundsContext } from '@/context/WalletFundsContext';
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
@@ -19,6 +20,8 @@ export const depositTxCount = 7;
 export const baseTxFees = 0;
 /** The extra amount of money needed for future transactions. */
 export const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
+
+const dialog = Container.get(ProcessDialog);
 
 /**
  * Returns true if the passed array is all-zero.
@@ -34,6 +37,20 @@ function voidResult(of: () => void) {
   };
 }
 
+async function checkUserFunds(balanceAlgo: number, nftPrice: number) {
+  if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(nftPrice)) {
+    console.log('balanceAlgo', balanceAlgo);
+    console.log('nftPrice', nftPrice);
+
+    return await dialog.process(async function () {
+      this.title = 'Not sufficient funds';
+      this.message = `Account balance must be greater than ${microalgosToAlgos(nftPrice)} Algos`;
+
+      return await new Promise((r) => setTimeout(r, 4000));
+    });
+  } else return true;
+}
+
 /**
  * Builds buy NFT and place-a-bid for NFT function actions.
  * @param aId
@@ -46,12 +63,14 @@ export function useNFTPurchasingActions(
   assetId: string,
   wallet: Wallet | undefined,
   nft: option<CurrentNFTInfo>,
-  updateNFTInfo: () => Promise<void>
+  updateNFTInfo: () => Promise<void> | undefined
 ) {
+  const { balanceAlgo } = useWalletFundsContext();
   const goToPage = useNavigate();
   if (wallet == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
   }
+
   const aId = Number(assetId);
   if (Number.isNaN(aId)) {
     return voidResult(() => {
@@ -62,6 +81,8 @@ export function useNFTPurchasingActions(
     return voidResult(() => alert('Nope.avi'));
   }
   const appId = nft.value.nft.arc69.properties.app_id;
+  const priceNft = nft.value.nft.arc69.properties.price;
+
   if (appId == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.attemptError')));
   }
@@ -70,16 +91,23 @@ export function useNFTPurchasingActions(
   // The buy action.
   return {
     async doBuyNFT() {
+      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft)) {
+        return await dialog.process(async function () {
+          this.title = 'No sufficient funds to purchase';
+          this.message = `Account balance has to be greater than ${microalgosToAlgos(
+            priceNft
+          )} Algos`;
+
+          return await new Promise((r) => setTimeout(r, 4000));
+        });
+      }
       return await dialog.process(async function () {
         this.title = 'Processing NFT purchase';
         this.message = 'Preparing NFT...';
         /** @TODO Logic check amounts before app call. */
         const account = WalletAccountProvider.get().account;
-        console.log('sending nft data for call', {
-          address: account.addr,
-          appId,
-          aId,
-        });
+        console.log('account', account);
+
         const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
         const state = nft.get().state.get();
         const callTxn = await algosdk.makeApplicationCallTxnFromObject({
@@ -135,6 +163,16 @@ export function useNFTPurchasingActions(
       });
     },
     async doPlaceABid() {
+      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft)) {
+        return await dialog.process(async function () {
+          this.title = 'No sufficient funds to place a bid';
+          this.message = `Account balance has to be greater than ${microalgosToAlgos(
+            priceNft
+          )} Algos`;
+
+          return await new Promise((r) => setTimeout(r, 4000));
+        });
+      }
       const appAddr = algosdk.getApplicationAddress(appId);
       let previousBid: option<string> = none();
       if (!nft.value.state.isDefined()) {

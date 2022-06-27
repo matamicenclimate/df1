@@ -8,6 +8,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { NFTMetadataBackend } from '@/lib/type';
 import { InputGenerator } from '@/componentes/InputGenerator/InputGenerator';
 import { useCauseContext } from '@/context/CauseContext';
+import { useWalletFundsContext } from '@/context/WalletFundsContext';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
 import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
 import { some } from '@octantis/option';
@@ -16,15 +17,20 @@ import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
 import ErrorHint from '@/componentes/Form/ErrorHint';
 import Configuration from '@/context/ConfigContext';
+import Container from 'typedi';
+import ProcessDialog from '@/service/ProcessDialog';
 
 export type MinterProps = {
   wallet: Wallet;
   account: string;
 };
 
+const dialog = Container.get(ProcessDialog);
+
 export const Minter = ({ wallet, account }: MinterProps) => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState<boolean>(false);
+  const { balanceAlgo } = useWalletFundsContext();
   const { causes } = useCauseContext();
   const mintNFT = useMintAction(causes);
   const config = useContext(Configuration.Context);
@@ -38,6 +44,15 @@ export const Minter = ({ wallet, account }: MinterProps) => {
 
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
     (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
+
+    if (balanceAlgo != null && balanceAlgo < 1) {
+      return await dialog.process(async function () {
+        this.title = 'Error minting NFT. Please fund your account';
+        this.message = 'Account balance must be greater than 1 Algo';
+
+        return await new Promise((r) => setTimeout(r, 4000));
+      });
+    }
     const meta = await getNFTMetadata(data);
     const info = {
       cause: {
