@@ -75,7 +75,7 @@ export function useNFTPurchasingActions(
   // The buy action.
   return {
     async doBuyNFT() {
-      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft)) {
+      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft + computedExtraFees)) {
         return await dialog.process(async function () {
           this.title = 'No sufficient funds to purchase';
           this.message = `Account balance has to be greater than ${microalgosToAlgos(
@@ -145,7 +145,8 @@ export function useNFTPurchasingActions(
       });
     },
     async doPlaceABid() {
-      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft)) {
+      console.log('computedExtraFees', computedExtraFees);
+      if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(priceNft + computedExtraFees)) {
         return await dialog.process(async function () {
           this.title = 'No sufficient funds to place a bid';
           this.message = `Account balance has to be greater than ${microalgosToAlgos(
