@@ -9,7 +9,7 @@
     "nftCause": "Seleccionar Causa",
     "nftCausePercentage": "Porcentaje Causa",
     "selectCause": "Seleccionar una causa",
-    "selectPercentage": "El porcentaje minimo es 50%",
+    "selectPercentage": "El porcentaje tiene que ser de entre 50% y 90%",
     "nftDetails": "Detalle NFT",
     "uploadResources": "Subir Archivo",
     "uploadFile": "Puedes mintear jpg, gif, mov, mp4, cad, pdf",
@@ -26,7 +26,8 @@
       "dialogIpfs": "Subiendo el NFT a IPFS...",
       "dialogPrepNft": "Preparando el NFT",
       "dialogNFTCreatedSuccess": "Tu NFT ha sido creado correctamente",
-      "dialogNFTListedSuccess": "Tu NFT ha sido listeado correctamente"
+      "dialogNFTListedSuccess": "Tu NFT ha sido listeado correctamente",
+      "dialogNFTBuySuccess": "La compra del NFT se ha acabado con exito!"
     }
   },
   "NFTDetail": {

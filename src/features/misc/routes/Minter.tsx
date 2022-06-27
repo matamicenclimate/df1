@@ -97,7 +97,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                     required: true,
                     valueAsNumber: true,
                     min: config.minBidPart,
-                    max: 99,
+                    max: 90,
                   })}
                 />
                 <ErrorHint on={errors.properties?.causePercentage} text="Minter.selectPercentage" />

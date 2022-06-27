@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { destroyAsset } from '../../../lib/nft';
+import { destroyAsset } from '../../../../lib/nft';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
-import Tabs from './Tabs/Tabs';
+import Tabs from '../Tabs/Tabs';
 import { Nft, NftAssetInfo } from '@common/src/lib/api/entities';
 import NetworkClient from '@common/src/services/NetworkClient';
 import Container from 'typedi';

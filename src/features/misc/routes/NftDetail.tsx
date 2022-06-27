@@ -20,7 +20,7 @@ import { retrying } from '@common/src/lib/net';
 import { Nft } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
 import { useNFTPurchasingActions } from '../lib/detail';
-import { BuyAndBidButtons } from '../components/components/NftDetailSub';
+import { BuyAndBidButtons } from '../components/NftDetailSub';
 
 const getDateObj = (mintingDate: any) => {
   const date = new Date(mintingDate);

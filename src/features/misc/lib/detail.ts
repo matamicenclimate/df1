@@ -9,7 +9,9 @@ import CurrentNFTInfo from '../state/CurrentNFTInfo';
 import algosdk from 'algosdk';
 import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
-import { fetchNfts } from '@/lib/NFTFetch';
+import { useNavigate } from 'react-router-dom';
+import directListingAbi from '@common/src/abi/direct-listing.abi';
+import { algosToMicroalgos, microalgosToAlgos } from './minting';
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
@@ -46,6 +48,7 @@ export function useNFTPurchasingActions(
   nft: option<CurrentNFTInfo>,
   updateNFTInfo: () => Promise<void>
 ) {
+  const goToPage = useNavigate();
   if (wallet == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
   }
@@ -68,6 +71,7 @@ export function useNFTPurchasingActions(
   return {
     async doBuyNFT() {
       return await dialog.process(async function () {
+        this.title = 'Processing NFT purchase';
         this.message = 'Preparing NFT...';
         /** @TODO Logic check amounts before app call. */
         const account = WalletAccountProvider.get().account;
@@ -82,7 +86,7 @@ export function useNFTPurchasingActions(
           from: account.addr,
           appIndex: appId,
           onComplete: algosdk.OnApplicationComplete.NoOpOC,
-          appArgs: ['bid'.toBytes()],
+          appArgs: [directListingAbi.getMethodByName('on_bid').getSelector()],
           accounts: [
             algosdk.encodeAddress(state.cause),
             algosdk.encodeAddress(state.creator),
@@ -118,8 +122,11 @@ export function useNFTPurchasingActions(
               appId: appId.toString(),
             },
           });
-          await fetchNfts();
           await updateNFTInfo();
+          this.title = t('Minter.dialog.dialogNFTBuySuccess');
+          this.message = '';
+
+          goToPage(`/my-nfts`);
         } catch {
           this.message = t('NFTDetail.dialog.bidFinishedFail');
           await new Promise((r) => setTimeout(r, 1000));
@@ -138,9 +145,18 @@ export function useNFTPurchasingActions(
         previousBid = some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-      const minRequired = (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 10);
+      console.log('statestatestate', state);
+
+      const minRequired = microalgosToAlgos(
+        (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 1000000)
+      );
+
       let bidAmount = 0;
-      while (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
+      while (
+        bidAmount < microalgosToAlgos(minRequired) ||
+        Number.isNaN(bidAmount) ||
+        !Number.isFinite(bidAmount)
+      ) {
         const result = prompt(
           `Enter a bid amount (At least ${minRequired}!):`,
           minRequired.toString()
@@ -149,6 +165,9 @@ export function useNFTPurchasingActions(
           return alert('Aborting the bidding process');
         }
         bidAmount = Number(result);
+        console.log('bid Amount', bidAmount);
+        console.log('minRequired', minRequired);
+
         if (bidAmount < minRequired || Number.isNaN(bidAmount) || !Number.isFinite(bidAmount)) {
           alert(t('NFTDetail.dialog.bidErrorAmount'));
         }
@@ -180,7 +199,7 @@ export function useNFTPurchasingActions(
           from: account.addr,
           appIndex: appId,
           onComplete: algosdk.OnApplicationComplete.NoOpOC,
-          appArgs: ['bid'.toBytes()],
+          appArgs: [directListingAbi.getMethodByName('on_bid').getSelector()],
           foreignAssets: [state.nft_id],
           accounts: previousBid.fold([], (s) => [s]),
           suggestedParams: await client().getTransactionParams().do(),
@@ -195,7 +214,6 @@ export function useNFTPurchasingActions(
         try {
           await algosdk.waitForConfirmation(client(), txId, 10);
           this.message = t('NFTDetail.dialog.bidFinishedSuccess');
-          await fetchNfts();
           await updateNFTInfo();
         } catch {
           this.message = t('NFTDetail.dialog.bidFinishedFail');

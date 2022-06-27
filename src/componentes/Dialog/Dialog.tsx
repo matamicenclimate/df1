@@ -41,7 +41,7 @@ export const Dialog = ({
       {/* Use the overlay to style a dim backdrop for your dialog */}
       <HUIDialog.Overlay className="fixed inset-0 bg-black opacity-30 backdrop-blur" />
       <div
-        style={{ position: 'absolute', width: '100vw', height: '100vh', border: '1px solid red' }}
+        style={{ position: 'absolute', width: '100vw', height: '100vh' }}
         onClick={() => setIsOpen(false)}
       >
         {' '}

@@ -1,12 +1,9 @@
 import { Button } from '@/componentes/Elements/Button/Button';
-import { Case, Match } from '@/componentes/Generic/Match';
-import { AuctionAppState } from '@common/src/lib/types';
-import { option } from '@octantis/option';
-import { useNFTPurchasingActions } from '../../lib/detail';
-import { microalgosToAlgos } from '../../lib/minting';
-import algoLogo from '../../../../assets/algoLogo.svg';
+import { useNFTPurchasingActions } from '../lib/detail';
+import { microalgosToAlgos } from '../lib/minting';
+import algoLogo from '../../../assets/algoLogo.svg';
 import { Nft } from '@common/src/lib/api/entities';
-import CurrentNFTInfo from '../../state/CurrentNFTInfo';
+import CurrentNFTInfo from '../state/CurrentNFTInfo';
 
 const NoNftApp = () => (
   <div>
