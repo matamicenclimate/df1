@@ -11,7 +11,7 @@ import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
-import { algosToMicroalgos, microalgosToAlgos } from './minting';
+import { microalgosToAlgos } from './minting';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
 
 /** The deposit fee value. */
@@ -20,8 +20,6 @@ export const depositTxCount = 7;
 export const baseTxFees = 0;
 /** The extra amount of money needed for future transactions. */
 export const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
-
-const dialog = Container.get(ProcessDialog);
 
 /**
  * Returns true if the passed array is all-zero.
@@ -37,20 +35,6 @@ function voidResult(of: () => void) {
   };
 }
 
-async function checkUserFunds(balanceAlgo: number, nftPrice: number) {
-  if (balanceAlgo != null && balanceAlgo < microalgosToAlgos(nftPrice)) {
-    console.log('balanceAlgo', balanceAlgo);
-    console.log('nftPrice', nftPrice);
-
-    return await dialog.process(async function () {
-      this.title = 'Not sufficient funds';
-      this.message = `Account balance must be greater than ${microalgosToAlgos(nftPrice)} Algos`;
-
-      return await new Promise((r) => setTimeout(r, 4000));
-    });
-  } else return true;
-}
-
 /**
  * Builds buy NFT and place-a-bid for NFT function actions.
  * @param aId
@@ -63,7 +47,7 @@ export function useNFTPurchasingActions(
   assetId: string,
   wallet: Wallet | undefined,
   nft: option<CurrentNFTInfo>,
-  updateNFTInfo: () => Promise<void> | undefined
+  updateNFTInfo: () => Promise<void>
 ) {
   const { balanceAlgo } = useWalletFundsContext();
   const goToPage = useNavigate();
@@ -106,8 +90,6 @@ export function useNFTPurchasingActions(
         this.message = 'Preparing NFT...';
         /** @TODO Logic check amounts before app call. */
         const account = WalletAccountProvider.get().account;
-        console.log('account', account);
-
         const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
         const state = nft.get().state.get();
         const callTxn = await algosdk.makeApplicationCallTxnFromObject({
@@ -183,8 +165,6 @@ export function useNFTPurchasingActions(
         previousBid = some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));
-      console.log('statestatestate', state);
-
       const minRequired = microalgosToAlgos(
         (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 1000000)
       );
