@@ -32,6 +32,13 @@ export interface UserState {
   projects: number;
 }
 
+function getId(value: Asset | Nft) {
+  if (isAsset(value)) {
+    return value['asset-id'];
+  }
+  return value.id;
+}
+
 function isAsset(value: Asset | Nft): value is Asset {
   return typeof (value as unknown as Record<string, unknown>)['asset-id'] === 'number';
 }
@@ -84,17 +91,15 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
   useEffect(() => {
     const size = Object.keys(nfts).length;
     if (size === 0) return;
-    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)).reverse() as Asset[];
+    const pending = [...Object.values(nfts)].filter((s) => isAsset(s)) as Asset[];
     setInfo(`Loaded ${size - pending.length} out of ${size} total assets...`);
-    console.log('pending', pending);
-
     if (pending.length === 0) {
       setInfo(`Done! All assets loaded!`);
       setTimeout(() => {
         setInfo('');
       }, 3000);
     } else {
-      const ad = pending.shift();
+      const ad = pending.pop();
       if (!ad) {
         throw new Error(`Invalid data payload! This shouldn't be happening!`);
       }
@@ -163,55 +168,59 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                   cause: 'Cause',
                   status: 'Status',
                 }}
-                rows={[...Object.values(nfts)].map((nft) => {
-                  if (isAsset(nft)) {
-                    const id = nft['asset-id'].toString();
-                    return {
-                      $id: id,
-                      $class: 'animate-pulse',
-                      name: (
-                        <div className="flex">
-                          <div className="mr-2 bg-climate-action-light rounded-lg w-10 h-10">
-                            &nbsp;
+                rows={[...Object.values(nfts)]
+                  .sort((a, b) => getId(b) - getId(a))
+                  .map((nft) => {
+                    if (isAsset(nft)) {
+                      const id = nft['asset-id'].toString();
+                      return {
+                        $id: id,
+                        $class: 'animate-pulse',
+                        name: (
+                          <div className="flex">
+                            <div className="mr-2 bg-climate-action-light rounded-lg w-10 h-10">
+                              &nbsp;
+                            </div>
+                            <div className="flex flex-col w-6/12">
+                              <div className="rounded mb-2 bg-climate-action-light">&nbsp;</div>
+                              <div className="rounded bg-climate-action-light h-2">&nbsp;</div>
+                            </div>
                           </div>
-                          <div className="flex flex-col w-6/12">
-                            <div className="rounded mb-2 bg-climate-action-light">&nbsp;</div>
-                            <div className="rounded bg-climate-action-light h-2">&nbsp;</div>
+                        ),
+                        price: (
+                          <div className="flex flex-col">
+                            <div className="mt-2 mb-4 flex justify-between">
+                              <div className="bg-climate-action-light rounded w-full">&nbsp;</div>
+                              <div className="ml-2 bg-climate-action-light rounded w-4">&nbsp;</div>
+                            </div>
+                            <hr />
                           </div>
-                        </div>
-                      ),
-                      price: (
-                        <div className="flex flex-col">
-                          <div className="mt-2 mb-4 flex justify-between">
-                            <div className="bg-climate-action-light rounded w-full">&nbsp;</div>
-                            <div className="ml-2 bg-climate-action-light rounded w-4">&nbsp;</div>
-                          </div>
-                          <hr />
-                        </div>
-                      ),
-                      cause: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
-                      status: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
-                    };
-                  } else {
-                    const id = nft.id.toString();
-                    return {
-                      $id: id,
-                      $class: '',
-                      name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
-                      price: <NftPrice price={nft.arc69.properties.price} />,
-                      cause: <NftCause id={nft.arc69.properties.cause} />,
-                      status: (
-                        <NftStatus
-                          nft={nft}
-                          assetId={nft.id}
-                          creatorWallet={account}
-                          causePercentage={nft.arc69.properties.causePercentage}
-                          status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
-                        />
-                      ),
-                    };
-                  }
-                })}
+                        ),
+                        cause: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
+                        status: (
+                          <div className="rounded w-full bg-climate-action-light">&nbsp;</div>
+                        ),
+                      };
+                    } else {
+                      const id = nft.id.toString();
+                      return {
+                        $id: id,
+                        $class: '',
+                        name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
+                        price: <NftPrice price={nft.arc69.properties.price} />,
+                        cause: <NftCause id={nft.arc69.properties.cause} />,
+                        status: (
+                          <NftStatus
+                            nft={nft}
+                            assetId={nft.id}
+                            creatorWallet={account}
+                            causePercentage={nft.arc69.properties.causePercentage}
+                            status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
+                          />
+                        ),
+                      };
+                    }
+                  })}
               />
             </div>
           </div>
