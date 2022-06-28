@@ -38,7 +38,7 @@ export const CreateProfile = (account: string, wallet: Wallet, state: UserState)
         rel="noreferrer"
         href={`https://algoexplorer.io/address/${account}`}
       >
-        <Button className="m-1 w-full" size="sm" variant="light">
+        <Button className="m-1 w-full hover:text-climate-blue" size="sm" variant="light">
           Wallet
         </Button>
       </a>
