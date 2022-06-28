@@ -16,7 +16,7 @@ import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
 import ErrorHint from '@/componentes/Form/ErrorHint';
 import Configuration from '@/context/ConfigContext';
-import { TestMint } from '../components/components/TestMint';
+import { TestMint } from '../components/TestMint';
 
 export type MinterProps = {
   wallet: Wallet;
