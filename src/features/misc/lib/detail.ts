@@ -6,19 +6,24 @@ import { Wallet } from 'algorand-session-wallet';
 import { t } from 'i18next';
 import Container from 'typedi';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
-import algosdk from 'algosdk';
 import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
-import { algosToMicroalgos, microalgosToAlgos } from './minting';
+import { microalgosToAlgos } from './minting';
+import { BlockchainGatewayProvider } from '@common/src/blockchain';
+import { SmartContractID } from '@common/src/blockchain/lib/SmartContract';
+
+const chain = Container.get(BlockchainGatewayProvider).require();
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
 /** Base transactions that will be paid immediately. None atm. */
 export const baseTxFees = 0;
 /** The extra amount of money needed for future transactions. */
-export const computedExtraFees = algosdk.ALGORAND_MIN_TX_FEE * (depositTxCount + baseTxFees);
+export const computedExtraFees = chain
+  .getBaseGas({})
+  .then((s) => s.value * (depositTxCount + baseTxFees));
 
 /**
  * Returns true if the passed array is all-zero.
@@ -65,6 +70,7 @@ export function useNFTPurchasingActions(
   if (appId == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.attemptError')));
   }
+  const app = new SmartContractID(appId);
   const dialog = Container.get(ProcessDialog);
   const net = Container.get(NetworkClient);
   // The buy action.
@@ -82,6 +88,12 @@ export function useNFTPurchasingActions(
         });
         const optTxn = await Container.get(OptInService).createOptInRequest(aId, account.addr);
         const state = nft.get().state.get();
+
+        const sm = await chain.bindSmartContract(app);
+        const result = await sm.invoke({
+          participants: [state.cause, state.creator, state.seller],
+          assets: [aId],
+        });
         const callTxn = await algosdk.makeApplicationCallTxnFromObject({
           from: account.addr,
           appIndex: appId,
