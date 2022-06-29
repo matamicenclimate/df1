@@ -1,7 +1,7 @@
 import ProcessDialog from '@/service/ProcessDialog';
 import OptInService from '@common/src/services/OptInService';
 import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
-import { none, option, some } from '@octantis/option';
+import { Some, None, Option } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
 import { t } from 'i18next';
 import Container from 'typedi';
@@ -50,7 +50,7 @@ function voidResult(of: () => void) {
 export function useNFTPurchasingActions(
   assetId: string,
   wallet: Wallet | undefined,
-  nft: option<CurrentNFTInfo>,
+  nft: Option<CurrentNFTInfo>,
   updateNFTInfo: () => Promise<void>
 ) {
   const goToPage = useNavigate();
@@ -66,6 +66,8 @@ export function useNFTPurchasingActions(
   if (!nft.isDefined()) {
     return voidResult(() => alert('Nope.avi'));
   }
+  // TODO Assimilate this breaking point into a hidden detail.
+  /* How? With *Magic* */
   const appId = nft.value.nft.arc69.properties.app_id;
   if (appId == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.attemptError')));
@@ -148,13 +150,13 @@ export function useNFTPurchasingActions(
     },
     async doPlaceABid() {
       const appAddr = algosdk.getApplicationAddress(appId);
-      let previousBid: option<string> = none();
+      let previousBid: option<string> = None();
       if (!nft.value.state.isDefined()) {
         throw new Error('Attemptint to bid when the state is not set. Contact support.');
       }
       const state = nft.value.state.get();
       if (!isZeroAccount(state.bid_account)) {
-        previousBid = some(algosdk.encodeAddress(state.bid_account));
+        previousBid = Some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));
       console.log('statestatestate', state);
