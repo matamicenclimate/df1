@@ -114,7 +114,6 @@ export function useNFTPurchasingActions(
           await updateNFTInfo();
           this.title = t('Minter.dialog.dialogNFTBuySuccess');
           this.message = '';
-
           goToPage(`/my-nfts`);
         } catch {
           this.message = t('NFTDetail.dialog.bidFinishedFail');
@@ -130,7 +129,7 @@ export function useNFTPurchasingActions(
       }
       const state = nft.state.get();
       {
-        const account = chain.decodeWallet(state.bid_account);
+        const account = await chain.decodeWallet(state.bid_account);
         if (!account.failed) {
           if (!account.result.isNull()) {
             previousBid = Some(account.result);
