@@ -83,18 +83,12 @@ export function useNFTPurchasingActions(
   // The buy action.
   return {
     async doBuyNFT() {
+      const amount = nft.nft.arc69.properties.price + (await computedExtraFees);
       return await dialog.process(async function () {
         this.title = 'Processing NFT purchase';
         this.message = 'Preparing NFT...';
         /** @TODO Logic check amounts before app call. */
-        const account = WalletAccountProvider.get().account;
-        console.log('sending nft data for call', {
-          address: account.addr,
-          smartContract,
-          asset,
-        });
-        const optInOp = await chain.optIn({ asset }).then((o) => o.operation);
-        const state = nft.state.get();
+        const optInOp = await chain.optIn({ asset, target: caller }).then((o) => o.operation);
         const sm = await chain.bindSmartContract(smartContract);
         const callOp = await sm.prepareInvoke({
           participants,
@@ -104,13 +98,13 @@ export function useNFTPurchasingActions(
           caller,
         });
         const contractWallet = await chain.getSmartContractWallet(smartContract);
-        const amount = nft.nft.arc69.properties.price + (await computedExtraFees);
         const payOp = await chain.pay({ payer: caller, payee: contractWallet, amount });
         const cluster = await optInOp
           .cluster(payOp, callOp)
           .sign()
           .then((o) => o.commit())
           .then((o) => o.confirm());
+        console.log('Done: Confirmed ops,', cluster.operations);
         try {
           await net.core.delete('sell-asset/:appId', {
             params: {
@@ -130,22 +124,27 @@ export function useNFTPurchasingActions(
       });
     },
     async doPlaceABid() {
-      const appAddr = algosdk.getApplicationAddress(appId);
-      let previousBid: option<string> = None();
-      if (!nft.value.state.isDefined()) {
+      let previousBid: Option<ChainWallet> = None();
+      if (nft.state.isEmpty()) {
         throw new Error('Attemptint to bid when the state is not set. Contact support.');
       }
-      const state = nft.value.state.get();
-      if (!isZeroAccount(state.bid_account)) {
-        previousBid = Some(algosdk.encodeAddress(state.bid_account));
+      const state = nft.state.get();
+      {
+        const account = chain.decodeWallet(state.bid_account);
+        if (!account.failed) {
+          if (!account.result.isNull()) {
+            previousBid = Some(account.result);
+          }
+        }
       }
-      console.info('Previous bidder:', previousBid.getOrElse('<none>'));
+      console.info(
+        'Previous bidder:',
+        previousBid.fold('<none>', (s) => String(s))
+      );
       console.log('statestatestate', state);
-
       const minRequired = microalgosToAlgos(
         (state.bid_amount ?? state.reserve_amount) + (state.min_bid_inc ?? 1000000)
       );
-
       let bidAmount = 0;
       while (
         bidAmount < microalgosToAlgos(minRequired) ||
@@ -167,47 +166,31 @@ export function useNFTPurchasingActions(
           alert(t('NFTDetail.dialog.bidErrorAmount'));
         }
       }
-      const account = WalletAccountProvider.get().account;
+      const contractWallet = await chain.getSmartContractWallet(smartContract);
+      const amount = nft.nft.arc69.properties.price + (await computedExtraFees);
       await dialog.process(async function () {
-        const aId = Number(assetId);
-        if (Number.isNaN(aId)) {
-          throw new Error(t('NFTDetail.dialog.assetWrongFormat'));
-        }
-        if (wallet == null) {
-          return alert(t('NFTDetail.dialog.alertConnectWallet'));
-        }
-        // this.title = `Placing a bid (${bidAmount} μAlgo)`;
         this.title = t('NFTDetail.dialog.placingBid');
         this.message = t('NFTDetail.dialog.makingPayment');
-        const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-          from: account.addr,
-          to: appAddr,
-          amount: bidAmount + computedExtraFees,
-          suggestedParams: await client().getTransactionParams().do(),
-        });
+        const payOp = await chain.pay({ payer: caller, payee: contractWallet, amount });
         this.message = t('NFTDetail.dialog.makingAppCall');
-        console.log(`Smart contract wallet: ${appAddr}`);
-        console.log(
-          `Using this smart contract: https://testnet.algoexplorer.io/application/${appId}`
-        );
-        const callTxn = await algosdk.makeApplicationCallTxnFromObject({
-          from: account.addr,
-          appIndex: appId,
-          onComplete: algosdk.OnApplicationComplete.NoOpOC,
-          appArgs: [directListingAbi.getMethodByName('on_bid').getSelector()],
-          foreignAssets: [state.nft_id],
-          accounts: previousBid.fold([], (s) => [s]),
-          suggestedParams: await client().getTransactionParams().do(),
+        console.log(`Smart contract wallet: ${contractWallet}`);
+        const callOp = await chain.callSmartContract({
+          caller,
+          method,
+          contract: smartContract,
+          assets: [asset],
+          participants: previousBid.fold([], (w) => [w]),
+          parameters: {},
         });
-        const optTxn = await Container.get(OptInService).createOptInRequest(aId);
-        const txns = algosdk.assignGroupID([payTxn, callTxn, optTxn]);
-        const signedTxn = await wallet.signTxn(txns);
-        const { txId } = await client()
-          .sendRawTransaction(signedTxn.map((tx) => tx.blob))
-          .do();
+        const optOp = await chain.optIn({ asset, target: caller });
         this.message = t('NFTDetail.dialog.waintingConf');
         try {
-          await algosdk.waitForConfirmation(client(), txId, 10);
+          const cluster = await payOp
+            .cluster(callOp.result, optOp.operation)
+            .sign()
+            .then((o) => o.commit())
+            .then((o) => o.confirm());
+          console.log(cluster);
           this.message = t('NFTDetail.dialog.bidFinishedSuccess');
           await updateNFTInfo();
         } catch {
