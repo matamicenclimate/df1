@@ -17,7 +17,7 @@ import NftDetailPreview from '../components/NftDetailPreview';
 import { useTranslation } from 'react-i18next';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
-import { Nft } from '@common/src/lib/api/entities';
+import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
 import { useNFTPurchasingActions } from '../lib/detail';
 import { BuyAndBidButtons } from '../components/NftDetailSub';
@@ -35,7 +35,9 @@ const net = Container.get(NetworkClient);
 const getAppId = async (id: string) => {
   const res = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
   const nft = res.data.value;
-  const appId = res.data.value.arc69.properties.app_id;
+  console.log('nft getappId', nft);
+
+  const appId = res.data.value.id;
   return [nft, appId] as const;
 };
 
@@ -94,7 +96,7 @@ export const NftDetail = () => {
 
   const nftActions = useNFTPurchasingActions(assetId, wallet, nft, updateNFTInfo);
 
-  const getCause = (causes: Cause[] | undefined, nft: Nft) => {
+  const getCause = (causes: Cause[] | undefined, nft: AssetEntity) => {
     const cause: Cause | undefined = causes?.find(
       (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
     );
@@ -121,7 +123,7 @@ export const NftDetail = () => {
                   </div>
                   <div>
                     <p className="font-sanspro font-normal text-sm ">
-                      {detail.nft.arc69.description}
+                      {detail.nft.asset.arc69.description}
                     </p>
                   </div>
                   <div>
@@ -132,10 +134,10 @@ export const NftDetail = () => {
                     </div>
                     <div className="w-[650px]">
                       <CauseDetail
-                        title={getCause(causes, detail.nft)?.title}
-                        imageUrl={getCause(causes, detail.nft)?.imageUrl}
-                        description={getCause(causes, detail.nft)?.description}
-                        wallet={getCause(causes, detail.nft)?.wallet}
+                        title={getCause(causes, detail.nft.asset)?.title}
+                        imageUrl={getCause(causes, detail.nft.asset)?.imageUrl}
+                        description={getCause(causes, detail.nft.asset)?.description}
+                        wallet={getCause(causes, detail.nft.asset)?.wallet}
                       />
                     </div>
                   </div>
@@ -145,7 +147,7 @@ export const NftDetail = () => {
                         {t('NFTDetail.Overview.nftResources')}
                       </h4>
                       <p className="self-center font-normal text-climate-gray-light text-lg">
-                        {getDateObj(detail.nft.arc69.properties.date)}
+                        {getDateObj(detail.nft.asset.arc69.properties.date)}
                       </p>
                     </div>
                     <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
@@ -166,18 +168,18 @@ export const NftDetail = () => {
                       <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
                         <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
                         <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-                          {getCause(causes, detail.nft)?.title}
+                          {getCause(causes, detail.nft.asset)?.title}
                         </p>
                       </div>
                       <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
-                        {detail.nft.title}
+                        {detail.nft.asset.title}
                       </h4>
                       <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
-                        @{detail.nft.arc69.properties.artist}
+                        @{detail.nft.asset.arc69.properties.artist}
                       </div>
                     </div>
                   </div>
-                  <BuyAndBidButtons nft={detail.nft} state={detail} actions={nftActions} />
+                  <BuyAndBidButtons nft={detail.nft.asset} state={detail} actions={nftActions} />
                 </div>
               </div>
             </div>

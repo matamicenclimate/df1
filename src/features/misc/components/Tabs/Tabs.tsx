@@ -3,14 +3,14 @@ import FirstTab from './FirstTab';
 import './mycssfile.css';
 import SecondTab from './SecondTab';
 import clsx from 'clsx';
-import { Nft } from '@common/src/lib/api/entities';
+import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 
 type TabsProps = {
   status: string;
   assetId: number;
   causePercentage: number;
   creatorWallet: string;
-  nft: Nft;
+  nft: Nft | AssetEntity;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 

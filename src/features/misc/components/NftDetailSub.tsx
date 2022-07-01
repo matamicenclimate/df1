@@ -2,7 +2,7 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { useNFTPurchasingActions } from '../lib/detail';
 import { microalgosToAlgos } from '../lib/minting';
 import algoLogo from '../../../assets/algoLogo.svg';
-import { Nft } from '@common/src/lib/api/entities';
+import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
 
 const NoNftApp = () => (
@@ -17,18 +17,18 @@ export function ButtonsDiscriminator({
   nft,
   actions: { doBuyNFT, doPlaceABid },
 }: {
-  nft: Nft;
+  nft: AssetEntity;
   actions: ReturnType<typeof useNFTPurchasingActions>;
   state: CurrentNFTInfo;
 }) {
   for (const info of state.info) {
-    if (info.type === 'direct-listing') {
-      return (
-        <Button onClick={doBuyNFT} className="w-full">
-          Buy
-        </Button>
-      );
-    }
+    // if (info.type === 'direct-listing') {
+    //   return (
+    //     <Button onClick={doBuyNFT} className="w-full">
+    //       Buy
+    //     </Button>
+    //   );
+    // }
     return (
       <>
         <div className="offerBid flex justify-between py-7">
@@ -59,7 +59,7 @@ export function BuyAndBidButtons({
   nft,
   actions,
 }: {
-  nft: Nft;
+  nft: AssetEntity;
   actions: ReturnType<typeof useNFTPurchasingActions>;
   state: CurrentNFTInfo;
 }) {

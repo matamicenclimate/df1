@@ -1,5 +1,5 @@
 import { Button } from '@/componentes/Elements/Button/Button';
-import { Nft } from '@common/src/lib/api/entities';
+import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 import { microalgosToAlgos } from '../../lib/minting';
 import './mycssfile.css';
 import Container from 'typedi';
@@ -10,7 +10,7 @@ import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import { useTranslation } from 'react-i18next';
 
 type FirstTabProps = {
-  nft: Nft;
+  nft: Nft | AssetEntity;
   assetId: number;
   causePercentage: number;
   creatorWallet: string;

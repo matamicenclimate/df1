@@ -1,7 +1,7 @@
 import { useCauseContext } from '@/context/CauseContext';
 import algoLogo from '../../../assets/algoLogo.svg';
 import { Cause } from '@/lib/api/causes';
-import { Nft, RekeyAccountRecord } from '@common/src/lib/api/entities';
+import { Nft, Listing } from '@common/src/lib/api/entities';
 import useOptionalState from '@/hooks/useOptionalState';
 import { useEffect } from 'react';
 import Container from 'typedi';
@@ -11,23 +11,30 @@ import { microalgosToAlgos } from '@/features/misc/lib/minting';
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
 
 type CardProps = {
-  nft: RekeyAccountRecord;
+  nft: Listing;
 };
 
 export const Card = (props: CardProps) => {
+  console.log('props from Card', props);
+
   const { causes } = useCauseContext();
   const [state, setState] = useOptionalState<Nft>();
   useEffect(() => {
     Container.get(NetworkClient)
       .core.get('asset/:id', {
         params: {
-          id: props.nft.assetId.toString(),
+          id: props.nft.assetIdBlockchain.toString(),
         },
       })
       .then(({ data }) => {
+        console.log('data', data);
+
         setState(data.value);
       });
   }, []);
+
+  console.log('state', state);
+
   return state.fold(
     <div className="wrapper antialiased text-gray-900 max-w-[325px] animate-pulse">
       <div>
@@ -58,9 +65,13 @@ export const Card = (props: CardProps) => {
       </div>
     </div>,
     (info) => {
+      console.log('info', info);
+
       const { nft } = props;
-      const getCauseTitle = (causes: Cause[] | undefined, nft: RekeyAccountRecord) => {
-        const cause: Cause | undefined = causes?.find((cause: Cause) => cause.id === nft.cause);
+      const getCauseTitle = (causes: Cause[] | undefined, nft: Listing) => {
+        const cause: Cause | undefined = causes?.find(
+          (cause: Cause) => cause.id === nft.asset.arc69.properties.cause
+        );
         return cause?.title;
       };
       return (
@@ -75,7 +86,7 @@ export const Card = (props: CardProps) => {
             ) : (
               <img
                 onError={({ currentTarget }) => {
-                  currentTarget.onerror = null; // prevents looping
+                  currentTarget.onerror = null;
                   currentTarget.src = defaultImage;
                 }}
                 src={nft.assetUrl}
@@ -92,19 +103,19 @@ export const Card = (props: CardProps) => {
                   </p>
                 </div>
                 <h4 className="mt-1 text-lg font-dinpro font-normal uppercase leading-tight truncate">
-                  {info.title}
+                  {info?.title}
                 </h4>
                 <div className="mt-1 font-sanspro text-climate-gray-artist text-sm">
-                  {info.arc69?.properties?.artist}
+                  {info?.arc69?.properties?.artist}
                 </div>
                 <div className="flex">
                   <p className="text-xl text-climate-blue ">
-                    {microalgosToAlgos(info.arc69?.properties?.price)}
+                    {microalgosToAlgos(info?.arc69?.properties?.price)}
                   </p>
                   <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                 </div>
                 <div className="text-base text-climate-gray">
-                  {info.arc69?.properties?.causePercentage} %
+                  {info?.arc69?.properties?.causePercentage} %
                 </div>
               </div>
             </div>

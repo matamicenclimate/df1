@@ -8,7 +8,7 @@ import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import Tabs from '../Tabs/Tabs';
-import { Nft, NftAssetInfo } from '@common/src/lib/api/entities';
+import { AssetEntity, Listing, Nft, NftAssetInfo } from '@common/src/lib/api/entities';
 import NetworkClient from '@common/src/services/NetworkClient';
 import Container from 'typedi';
 
@@ -22,7 +22,7 @@ export interface NftStatusProps {
   assetId: number;
   causePercentage: number;
   creatorWallet: string;
-  nft: Nft;
+  nft: Nft | AssetEntity;
 }
 
 const colors = {
@@ -87,13 +87,13 @@ export default function NftStatus({
         className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
       >
         {/* {text[status] ?? status} */}
-        {assetInfo?.assetInfo.type === 'direct-listing' ? (
+        {/* {assetInfo?.assetInfo. .type === 'direct-listing' ? (
           <p>Direct Buy</p>
         ) : assetInfo?.assetInfo.type === 'create-auction' ? (
           <p>Auction</p>
         ) : (
           'Not Listed'
-        )}
+        )} */}
       </div>
       <div>
         <span

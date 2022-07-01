@@ -12,7 +12,7 @@ import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
-import { Nft } from '@common/src/lib/api/entities';
+import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 const defaultOffset = 24 * 60 * 60 * 1000;
@@ -42,7 +42,7 @@ function validateDates(dates: Nullable<Dates>): true | 'past' | 'reverse' | 'inv
 }
 
 type SecondTabProps = {
-  nft: Nft;
+  nft: Nft | AssetEntity;
   assetId: number;
   causePercentage: number;
   creatorWallet: string;

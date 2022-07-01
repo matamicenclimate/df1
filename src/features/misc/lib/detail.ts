@@ -64,8 +64,8 @@ export function useNFTPurchasingActions(
   if (!nft.isDefined()) {
     return voidResult(() => alert('Nope.avi'));
   }
-  const appId = nft.value.nft.arc69.properties.app_id;
-  const priceNft = nft.value.nft.arc69.properties.price;
+  const appId = nft.value.nft.applicationIdBlockchain;
+  const priceNft = nft.value.nft.asset.arc69.properties.price;
 
   if (appId == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.attemptError')));
@@ -110,13 +110,13 @@ export function useNFTPurchasingActions(
         const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
           from: account.addr,
           to: appAddr,
-          amount: nft.value.nft.arc69.properties.price + computedExtraFees,
+          amount: nft.value.nft.asset.arc69.properties.price + computedExtraFees,
           suggestedParams: await client().getTransactionParams().do(),
         });
         console.log('sending nft data for pay txn', {
           address: account.addr,
           appAddr,
-          amount: nft.value.nft.arc69.properties.price + computedExtraFees,
+          amount: nft.value.nft.asset.arc69.properties.price + computedExtraFees,
           aId,
         });
 
