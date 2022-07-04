@@ -30,9 +30,10 @@ export const computedExtraFees = chain
 
 /**
  * Returns true if the passed array is all-zero.
+ * @deprecated See ChainWallet#isNull
  */
 function isZeroAccount(account: Uint8Array) {
-  return account.reduce((a, b) => a + b, 0) === 0;
+  throw new Error(`DEPRECATED! Use ChainWallet#isNull(): boolean method instead.`);
 }
 
 function voidResult(of: () => void) {
