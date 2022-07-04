@@ -33,11 +33,11 @@ const getDateObj = (mintingDate: any) => {
 const net = Container.get(NetworkClient);
 
 const getAppId = async (id: string) => {
-  const res = await retrying(net.core.get('asset/:id', { params: { id } }), 10);
-  const nft = res.data.value;
+  const res = await retrying(net.core.get('listing/:id', { params: { id } }), 10);
+  const nft = res.data;
   console.log('nft getappId', nft);
 
-  const appId = res.data.value.id;
+  const appId = res.data.applicationIdBlockchain;
   return [nft, appId] as const;
 };
 
