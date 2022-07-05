@@ -1,7 +1,7 @@
 import { useCauseContext } from '@/context/CauseContext';
 import algoLogo from '../../../assets/algoLogo.svg';
 import { Cause } from '@/lib/api/causes';
-import { Nft, Listing, AssetEntity } from '@common/src/lib/api/entities';
+import { Nft, AssetEntity } from '@common/src/lib/api/entities';
 import useOptionalState from '@/hooks/useOptionalState';
 import { useEffect } from 'react';
 import Container from 'typedi';
@@ -15,8 +15,6 @@ type CardProps = {
 };
 
 export const Card = (props: CardProps) => {
-  console.log('props from Card', props);
-
   const { causes } = useCauseContext();
   const [state, setState] = useOptionalState<Nft>();
   useEffect(() => {
@@ -27,13 +25,9 @@ export const Card = (props: CardProps) => {
         },
       })
       .then(({ data }) => {
-        console.log('data', data);
-
         setState(data.value);
       });
   }, []);
-
-  console.log('state', state);
 
   return state.fold(
     <div className="wrapper antialiased text-gray-900 max-w-[325px] animate-pulse">
@@ -65,8 +59,6 @@ export const Card = (props: CardProps) => {
       </div>
     </div>,
     (info) => {
-      console.log('info', info);
-
       const { nft } = props;
       const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
         const cause: Cause | undefined = causes?.find(

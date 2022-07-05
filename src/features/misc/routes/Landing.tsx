@@ -6,9 +6,8 @@ import { Case, Match } from '@/componentes/Generic/Match';
 import { retrying } from '@common/src/lib/net';
 import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
-import { AssetNote } from '@common/src/lib/AssetNote';
 import { useTranslation } from 'react-i18next';
-import { Asset, Listing } from '@common/src/lib/api/entities';
+import { Listing } from '@common/src/lib/api/entities';
 
 const net = Container.get(NetworkClient);
 
@@ -24,8 +23,6 @@ async function tryGetManifest(setList: Update) {
 export const Landing = () => {
   const { t } = useTranslation();
   const [list, setList] = useState<State>([]);
-
-  console.log('this is list', list);
 
   useEffect(() => {
     tryGetManifest(setList);
@@ -44,9 +41,6 @@ export const Landing = () => {
                 ) : (
                   list.map((asset) => {
                     const id = asset.assetIdBlockchain;
-                    console.log('assetId', id);
-                    console.log('asset', asset);
-
                     return (
                       <Link key={`link-of-${id}`} to={`/nft/${id}`}>
                         <Card nft={asset.asset} />
