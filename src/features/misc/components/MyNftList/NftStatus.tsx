@@ -36,7 +36,7 @@ export default function NftStatus({
   const [showSellingOptions, setShowSellingOptions] = useState<boolean>(false);
   const [openSpinner, setOpenSpinner] = useState<boolean>(false);
   const [assetInfo, setAssetInfo] = useState<NftAssetInfo>();
-  const [disabled, setDisabled] = useState<boolean>(false);
+  const [disabled, setDisabled] = useState<any | void | boolean | undefined>();
   const { wallet } = useWalletContext();
   const algodClient = client();
 
@@ -52,9 +52,6 @@ export default function NftStatus({
   }
 
   function handleTabs() {
-    if (assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') {
-      setDisabled(true);
-    }
     setOpenDropdown(!openDropdown);
     setShowSellingOptions(true);
   }
@@ -67,6 +64,18 @@ export default function NftStatus({
   useEffect(() => {
     getAssetInfo(assetId.toString());
   }, []);
+
+  const disableButton = () => {
+    if (assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') {
+      return setDisabled(true);
+    }
+    return disabled as boolean;
+  };
+
+  const handleDropdown = () => {
+    disableButton();
+    setOpenDropdown(!openDropdown);
+  };
 
   return (
     <div className={clsx('flex justify-between items-center', className)}>
@@ -81,7 +90,7 @@ export default function NftStatus({
       </div>
       <div>
         <span
-          onClick={() => setOpenDropdown(!openDropdown)}
+          onClick={handleDropdown}
           className="cursor-pointer text-2xl font-bold px-3 hover:text-climate-blue"
         >
           ...
