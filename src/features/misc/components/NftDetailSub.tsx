@@ -21,14 +21,13 @@ export function ButtonsDiscriminator({
   actions: ReturnType<typeof useNFTPurchasingActions>;
   state: CurrentNFTInfo;
 }) {
-  for (const info of state.info) {
-    if (info.type === 'direct-listing') {
-      return (
-        <Button onClick={doBuyNFT} className="w-full">
-          Buy
-        </Button>
-      );
-    }
+  if (state.nft.type === 'direct-listing') {
+    return (
+      <Button onClick={doBuyNFT} className="w-full">
+        Buy
+      </Button>
+    );
+  } else if (state.nft.type === 'auction') {
     return (
       <>
         <div className="offerBid flex justify-between py-7">
