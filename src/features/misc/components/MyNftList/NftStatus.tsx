@@ -8,12 +8,11 @@ import { Dialog } from '@/componentes/Dialog/Dialog';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import Tabs from '../Tabs/Tabs';
-import { AssetEntity, Listing, Nft, NftAssetInfo } from '@common/src/lib/api/entities';
+import { AssetEntity, Nft, NftAssetInfo } from '@common/src/lib/api/entities';
 import NetworkClient from '@common/src/services/NetworkClient';
 import Container from 'typedi';
 
 export interface NftStatusProps {
-  status: 'selling' | 'bidding' | 'sold' | 'locked' | 'pending' | 'available';
   onEdit?: () => void;
   onDuplicate?: () => void;
   onSend?: () => void;
@@ -25,22 +24,7 @@ export interface NftStatusProps {
   nft: Nft | AssetEntity;
 }
 
-const colors = {
-  bidding: 'climate-informative-green',
-  sold: 'climate-informative-yellow',
-  available: 'climate-gray-light',
-} as ByStatus;
-
-const text = {
-  bidding: 'Listed',
-  sold: 'Sold',
-  available: 'Not Listed',
-} as ByStatus;
-
-type ByStatus = { [D in NftStatusProps['status']]: string };
-
 export default function NftStatus({
-  status,
   className,
   assetId,
   causePercentage,
@@ -52,9 +36,9 @@ export default function NftStatus({
   const [showSellingOptions, setShowSellingOptions] = useState<boolean>(false);
   const [openSpinner, setOpenSpinner] = useState<boolean>(false);
   const [assetInfo, setAssetInfo] = useState<NftAssetInfo>();
+  const [disabled, setDisabled] = useState<boolean>(false);
   const { wallet } = useWalletContext();
   const algodClient = client();
-  const color = colors[status];
 
   const refreshPage = () => {
     window.location.reload();
@@ -68,6 +52,9 @@ export default function NftStatus({
   }
 
   function handleTabs() {
+    if (assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') {
+      setDisabled(true);
+    }
     setOpenDropdown(!openDropdown);
     setShowSellingOptions(true);
   }
@@ -83,10 +70,7 @@ export default function NftStatus({
 
   return (
     <div className={clsx('flex justify-between items-center', className)}>
-      <div
-        className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
-      >
-        {/* {text[status] ?? status} */}
+      <div>
         {assetInfo?.assetInfo.type === 'direct-listing' ? (
           <p>Direct Buy</p>
         ) : assetInfo?.assetInfo.type === 'auction' ? (
@@ -104,14 +88,14 @@ export default function NftStatus({
         </span>
         {openDropdown && (
           <ul className="mt-3 absolute font-dinpro text-climate-black-title bg-climate-action-light rounded shadow-lg">
-            {/* <li className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border ">
-              Edit NFT
-            </li> */}
-            <li
-              onClick={() => handleTabs()}
-              className="cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border "
-            >
-              List NFT
+            <li>
+              <Button
+                onClick={() => handleTabs()}
+                className="w-full cursor-pointer p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border"
+                disabled={disabled}
+              >
+                List NFT
+              </Button>
             </li>
             <li className="cursor-pointer text-climate-informative-yellow p-3 rounded border-b-2 hover:text-climate-blue hover:bg-climate-border">
               Delist NFT

@@ -21,7 +21,6 @@ import { ProfileColumn } from '../components/MyNftList/ProfileColumn';
 import { ProfileLoading } from '../components/MyNftList/ProfileLoading';
 import { CreateProfile } from './CreateProfile';
 import { TransactionFrame } from '../components/MyNftList/TransactionFrame';
-import NftView from '../components/MyNftList/NftView';
 
 export interface MyNftListProps {
   wallet: Wallet;
@@ -230,7 +229,6 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                             assetId={getId(nft)}
                             creatorWallet={account}
                             causePercentage={nft.arc69.properties.causePercentage}
-                            status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
                           />
                         ),
                       };
