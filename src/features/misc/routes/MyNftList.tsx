@@ -176,12 +176,12 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                 &nbsp;{info}
               </div>
               <RichTable
-                order={['name', 'price', 'date', 'viewNft']}
+                order={['name', 'price', 'cause', 'status']}
                 header={{
-                  name: 'NFT',
+                  name: 'NFT Name',
                   price: 'Price',
-                  date: 'Date',
-                  viewNft: 'Actions',
+                  cause: 'Cause',
+                  status: 'Status',
                 }}
                 rows={[...Object.values(nfts)]
                   .sort((a, b) => getId(b) - getId(a))
@@ -211,8 +211,8 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                             <hr />
                           </div>
                         ),
-                        date: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
-                        viewNft: (
+                        cause: <div className="rounded w-full bg-climate-action-light">&nbsp;</div>,
+                        status: (
                           <div className="rounded w-full bg-climate-action-light">&nbsp;</div>
                         ),
                       };
@@ -223,18 +223,16 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                         $class: '',
                         name: <NftName thumbnail={getImageUrl(nft)} title={nft.title} id={id} />,
                         price: <NftPrice price={nft.arc69.properties.price} />,
-                        date: nft.arc69.properties.date,
-                        viewNft: <NftView />,
-                        // cause: <NftCause id={nft.arc69.properties.cause} />,
-                        // status: (
-                        //   <NftStatus
-                        //     nft={nft}
-                        //     assetId={getId(nft)}
-                        //     creatorWallet={account}
-                        //     causePercentage={nft.arc69.properties.causePercentage}
-                        //     status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
-                        //   />
-                        // ),
+                        cause: <NftCause id={nft.arc69.properties.cause} />,
+                        status: (
+                          <NftStatus
+                            nft={nft}
+                            assetId={getId(nft)}
+                            creatorWallet={account}
+                            causePercentage={nft.arc69.properties.causePercentage}
+                            status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
+                          />
+                        ),
                       };
                     }
                   })}

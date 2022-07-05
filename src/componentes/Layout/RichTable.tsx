@@ -1,14 +1,12 @@
 interface Meta {
   $id: string;
   $class?: string;
-  // date: string | JSX.Element | Date;
-  // viewNft: string | JSX.Element;
 }
 type Dict = Record<string, JSX.Element | string> & Meta;
 export interface RichTableProps<T extends Dict[]> {
   rows: T;
   order: (keyof Omit<{ [K in keyof T[number]]: JSX.Element | string }, keyof Meta>)[];
-  header: Omit<{ [K in keyof T[number]]: string }, keyof Meta>;
+  header: Omit<{ [K in keyof T[number]]: JSX.Element | string }, keyof Meta>;
 }
 
 export function RichTable<T extends Dict[]>({ rows, header, order }: RichTableProps<T>) {
