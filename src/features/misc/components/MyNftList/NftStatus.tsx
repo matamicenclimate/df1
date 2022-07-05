@@ -87,13 +87,13 @@ export default function NftStatus({
         className={clsx('p-1 pl-4 pr-4 rounded-md bg-opacity-10', `bg-${color}`, `text-${color}`)}
       >
         {/* {text[status] ?? status} */}
-        {/* {assetInfo?.assetInfo. .type === 'direct-listing' ? (
+        {assetInfo?.assetInfo.type === 'direct-listing' ? (
           <p>Direct Buy</p>
-        ) : assetInfo?.assetInfo.type === 'create-auction' ? (
+        ) : assetInfo?.assetInfo.type === 'auction' ? (
           <p>Auction</p>
         ) : (
           'Not Listed'
-        )} */}
+        )}
       </div>
       <div>
         <span

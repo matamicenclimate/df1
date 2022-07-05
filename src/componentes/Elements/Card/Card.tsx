@@ -1,7 +1,7 @@
 import { useCauseContext } from '@/context/CauseContext';
 import algoLogo from '../../../assets/algoLogo.svg';
 import { Cause } from '@/lib/api/causes';
-import { Nft, Listing } from '@common/src/lib/api/entities';
+import { Nft, Listing, AssetEntity } from '@common/src/lib/api/entities';
 import useOptionalState from '@/hooks/useOptionalState';
 import { useEffect } from 'react';
 import Container from 'typedi';
@@ -11,7 +11,7 @@ import { microalgosToAlgos } from '@/features/misc/lib/minting';
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
 
 type CardProps = {
-  nft: Listing;
+  nft: AssetEntity;
 };
 
 export const Card = (props: CardProps) => {
@@ -68,19 +68,19 @@ export const Card = (props: CardProps) => {
       console.log('info', info);
 
       const { nft } = props;
-      const getCauseTitle = (causes: Cause[] | undefined, nft: Listing) => {
+      const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
         const cause: Cause | undefined = causes?.find(
-          (cause: Cause) => cause.id === nft.asset.arc69.properties.cause
+          (cause: Cause) => cause.id === nft.arc69.properties.cause
         );
         return cause?.title;
       };
       return (
         <div className="wrapper antialiased text-gray-900 max-w-[325px]">
           <div>
-            {nft?.assetUrl?.endsWith('.mp4') ? (
+            {nft?.imageUrl?.endsWith('.mp4') ? (
               <div className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]">
                 <video className=" min-h-[325px] max-h-[325px]" autoPlay loop muted>
-                  <source src={nft.assetUrl} type="video/mp4" />
+                  <source src={nft.imageUrl} type="video/mp4" />
                 </video>
               </div>
             ) : (
@@ -89,8 +89,8 @@ export const Card = (props: CardProps) => {
                   currentTarget.onerror = null;
                   currentTarget.src = defaultImage;
                 }}
-                src={nft.assetUrl}
-                alt={nft.assetUrl}
+                src={nft.imageUrl}
+                alt={nft.imageUrl}
                 className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]"
               />
             )}

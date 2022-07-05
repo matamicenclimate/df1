@@ -216,7 +216,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                         ),
                       };
                     } else {
-                      const id = nft.id.toString();
+                      const id = getId(nft).toString();
                       return {
                         $id: id,
                         $class: '',

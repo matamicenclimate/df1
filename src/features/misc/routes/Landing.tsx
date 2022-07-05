@@ -45,10 +45,11 @@ export const Landing = () => {
                   list.map((asset) => {
                     const id = asset.assetIdBlockchain;
                     console.log('assetId', id);
+                    console.log('asset', asset);
 
                     return (
                       <Link key={`link-of-${id}`} to={`/nft/${id}`}>
-                        <Card nft={asset} />
+                        <Card nft={asset.asset} />
                       </Link>
                     );
                   })
