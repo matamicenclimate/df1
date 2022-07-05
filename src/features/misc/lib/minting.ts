@@ -13,6 +13,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { useTranslation } from 'react-i18next';
 import Container from 'typedi';
 import { useNavigate } from 'react-router-dom';
+import { Nft } from '@common/src/lib/api/entities';
 
 const dialog = Container.get(ProcessDialog);
 const net = Container.get(NetworkClient);
@@ -72,12 +73,7 @@ export function useMintAction(causes: Cause[] | undefined) {
   if (causes == null) {
     return () => alert('Causes not loaded yet.');
   }
-  return async function mintNFT(
-    data: metadataNFTType,
-    info: MintMeta,
-    wallet: Wallet,
-    account: string
-  ) {
+  return async function mintNFT(data: Nft, info: MintMeta, wallet: Wallet, account: string) {
     const cause = causes.find((cause) => cause.id === info.cause.id);
     if (cause == null) {
       return alert('Invalid cause selected!');

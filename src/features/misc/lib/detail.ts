@@ -64,8 +64,8 @@ export function useNFTPurchasingActions(
   if (!nft.isDefined()) {
     return voidResult(() => alert('Nope.avi'));
   }
-  const appId = nft.value.nft.arc69.properties.app_id;
-  const priceNft = nft.value.nft.arc69.properties.price;
+  const appId = nft.value.nft.applicationIdBlockchain;
+  const priceNft = nft.value.nft?.asset?.arc69.properties.price;
 
   if (appId == null) {
     return voidResult(() => alert(t('NFTDetail.dialog.attemptError')));
@@ -110,13 +110,13 @@ export function useNFTPurchasingActions(
         const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
           from: account.addr,
           to: appAddr,
-          amount: nft.value.nft.arc69.properties.price + computedExtraFees,
+          amount: nft.value.nft.asset.arc69.properties.price + computedExtraFees,
           suggestedParams: await client().getTransactionParams().do(),
         });
         console.log('sending nft data for pay txn', {
           address: account.addr,
           appAddr,
-          amount: nft.value.nft.arc69.properties.price + computedExtraFees,
+          amount: nft.value.nft.asset.arc69.properties.price + computedExtraFees,
           aId,
         });
 
@@ -161,8 +161,12 @@ export function useNFTPurchasingActions(
       if (!nft.value.state.isDefined()) {
         throw new Error('Attemptint to bid when the state is not set. Contact support.');
       }
+      // const state = await this.transactionOperation.getApplicationState(appId) as AuctionAppState
+
       const state = nft.value.state.get();
-      if (!isZeroAccount(state.bid_account)) {
+      console.log('state', state);
+
+      if (state.bid_account != null && !isZeroAccount(state.bid_account)) {
         previousBid = some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));

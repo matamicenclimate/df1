@@ -6,13 +6,13 @@ import { Case, Match } from '@/componentes/Generic/Match';
 import { retrying } from '@common/src/lib/net';
 import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
-import { RekeyAccountRecord } from '@common/src/lib/api/entities';
 import { useTranslation } from 'react-i18next';
+import { Listing } from '@common/src/lib/api/entities';
 
 const net = Container.get(NetworkClient);
 
-type State = RekeyAccountRecord[];
-type Update = React.Dispatch<React.SetStateAction<RekeyAccountRecord[]>>;
+type State = Listing[];
+type Update = React.Dispatch<React.SetStateAction<Listing[]>>;
 
 async function tryGetManifest(setList: Update) {
   const res = await retrying(net.core.get('assets'));
@@ -40,10 +40,10 @@ export const Landing = () => {
                   <div>{t('misc.Landing.no-nft-message')}</div>
                 ) : (
                   list.map((asset) => {
-                    const id = asset.assetId;
+                    const id = asset.assetIdBlockchain;
                     return (
                       <Link key={`link-of-${id}`} to={`/nft/${id}`}>
-                        <Card nft={asset} />
+                        <Card nft={asset.asset} />
                       </Link>
                     );
                   })

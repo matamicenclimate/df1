@@ -5,6 +5,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { none, option, some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
+import { Nft } from '@common/src/lib/api/entities';
 
 const mdhash = DigestProvider.get();
 const dialog = Container.get(ProcessDialog);
@@ -169,7 +170,7 @@ const printAssetHolding = async function (algodClient: any, account: any, asseti
 export async function createNFT(
   algodClient: algosdk.Algodv2,
   account: string,
-  metadat: metadataNFTType,
+  metadat: Nft,
   wallet: Wallet
 ): Promise<option<AssetInfo>> {
   try {

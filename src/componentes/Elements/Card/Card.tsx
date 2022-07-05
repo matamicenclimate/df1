@@ -1,7 +1,7 @@
 import { useCauseContext } from '@/context/CauseContext';
 import algoLogo from '../../../assets/algoLogo.svg';
 import { Cause } from '@/lib/api/causes';
-import { Nft, RekeyAccountRecord } from '@common/src/lib/api/entities';
+import { Nft, AssetEntity } from '@common/src/lib/api/entities';
 import useOptionalState from '@/hooks/useOptionalState';
 import { useEffect } from 'react';
 import Container from 'typedi';
@@ -11,7 +11,7 @@ import { microalgosToAlgos } from '@/features/misc/lib/minting';
 const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
 
 type CardProps = {
-  nft: RekeyAccountRecord;
+  nft: AssetEntity;
 };
 
 export const Card = (props: CardProps) => {
@@ -21,13 +21,14 @@ export const Card = (props: CardProps) => {
     Container.get(NetworkClient)
       .core.get('asset/:id', {
         params: {
-          id: props.nft.assetId.toString(),
+          id: props.nft.assetIdBlockchain.toString(),
         },
       })
       .then(({ data }) => {
         setState(data.value);
       });
   }, []);
+
   return state.fold(
     <div className="wrapper antialiased text-gray-900 max-w-[325px] animate-pulse">
       <div>
@@ -59,27 +60,29 @@ export const Card = (props: CardProps) => {
     </div>,
     (info) => {
       const { nft } = props;
-      const getCauseTitle = (causes: Cause[] | undefined, nft: RekeyAccountRecord) => {
-        const cause: Cause | undefined = causes?.find((cause: Cause) => cause.id === nft.cause);
+      const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
+        const cause: Cause | undefined = causes?.find(
+          (cause: Cause) => cause.id === nft.arc69.properties.cause
+        );
         return cause?.title;
       };
       return (
         <div className="wrapper antialiased text-gray-900 max-w-[325px]">
           <div>
-            {nft?.assetUrl?.endsWith('.mp4') ? (
+            {nft?.imageUrl?.endsWith('.mp4') ? (
               <div className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]">
                 <video className=" min-h-[325px] max-h-[325px]" autoPlay loop muted>
-                  <source src={nft.assetUrl} type="video/mp4" />
+                  <source src={nft.imageUrl} type="video/mp4" />
                 </video>
               </div>
             ) : (
               <img
                 onError={({ currentTarget }) => {
-                  currentTarget.onerror = null; // prevents looping
+                  currentTarget.onerror = null;
                   currentTarget.src = defaultImage;
                 }}
-                src={nft.assetUrl}
-                alt={nft.assetUrl}
+                src={nft.imageUrl}
+                alt={nft.imageUrl}
                 className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]"
               />
             )}
@@ -92,19 +95,19 @@ export const Card = (props: CardProps) => {
                   </p>
                 </div>
                 <h4 className="mt-1 text-lg font-dinpro font-normal uppercase leading-tight truncate">
-                  {info.title}
+                  {info?.title}
                 </h4>
                 <div className="mt-1 font-sanspro text-climate-gray-artist text-sm">
-                  {info.arc69?.properties?.artist}
+                  {info?.arc69?.properties?.artist}
                 </div>
                 <div className="flex">
                   <p className="text-xl text-climate-blue ">
-                    {microalgosToAlgos(info.arc69?.properties?.price)}
+                    {microalgosToAlgos(info?.arc69?.properties?.price)}
                   </p>
                   <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
                 </div>
                 <div className="text-base text-climate-gray">
-                  {info.arc69?.properties?.causePercentage} %
+                  {info?.arc69?.properties?.causePercentage} %
                 </div>
               </div>
             </div>

@@ -4,12 +4,12 @@ import { Input } from '@/componentes/Form/Inputs';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { RichTable } from '@/componentes/Layout/RichTable';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
-import { Asset, Nft } from '@common/src/lib/api/entities';
+import { Asset, AssetEntity, Nft } from '@common/src/lib/api/entities';
 import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { none, option, some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import Container from 'typedi';
@@ -32,15 +32,27 @@ export interface UserState {
   projects: number;
 }
 
-function getId(value: Asset | Nft) {
+function getId(value: Asset | AssetEntity | Nft) {
   if (isAsset(value)) {
     return value['asset-id'];
+  } else if (isNft(value)) {
+    return value.id;
   }
-  return value.id;
+  return value.assetIdBlockchain;
 }
 
-function isAsset(value: Asset | Nft): value is Asset {
+function getImageUrl(value: AssetEntity | Nft) {
+  if (isNft(value)) {
+    return value.image_url;
+  }
+  return value.imageUrl;
+}
+
+function isAsset(value: Asset | AssetEntity | Nft): value is Asset {
   return typeof (value as unknown as Record<string, unknown>)['asset-id'] === 'number';
+}
+function isNft(value: AssetEntity | Nft): value is Nft {
+  return typeof (value as unknown as Record<string, unknown>)['image_url'] === 'string';
 }
 const net = Container.get(NetworkClient);
 
@@ -51,7 +63,7 @@ const net = Container.get(NetworkClient);
 export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
-  const [nfts, setNfts] = useState<Record<string, Nft | Asset>>({});
+  const [nfts, setNfts] = useState<Record<string, AssetEntity | Asset | Nft>>({});
   const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
   const [info, setInfo] = useState('');
 
@@ -82,9 +94,9 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       }
       setNfts(
         res.data.assets.reduce((map, asset) => {
-          map[asset['asset-id'].toString()] = asset;
+          map[getId(asset)] = asset;
           return map;
-        }, {} as Record<string, Asset | Nft>)
+        }, {} as Record<string, Asset | AssetEntity>)
       );
     })();
   }, []);
@@ -115,6 +127,8 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
           }),
           10
         );
+        console.log('response data', res.data);
+
         setNfts({ ...nfts, [res.data.value.id.toString()]: res.data.value });
       })();
     }
@@ -202,20 +216,19 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                         ),
                       };
                     } else {
-                      const id = nft.id.toString();
+                      const id = getId(nft).toString();
                       return {
                         $id: id,
                         $class: '',
-                        name: <NftName thumbnail={nft.image_url} title={nft.title} id={id} />,
+                        name: <NftName thumbnail={getImageUrl(nft)} title={nft.title} id={id} />,
                         price: <NftPrice price={nft.arc69.properties.price} />,
                         cause: <NftCause id={nft.arc69.properties.cause} />,
                         status: (
                           <NftStatus
                             nft={nft}
-                            assetId={nft.id}
+                            assetId={getId(nft)}
                             creatorWallet={account}
                             causePercentage={nft.arc69.properties.causePercentage}
-                            status={nft.arc69.properties.app_id ? 'bidding' : 'available'}
                           />
                         ),
                       };
