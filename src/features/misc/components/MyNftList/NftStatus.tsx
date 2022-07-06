@@ -66,7 +66,8 @@ export default function NftStatus({
   }, []);
 
   const disableButton = () => {
-    if (assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') {
+    // TODO El estado debe ser correcto y no mirar el isClosed
+    if ((assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') && !assetInfo?.assetInfo.isClosed) {
       return setDisabled(true);
     }
     return disabled as boolean;
