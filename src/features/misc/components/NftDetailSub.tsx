@@ -38,7 +38,7 @@ export function ButtonsDiscriminator({
           </div>
           <div className="flex self-end">
             <p className="text-xl text-climate-blue self-center">
-              {state.state.fold(undefined, (s) => s.bid_amount) ??
+              {state.state.fold(undefined, (s) => microalgosToAlgos(s.bid_amount || 0)) ??
                 microalgosToAlgos(nft.arc69.properties.price)}
             </p>
             <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />

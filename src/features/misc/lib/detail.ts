@@ -11,7 +11,7 @@ import { client } from '@/lib/algorand';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
-import { microalgosToAlgos } from './minting';
+import { algosToMicroalgos, microalgosToAlgos } from './minting';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
 
 /** The deposit fee value. */
@@ -210,7 +210,7 @@ export function useNFTPurchasingActions(
         const payTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
           from: account.addr,
           to: appAddr,
-          amount: bidAmount + computedExtraFees,
+          amount: algosToMicroalgos(bidAmount) + computedExtraFees,
           suggestedParams: await client().getTransactionParams().do(),
         });
         this.message = t('NFTDetail.dialog.makingAppCall');
