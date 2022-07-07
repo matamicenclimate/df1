@@ -65,6 +65,13 @@ async function tryGetNFTData(
   }
 }
 
+export const getCause = (causes: Cause[] | undefined, nft: AssetEntity) => {
+  const cause: Cause | undefined = causes?.find(
+    (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
+  );
+  return cause as CausePostBody;
+};
+
 let sideTimer: NodeJS.Timeout | null = null;
 export const NftDetail = () => {
   const { t } = useTranslation();
@@ -96,15 +103,8 @@ export const NftDetail = () => {
 
   const nftActions = useNFTPurchasingActions(assetId, wallet, nft, updateNFTInfo);
 
-  const getCause = (causes: Cause[] | undefined, nft: AssetEntity) => {
-    const cause: Cause | undefined = causes?.find(
-      (cause: Cause) => cause.id === nft?.arc69?.properties?.cause
-    );
-    return cause as CausePostBody;
-  };
-
   return (
-    <MainLayout>
+    <MainLayout nft={nft}>
       <Fold
         option={error}
         as={(e) => <div className="text-red-600 flex justify-center">Error: {`${e}`}</div>}
@@ -158,24 +158,42 @@ export const NftDetail = () => {
               </div>
             </div>
             <div className="right-4 col-span-1">
-              <div className="rounded-xl p-5 h-[690px] w-[370px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
-                <div className="image w-[330px] h-[345px]">
+              <div className="absolute bottom-[200px] rounded-xl p-5 h-[477px] w-[312px] bg-white shadow-[3px_-5px_40px_0px_rgba(205, 205, 212, 0.3)]">
+                <div className="image w-[280px] h-[235px] rounded-lg">
                   <NftDetailPreview nft={nft} />
                 </div>
                 <div className="p-3">
-                  <div className="cardText">
+                  <div className="cardText ">
                     <div className="bg-white">
-                      <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
-                        <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
-                        <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
-                          {getCause(causes, detail.nft.asset)?.title}
-                        </p>
+                      <div className="flex justify-between">
+                        <span className="text-base text-climate-light-gray">NFT Price</span>
+                        <p> TODO: fetch price</p>
                       </div>
-                      <h4 className="py-2 text-4xl font-dinpro font-normal uppercase truncate text-ellipsis ">
-                        {detail.nft.asset.title}
-                      </h4>
-                      <div className="font-sanspro text-climate-gray-artist text-sm truncate text-ellipsis">
-                        @{detail.nft.asset.arc69.properties.artist}
+                      <div className="flex justify-between">
+                        <span className="text-base text-climate-light-gray">Token price</span>
+                        <p> TODO: what???</p>
+                      </div>
+                      <div className="font-sanspro font-semibold flex justify-between items-baseline text-climate-light-gray mb-2">
+                        <div className="flex items-center">
+                          <span className="font-normal text-xs">Cause percentage</span>
+                          <span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        </div>
+                        <p className="whitespace-nowrap overflow-hidden truncate text-ellipsis">
+                          {detail.nft.asset.arc69.properties.causePercentage} %
+                        </p>
                       </div>
                     </div>
                   </div>

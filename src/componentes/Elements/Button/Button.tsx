@@ -13,6 +13,7 @@ const variants = {
   primary: 'text-climate-white bg-climate-blue',
   delete: 'text-white bg-red-800',
   inverted: 'bg-transparent border-climate-blue text-climate-blue border',
+  login: 'bg-white text-black rounded-3xl hover:bg-white hover:text-black hover:font-bold',
 };
 
 const hover = {

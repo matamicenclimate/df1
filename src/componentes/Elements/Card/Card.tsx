@@ -17,6 +17,7 @@ type CardProps = {
 export const Card = (props: CardProps) => {
   const { causes } = useCauseContext();
   const [state, setState] = useOptionalState<Nft>();
+
   useEffect(() => {
     Container.get(NetworkClient)
       .core.get('asset/:id', {
@@ -30,29 +31,24 @@ export const Card = (props: CardProps) => {
   }, []);
 
   return state.fold(
-    <div className="wrapper antialiased text-gray-900 max-w-[325px] animate-pulse">
+    <div className="relative wrapper antialiased text-gray-900 max-w-[325px] animate-pulse">
       <div>
         <div className="w-full rounded-lg shadow-md min-w-[325px] max-w-[325px] min-h-[325px] max-h-[325px] bg-climate-border">
           &nbsp;
         </div>
-        <div className="relative px-4 -mt-16">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
-              <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
-              <p className="whitespace-nowrap overflow-hidden text-ellipsis w-full bg-climate-border">
+        <div className="absolute text-white font-inter bottom-[100px] left-8">
+          <div className="rounded-lg shadow-lg">
+            <div className=" flex items-baseline">
+              <span className="w-4 h-4 bg-climate-light-green rounded-full inline-block mr-1 border border-[rgba(255, 255, 255, 0.5)]"></span>
+              <p className="text-[13px] whitespace-nowrap overflow-hidden text-ellipsis self-center">
                 &nbsp;
               </p>
             </div>
-            <h4 className="mt-1 bg-climate-border rounded w-full">&nbsp;</h4>
-            <div className="mt-1 bg-climate-border rounded w-full">&nbsp;</div>
+            <h4 className="mt-1 text-lg font-semibold leading-tight truncate">&nbsp;</h4>
+            <div className="text-[13px] uppercase font-semibold">@ &nbsp;</div>
             <div className="flex">
-              <p className="text-xl text-climate-blue bg-climate-border rounded w-full m-1">
-                &nbsp;
-              </p>
+              <p className="text-xl">&nbsp;</p>
               <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
-            </div>
-            <div className="text-base text-climate-gray bg-climate-border rounded w-full m-1">
-              &nbsp;
             </div>
           </div>
         </div>
@@ -67,7 +63,7 @@ export const Card = (props: CardProps) => {
         return cause?.title;
       };
       return (
-        <div className="wrapper antialiased text-gray-900 max-w-[325px]">
+        <div className="relative wrapper antialiased text-gray-900 max-w-[325px]">
           <div>
             {nft?.imageUrl?.endsWith('.mp4') ? (
               <div className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]">
@@ -76,38 +72,31 @@ export const Card = (props: CardProps) => {
                 </video>
               </div>
             ) : (
-              <img
-                onError={({ currentTarget }) => {
-                  currentTarget.onerror = null;
-                  currentTarget.src = defaultImage;
+              <div
+                className="object-cover rounded-lg shadow-md min-h-[320px] max-h-[320px] w-[320px]"
+                style={{
+                  backgroundImage: `linear-gradient(to bottom, transparent 0%, black 100%), url(${nft.imageUrl})`,
+                  backgroundPosition: 'center center',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
                 }}
-                src={nft.imageUrl}
-                alt={nft.imageUrl}
-                className="w-full object-cover rounded-lg shadow-md min-h-[325px] max-h-[325px]"
               />
             )}
-            <div className="relative px-4 -mt-16">
-              <div className="bg-white p-6 rounded-lg shadow-lg">
-                <div className="font-sanspro font-semibold text-climate-green flex items-baseline">
-                  <span className="h-2 w-2 bg-climate-green rounded-full inline-block mr-1 self-center"></span>
-                  <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-                    {getCauseTitle(causes, nft)}
+            <div className="absolute text-white font-inter bottom-4 left-8">
+              <div className="rounded-lg shadow-lg">
+                <div className=" flex items-baseline">
+                  <span className="w-4 h-4 bg-climate-light-green rounded-full inline-block mr-1 border border-[rgba(255, 255, 255, 0.5)]"></span>
+                  <p className="text-[13px] whitespace-nowrap overflow-hidden text-ellipsis self-center">
+                    {getCauseTitle(causes, nft)?.toUpperCase()}
                   </p>
                 </div>
-                <h4 className="mt-1 text-lg font-dinpro font-normal uppercase leading-tight truncate">
-                  {info?.title}
-                </h4>
-                <div className="mt-1 font-sanspro text-climate-gray-artist text-sm">
-                  {info?.arc69?.properties?.artist}
+                <h4 className="my-4 text-lg font-semibold leading-tight truncate">{info?.title}</h4>
+                <div className="text-[13px] uppercase font-semibold">
+                  @ {info?.arc69?.properties?.artist}
                 </div>
-                <div className="flex">
-                  <p className="text-xl text-climate-blue ">
-                    {microalgosToAlgos(info?.arc69?.properties?.price)}
-                  </p>
+                <div className="mt-10 flex">
+                  <p className="text-xl">{microalgosToAlgos(info?.arc69?.properties?.price)}</p>
                   <img className="w-4 h-4 self-center ml-1" src={algoLogo} alt="algologo" />
-                </div>
-                <div className="text-base text-climate-gray">
-                  {info?.arc69?.properties?.causePercentage} %
                 </div>
               </div>
             </div>

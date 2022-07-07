@@ -41,20 +41,25 @@ export const Dialog = ({
       {/* Use the overlay to style a dim backdrop for your dialog */}
       <HUIDialog.Overlay className="fixed inset-0 bg-black opacity-30 backdrop-blur" />
       <div
-        style={{ position: 'absolute', width: '100vw', height: '100vh' }}
+        style={{
+          position: 'absolute',
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0, 0, 0, 0.24)',
+          backdropFilter: 'blur(4px)',
+        }}
         onClick={() => setIsOpen(false)}
-      >
-        {' '}
-      </div>
-      {/* <HUIDialog.Overlay className="fixed inset-0 backdrop-opacity-20" /> */}
-      <div className="min-w-[560px] relative bg-white rounded-2xl max-w-sm w-full mx-auto p-7">
+      ></div>
+      <div className="min-w-[330px] relative bg-white rounded-2xl max-w-sm w-full mx-auto p-7">
         <HUIDialog.Title className="text-3xl climate-black-title">{title}</HUIDialog.Title>
         {subtitle ? (
-          <HUIDialog.Description className="pt-4">{subtitle}</HUIDialog.Description>
+          <HUIDialog.Description className="text-center pt-4 font-inter font-semibold">
+            {subtitle}
+          </HUIDialog.Description>
         ) : null}
 
         {claim ? (
-          <p className="font-sanspro text-base text-climate-gray-light font-normal py-7">
+          <p className="font-sanspro text-base text-climate-gray-light font-normal pt-2">
             {claim}{' '}
           </p>
         ) : null}

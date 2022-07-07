@@ -14,4 +14,5 @@ export interface CausePostBody {
   description?: string | undefined;
   wallet?: string | undefined;
   imageUrl?: string | undefined;
+  percentage?: number;
 }

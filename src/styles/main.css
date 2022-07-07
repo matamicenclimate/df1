@@ -11,10 +11,10 @@ body > div {
 }
 
 .active {
-  border-bottom: 2px solid #003a6c;
+  border-bottom: 2px solid #fff;
 }
 .active:hover {
-  border-bottom: 4px solid #003a6c;
+  border-bottom: 4px solid #fff;
   font-weight: bold;
 }
 

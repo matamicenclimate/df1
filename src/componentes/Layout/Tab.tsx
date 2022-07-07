@@ -7,7 +7,7 @@ import { Link, useLocation } from 'react-router-dom';
 export function Tab({ to, children }: { to: string; children: ReactNode }) {
   const { pathname } = useLocation();
   return (
-    <li className={pathname === to ? 'active' : ''}>
+    <li className={`self-center ${pathname === to ? 'active' : ''}`}>
       <Link to={to}>
         <p className="hover:font-bold">{children}</p>
       </Link>
