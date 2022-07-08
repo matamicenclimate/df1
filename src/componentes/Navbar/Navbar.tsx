@@ -10,6 +10,7 @@ import { AlgoWalletConnector } from '../Wallet/AlgoWalletConnector';
 import BalanceDisplay from '../Layout/BalanceDisplay';
 import CurrentNFTInfo from '@/features/misc/state/CurrentNFTInfo';
 import { option } from '@octantis/option';
+import SearchBar from '../SearchBar/SearchBar';
 
 type NavbarPropsType = {
   nft?: option<CurrentNFTInfo>;
@@ -78,30 +79,38 @@ export const Navbar = ({ nft }: NavbarPropsType) => {
       </div> */}
       </nav>
       <div className="absolute max-w-[544px] max-h-[96px] bottom-[150px] left-16">
-        {isNftDetail ? (
-          <>
-            <Header nft={nft} />
-          </>
-        ) : (
-          <>
-            <Header title="Your own collection of NFTs for climate change.">
-              <div className="mt-4">
-                <Link
-                  to=""
-                  className="mr-3 text-black rounded-3xl border border-white bg-white p-3 hover:font-bold"
-                >
-                  Create my NFT
-                </Link>
-                <Link
-                  to=""
-                  className="rounded-3xl text-white border border-white p-3 hover:font-bold"
-                >
-                  More info
-                </Link>
-              </div>
-            </Header>
-          </>
-        )}
+        {(() => {
+          switch (location.pathname) {
+            case '/nft/':
+              return <Header nft={nft} />;
+            case '/':
+              return (
+                <Header title="Your own collection of NFTs for climate change.">
+                  <div className="mt-4">
+                    <Link
+                      to="/mint"
+                      className="mr-3 text-black rounded-3xl border border-white bg-white p-3 hover:font-bold"
+                    >
+                      Create my NFT
+                    </Link>
+                    <Link
+                      to=""
+                      className="rounded-3xl text-white border border-white p-3 hover:font-bold"
+                    >
+                      More info
+                    </Link>
+                  </div>
+                  <div className="absolute bottom-[-170px] left-1/2 translate-x-1/3">
+                    <SearchBar />
+                  </div>
+                </Header>
+              );
+            case '/mint':
+              return <></>;
+            default:
+              return null;
+          }
+        })()}
       </div>
     </div>
   );

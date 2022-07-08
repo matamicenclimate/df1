@@ -169,12 +169,12 @@ export const NftDetail = () => {
                         <span className="text-base text-climate-light-gray">NFT Price</span>
                         <p> TODO: fetch price</p>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between mt-4">
                         <span className="text-base text-climate-light-gray">Token price</span>
                         <p> TODO: what???</p>
                       </div>
                       <div className="font-sanspro font-semibold flex justify-between items-baseline text-climate-light-gray mb-2">
-                        <div className="flex items-center">
+                        <div className="flex items-center mt-4">
                           <span className="font-normal text-xs">Cause percentage</span>
                           <span>
                             <svg
@@ -197,7 +197,9 @@ export const NftDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <BuyAndBidButtons nft={detail.nft.asset} state={detail} actions={nftActions} />
+                  <div className="mt-12">
+                    <BuyAndBidButtons nft={detail.nft.asset} state={detail} actions={nftActions} />
+                  </div>
                 </div>
               </div>
             </div>

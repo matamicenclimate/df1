@@ -8,8 +8,6 @@ import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { microalgosToAlgos } from '@/features/misc/lib/minting';
 
-const defaultImage = 'https://www.newsbtc.com/wp-content/uploads/2021/10/nft.jpg';
-
 type CardProps = {
   nft: AssetEntity;
 };

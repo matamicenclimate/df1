@@ -5,7 +5,7 @@ import { option } from '@octantis/option';
 import { useLocation } from 'react-router-dom';
 
 export type HeaderProps = {
-  children?: JSX.Element;
+  children?: JSX.Element | JSX.Element[];
   title?: string;
   cause?: string;
   nft?: option<CurrentNFTInfo>;
