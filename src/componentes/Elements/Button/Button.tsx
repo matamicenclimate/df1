@@ -51,7 +51,7 @@ export const Button = ({
           base,
           sizes[size],
           variants[variant],
-          disabled ? undefined : hover.primary,
+          disabled ?? undefined,
           disabledClass,
           className
         )}
