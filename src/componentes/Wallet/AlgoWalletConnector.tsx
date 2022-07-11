@@ -110,7 +110,9 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
           </Button>
         </div>
       ) : (
-        <Button onClick={() => setIsOpen(!isOpen)}>Connect Wallet</Button>
+        <Button variant="login" onClick={() => setIsOpen(!isOpen)}>
+          Login / Connect Wallet
+        </Button>
       )}
 
       {isOpen && (
@@ -118,12 +120,12 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
           closeButton
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          title="Connect Wallet"
-          subtitle=""
-          claim="Register on Climatetrade's NFT marketplace with your account with one of our suppliers. These accounts are always free of charge."
+          title=""
+          subtitle="Connect your wallet"
+          claim="Please select the provider you wish to connect your wallet to."
         >
-          <div className="flex flex-col space-between m-auto my-5 items-center">
-            <div className="m-5 w-full shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:text hover:bg-gray-100">
+          <div className="flex flex-col space-between m-auto items-center font-inter">
+            <div className="m-5 w-[260px] border border-climate-light-blue rounded-3xl">
               <button
                 className="p-3 w-full flex justify-center items-center hover:font-bold"
                 id="algo-signer"
@@ -134,10 +136,12 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
                   src="https://dartroom.xyz/img/algosigner.69be6245.svg"
                   alt="algosigner-logo"
                 />
-                <span className="ml-4 text-climate-blue">Continue with AlgoSigner</span>
+                <span className="ml-4 text-climate-light-blue font-medium text-base">
+                  AlgoSigner
+                </span>
               </button>
             </div>
-            <div className="m-5 w-full shadow-[1px_1px_5px_2px_rgb(0,0,0.3)] rounded-2xl hover:bg-gray-100">
+            <div className="m-5 w-[260px] border border-climate-light-blue rounded-3xl">
               <button
                 className="p-3 w-full flex justify-center items-center hover:font-bold"
                 id="my-algo-connect"
@@ -148,7 +152,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
                   src="https://dartroom.xyz/img/myalgo.b2b6857d.svg"
                   alt="myalgo-logo"
                 />
-                <span className="ml-4 text-climate-blue">Continue with MyAlgo</span>
+                <span className="ml-4 text-climate-light-blue">MyAlgo</span>
               </button>
             </div>
           </div>

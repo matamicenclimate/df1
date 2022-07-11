@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
-import { Card } from '@/componentes/Elements/Card/Card';
 import { useEffect, useState } from 'react';
-import { Case, Match } from '@/componentes/Generic/Match';
 import { retrying } from '@common/src/lib/net';
 import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
-import { useTranslation } from 'react-i18next';
 import { Listing } from '@common/src/lib/api/entities';
+import { useCauseContext } from '@/context/CauseContext';
+import CauseSlider from '@/componentes/Layout/CauseSlider';
+import Sidebar from '@/componentes/Sidebar/Sidebar';
 
 const net = Container.get(NetworkClient);
 
@@ -21,8 +20,8 @@ async function tryGetManifest(setList: Update) {
 }
 
 export const Landing = () => {
-  const { t } = useTranslation();
   const [list, setList] = useState<State>([]);
+  const { causes } = useCauseContext();
 
   useEffect(() => {
     tryGetManifest(setList);
@@ -30,27 +29,10 @@ export const Landing = () => {
 
   return (
     <MainLayout>
-      <div className="flex justify-center">
-        <div className="p-4">
-          <h2 className="font-normal font-dinpro text-4xl">NFTs marketplace</h2>
-          <Match>
-            <Case of="default">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-4">
-                {list.length === 0 ? (
-                  <div>{t('misc.Landing.no-nft-message')}</div>
-                ) : (
-                  list.map((asset) => {
-                    const id = asset.assetIdBlockchain;
-                    return (
-                      <Link key={`link-of-${id}`} to={`/nft/${id}`}>
-                        <Card nft={asset.asset} />
-                      </Link>
-                    );
-                  })
-                )}
-              </div>
-            </Case>
-          </Match>
+      <div className="flex">
+        <Sidebar />
+        <div className="w-[70%] p-4">
+          {causes && <CauseSlider nftList={list} causes={causes} />}
         </div>
       </div>
     </MainLayout>
