@@ -47,14 +47,7 @@ export const Button = ({
       <button
         disabled={disabled}
         onClick={disabled ? undefined : onClick}
-        className={clsx(
-          base,
-          sizes[size],
-          variants[variant],
-          disabled ?? undefined,
-          disabledClass,
-          className
-        )}
+        className={clsx(base, sizes[size], variants[variant], disabled, disabledClass, className)}
         {...props}
       />
     </>
