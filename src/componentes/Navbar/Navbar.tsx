@@ -1,4 +1,3 @@
-// import { useAuth } from '@/lib/auth';
 import { useWalletContext } from '@/context/WalletContext';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -63,20 +62,6 @@ export const Navbar = ({ nft }: NavbarPropsType) => {
             </li>
           </div>
         </ul>
-        {/* <div className="flex gap-4">
-        {auth.user && (
-          <>
-            <Link to="profile">profile</Link>
-            <MenuLink text="logout" action={handleLogout} />
-          </>
-        )}
-        {!auth.user && (
-          <>
-            <Link to="/auth/login">login</Link>
-            <Link to="/auth/register">register</Link>
-          </>
-        )}
-      </div> */}
       </nav>
       <div className="absolute max-w-[544px] max-h-[96px] bottom-[150px] left-16">
         {(() => {

@@ -37,7 +37,7 @@ const Header = ({ children, title, nft }: HeaderProps) => {
               <h1 className="font-medium text-[13px]">{getCauseTitle()?.title?.toUpperCase()}</h1>
             </div>
             <h1 className="font-black text-[40px]">
-              {nft?.isDefined() && getNftAssetEntity(nft?.value)?.title}
+              {nft?.fold('', (value) => value.nft.asset.title)}
             </h1>
           </div>
         </>
