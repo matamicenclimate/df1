@@ -47,8 +47,11 @@
     },
     "Overview": {
       "nftDescription": "Description",
-      "nftCause": "Causes",
-      "nftResources": "Resources",
+      "nftCause": "Project goals",
+      "nftCreator": "Creator",
+      "nftResources": "NFT",
+      "nftHash": "Image HASH",
+      "nftSimilars": "Similar NFTs",
       "nftOfferBid": "Offer Bid",
       "nftTitle": "This is your own NFTs",
       "connectWallet": "Connect your wallet",

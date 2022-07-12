@@ -5,35 +5,30 @@ import Container from 'typedi';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { Listing } from '@common/src/lib/api/entities';
 import { useCauseContext } from '@/context/CauseContext';
-import CauseSlider from '@/componentes/Layout/CauseSlider';
+import CardSlider from '@/componentes/Layout/CardSlider';
 import Sidebar from '@/componentes/Sidebar/Sidebar';
 
 const net = Container.get(NetworkClient);
 
-type State = Listing[];
-type Update = React.Dispatch<React.SetStateAction<Listing[]>>;
-
-async function tryGetManifest(setList: Update) {
-  const res = await retrying(net.core.get('assets'));
-  console.log('Current asset manifest:', res.data.assets);
-  setList(res.data.assets);
-}
-
 export const Landing = () => {
-  const [list, setList] = useState<State>([]);
+  const [list, setList] = useState<Listing[]>([]);
   const { causes } = useCauseContext();
 
+  async function fetchAssets() {
+    const res = await retrying(net.core.get('assets'));
+    console.log('Current assets manifest:', res.data.assets);
+    setList(res.data.assets);
+  }
+
   useEffect(() => {
-    tryGetManifest(setList);
+    fetchAssets();
   }, []);
 
   return (
     <MainLayout>
       <div className="flex">
         <Sidebar />
-        <div className="w-[70%] p-4">
-          {causes && <CauseSlider nftList={list} causes={causes} />}
-        </div>
+        <div className="w-[70%] p-4">{causes && <CardSlider nftList={list} causes={causes} />}</div>
       </div>
     </MainLayout>
   );

@@ -3,19 +3,21 @@ import { Listing } from '@common/src/lib/api/entities';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import ChevronLeft from '../Arrows/ChevronLeft';
 import { Card } from '../Elements/Card/Card';
 
-type CauseSliderProps = {
+type CardSliderProps = {
   nftList: Listing[];
   causes: Cause[];
+  nftListByCause?: any;
 };
 
-type NftFilteredByIdType = {
+export type NftFilteredByIdType = {
   cause: string | undefined;
   arrayNft: Listing[];
 };
 
-const CauseSlider = ({ nftList, causes }: CauseSliderProps) => {
+const CardSlider = ({ nftList, causes }: CardSliderProps) => {
   const { t } = useTranslation();
   const [filteredList, setFilteredList] = useState<Listing[]>();
   const [nftFilteredByCauseId, setNftFilteredByCauseId] = useState<
@@ -55,20 +57,7 @@ const CauseSlider = ({ nftList, causes }: CauseSliderProps) => {
               <h3 className="font-semibold text-2xl mb-5">{value.cause}</h3>
               <div className="flex font-normal text-base text-climate-light-gray">
                 <p>{value.arrayNft?.length} NFTs</p>
-                <span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
+                <ChevronLeft />
               </div>
             </div>
             <div className="flex gap-5">
@@ -90,4 +79,4 @@ const CauseSlider = ({ nftList, causes }: CauseSliderProps) => {
   );
 };
 
-export default CauseSlider;
+export default CardSlider;

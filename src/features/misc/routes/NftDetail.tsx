@@ -17,26 +17,18 @@ import NftDetailPreview from '../components/NftDetailPreview';
 import { useTranslation } from 'react-i18next';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
-import { AssetEntity, Nft } from '@common/src/lib/api/entities';
+import { AssetEntity } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
 import { useNFTPurchasingActions } from '../lib/detail';
 import { BuyAndBidButtons } from '../components/NftDetailSub';
-
-const getDateObj = (mintingDate: any) => {
-  const date = new Date(mintingDate);
-  const day = date.getDate();
-  const monthName = date.toLocaleString('default', { month: 'long' });
-  const year = date.getFullYear();
-  return `Minted on ${day} ${monthName} ${year}`;
-};
+import ChevronDown from '@/componentes/Arrows/ChevronDown';
+import ChevronLeft from '@/componentes/Arrows/ChevronLeft';
 
 const net = Container.get(NetworkClient);
 
 const getAppId = async (id: string) => {
   const res = await retrying(net.core.get('listing/:id', { params: { id } }), 10);
   const nft = res.data;
-  console.log('nft getappId', nft);
-
   const appId = res.data.applicationIdBlockchain;
   return [nft, appId] as const;
 };
@@ -116,21 +108,19 @@ export const NftDetail = () => {
             <div className="left col-span-2 flex justify-center">
               <div className="w-[670px]">
                 <div>
-                  <div className="py-14">
-                    <h4 className="font-dinpro font-normal text-2xl">
+                  <div className="py-10 flex justify-between items-center">
+                    <h4 className="font-normal text-lg">
                       {t('NFTDetail.Overview.nftDescription')}
                     </h4>
+                    <ChevronDown />
                   </div>
                   <div>
-                    <p className="font-sanspro font-normal text-sm ">
-                      {detail.nft.asset.arc69.description}
-                    </p>
+                    <p className="font-normal text-sm">{detail.nft.asset.arc69.description}</p>
                   </div>
                   <div>
-                    <div className="py-14">
-                      <h4 className="font-dinpro font-normal text-2xl">
-                        {t('NFTDetail.Overview.nftCause')}
-                      </h4>
+                    <div className="py-10 flex justify-between items-center">
+                      <h4 className="font-normal text-lg">{t('NFTDetail.Overview.nftCause')}</h4>
+                      <ChevronDown />
                     </div>
                     <div className="w-[650px]">
                       <CauseDetail
@@ -141,17 +131,36 @@ export const NftDetail = () => {
                       />
                     </div>
                   </div>
+                  <div>
+                    <div className="py-10 flex justify-between items-center">
+                      <h4 className="font-normal text-lg">{t('NFTDetail.Overview.nftCreator')}</h4>
+                      <ChevronDown />
+                    </div>
+                    <div>
+                      <p className="font-normal text-base">
+                        @{detail.nft.asset.arc69.properties.artist}
+                      </p>
+                      <p className="font-normal text-base text-climate-light-gray mt-2">
+                        {detail.nft.asset.creator}
+                      </p>
+                    </div>
+                  </div>
                   <div className="image w-[650px] h-[580px]">
-                    <div className="py-14 flex justify-between font-dinpro">
-                      <h4 className="font-normal text-2xl">
+                    <div className="py-10 flex justify-between">
+                      <h4 className="font-normal text-lg">
                         {t('NFTDetail.Overview.nftResources')}
                       </h4>
-                      <p className="self-center font-normal text-climate-gray-light text-lg">
-                        {getDateObj(detail.nft.asset.arc69.properties.date)}
-                      </p>
+                      <ChevronDown />
                     </div>
                     <div className="w-full min-h-[580px] max-h-[580px] object-cover mr-8 rounded-lg">
                       <NftDetailPreview nft={nft} />
+                    </div>
+                  </div>
+                  <div className="py-10 flex justify-between">
+                    <h4 className="font-normal text-2xl">{t('NFTDetail.Overview.nftSimilars')}</h4>
+                    <div className="flex items-center text-climate-light-gray">
+                      <p> NFTs</p>
+                      <ChevronLeft />
                     </div>
                   </div>
                 </div>
@@ -170,10 +179,10 @@ export const NftDetail = () => {
                         <p> TODO: fetch price</p>
                       </div>
                       <div className="flex justify-between mt-4">
-                        <span className="text-base text-climate-light-gray">Token price</span>
-                        <p> TODO: what???</p>
+                        <span className="text-base text-climate-light-gray">Token price (??)</span>
+                        <p> TODO: ???</p>
                       </div>
-                      <div className="font-sanspro font-semibold flex justify-between items-baseline text-climate-light-gray mb-2">
+                      <div className="font-semibold flex justify-between items-baseline text-climate-light-gray mb-2">
                         <div className="flex items-center mt-4">
                           <span className="font-normal text-xs">Cause percentage</span>
                           <span>

@@ -12,7 +12,14 @@ type CardProps = {
   nft: AssetEntity;
 };
 
-export const Card = (props: CardProps) => {
+const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
+  const cause: Cause | undefined = causes?.find(
+    (cause: Cause) => cause.id === nft.arc69.properties.cause
+  );
+  return cause?.title;
+};
+
+export const Card = ({ nft }: CardProps) => {
   const { causes } = useCauseContext();
   const [state, setState] = useOptionalState<Nft>();
 
@@ -20,7 +27,7 @@ export const Card = (props: CardProps) => {
     Container.get(NetworkClient)
       .core.get('asset/:id', {
         params: {
-          id: props.nft.assetIdBlockchain.toString(),
+          id: nft.assetIdBlockchain.toString(),
         },
       })
       .then(({ data }) => {
@@ -53,13 +60,6 @@ export const Card = (props: CardProps) => {
       </div>
     </div>,
     (info) => {
-      const { nft } = props;
-      const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
-        const cause: Cause | undefined = causes?.find(
-          (cause: Cause) => cause.id === nft.arc69.properties.cause
-        );
-        return cause?.title;
-      };
       return (
         <div className="relative wrapper antialiased text-gray-900 max-w-[325px]">
           <div>
