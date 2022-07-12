@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { DetailedHTMLProps, SelectHTMLAttributes } from 'react';
+import React, { DetailedHTMLProps, Key, SelectHTMLAttributes } from 'react';
 import { Path, UseFormRegister } from 'react-hook-form';
 import { InputProps } from 'react-select';
 import { IconMagnify } from '../Icons';
@@ -57,9 +57,9 @@ export function Select<T, P extends string>({
   InputRegistryOption<T>) {
   return (
     <select {...register(name as Path<unknown>)} {...rest}>
-      {options.map((value: Record<string, unknown>) => (
-        <option key={value} value={value}>
-          {value}
+      {options.map((value) => (
+        <option key={value as Key} value={value as string | number | readonly string[] | undefined}>
+          {value as string | null}
         </option>
       ))}
     </select>
