@@ -10,6 +10,7 @@ import BalanceDisplay from '../Layout/BalanceDisplay';
 import CurrentNFTInfo from '@/features/misc/state/CurrentNFTInfo';
 import { option } from '@octantis/option';
 import SearchBar from '../SearchBar/SearchBar';
+import { useMemo } from 'react';
 
 type NavbarPropsType = {
   nft?: option<CurrentNFTInfo>;

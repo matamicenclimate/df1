@@ -1,13 +1,12 @@
 import { QueryClient, QueryClientProvider } from 'react-query';
-// import { AuthProvider } from '@/context/auth-context';
 import { ErrorBoundary } from 'react-error-boundary';
-// import { AuthProvider } from '@/lib/auth';
 import { UserContextProvider } from '@/context/WalletContext';
 import { CauseContextProvider } from '@/context/CauseContext';
 import { DialogProvider } from './DialogProvider';
 import { WalletFundsContextProvider } from '@/context/WalletFundsContext';
 import ModalDialogProvider from './ModalDialogProvider';
 import { LanguageContextProvider } from '@/context/LanguageContext';
+import { NftsContextProvider } from '@/context/NftsContext';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +33,7 @@ const providers = [
   (children) => <ErrorBoundary FallbackComponent={ErrorFallback}>{children}</ErrorBoundary>,
   (children) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
   (children) => <UserContextProvider>{children}</UserContextProvider>,
+  (children) => <NftsContextProvider>{children}</NftsContextProvider>,
   (children) => <CauseContextProvider>{children}</CauseContextProvider>,
   (children) => <WalletFundsContextProvider>{children}</WalletFundsContextProvider>,
   (children) => <LanguageContextProvider>{children}</LanguageContextProvider>,

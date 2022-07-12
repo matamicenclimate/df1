@@ -10,6 +10,7 @@ module.exports = {
         'climate-light-blue': '#1C64F2',
         'climate-light-gray': '#777E8B',
         'climate-white-gray': '#FAFAFA',
+        'climate-black': '#021120',
 
         'climate-white': '#FAFAFB',
         'climate-green': '#52662A',

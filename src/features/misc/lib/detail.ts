@@ -51,9 +51,9 @@ export function useNFTPurchasingActions(
 ) {
   const { balanceAlgo } = useWalletFundsContext();
   const goToPage = useNavigate();
-  if (wallet == null) {
-    return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
-  }
+  // if (wallet == null) {
+  //   return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
+  // }
 
   const aId = Number(assetId);
   if (Number.isNaN(aId)) {
@@ -121,6 +121,7 @@ export function useNFTPurchasingActions(
         });
 
         const txns = algosdk.assignGroupID([optTxn, payTxn, callTxn]);
+        if (wallet == null) return;
         const signedTxn = await wallet.signTxn(txns);
         const { txId } = await client()
           .sendRawTransaction(signedTxn.map((tx) => tx.blob))
