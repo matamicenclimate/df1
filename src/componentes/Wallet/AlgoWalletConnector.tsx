@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect, MouseEvent } from 'react';
-import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
+import { useState, useEffect } from 'react';
+import { SessionWallet } from 'algorand-session-wallet';
 import { Button } from '@/componentes/Elements/Button/Button';
-import { Dialog } from '@/componentes/Dialog/Dialog';
 import { useWalletContext } from '@/context/WalletContext';
 import { Dropdown } from '@/componentes/Dropdown/Dropdown';
 import DialogConnectWallet from './DialogConnectWallet';
