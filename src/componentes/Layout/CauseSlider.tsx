@@ -17,7 +17,6 @@ type NftFilteredByIdType = {
 
 const CauseSlider = ({ nftList, causes }: CauseSliderProps) => {
   const { t } = useTranslation();
-  const [filteredList, setFilteredList] = useState<Listing[]>();
   const [nftFilteredByCauseId, setNftFilteredByCauseId] = useState<
     Record<string, NftFilteredByIdType>
   >({});
@@ -46,7 +45,7 @@ const CauseSlider = ({ nftList, causes }: CauseSliderProps) => {
 
   return (
     <div>
-      {filteredList?.length === 0 ? (
+      {Object.keys(nftFilteredByCauseId).length === 0 ? (
         <div>{t('misc.Landing.no-nft-message')}</div>
       ) : (
         Object.entries(nftFilteredByCauseId).map(([key, value]) => (

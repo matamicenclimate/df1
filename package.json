@@ -51,6 +51,8 @@
     "test": "craco test",
     "test:common:net": "ts-node climate-nft-common/src/spec/net.spec.ts",
     "eject": "react-scripts eject",
+    "lint": "eslint --fix . --ext .ts,.tsx",
+    "prettier": "prettier --write src",
     "postinstall": "node hooks/install-hooks.js"
   },
   "eslintConfig": {
@@ -80,12 +82,13 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "handlebars": "^4.7.7",
     "postcss": "^8.4.6",
     "postcss-import": "^14.0.2",
     "postcss-nesting": "^10.1.2",
     "postcss-preset-env": "^7.3.1",
-    "prettier": "2.5.1",
+    "prettier": "^2.5.1",
     "raw-loader": "^4.0.2",
     "react-app-alias": "^2.1.0",
     "stream-browserify": "^3.0.0",

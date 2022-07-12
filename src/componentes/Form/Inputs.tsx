@@ -57,7 +57,7 @@ export function Select<T, P extends string>({
   InputRegistryOption<T>) {
   return (
     <select {...register(name as Path<unknown>)} {...rest}>
-      {options.map((value: any) => (
+      {options.map((value: Record<string, unknown>) => (
         <option key={value} value={value}>
           {value}
         </option>

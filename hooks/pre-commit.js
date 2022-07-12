@@ -6,4 +6,4 @@
 const $ = require('./cmd');
 
 // Run commands:
-$`echo This is a test hook.`;
+$`npm run prettier`.then(() => $`npm run lint`);

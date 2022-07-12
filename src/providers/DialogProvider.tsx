@@ -31,7 +31,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
   return (
     <>
       <Dialog subtitle={subtitle} isOpen={open} title={title}>
-        {message}
+        <div className={red ? 'red' : undefined}>{message}</div>
         {userInteraction ? (
           <div className="text-right">
             <Button className="my-4" onClick={onClose}>

@@ -34,7 +34,7 @@ export type CauseInfo = {
   price: number;
 };
 
-type Properties = Record<string, any> & CauseInfo;
+type Properties = Record<string, Record<string, unknown>> & CauseInfo;
 
 export type NFTMetadataBackend = {
   title: string;

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect, MouseEvent, useContext } from 'react';
+import { useState, useEffect, MouseEvent } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
 import { Button } from '@/componentes/Elements/Button/Button';
 import { Dialog } from '@/componentes/Dialog/Dialog';
-import { useWalletContext, WalletContext } from '@/context/WalletContext';
+import { useWalletContext } from '@/context/WalletContext';
 import { Dropdown } from '@/componentes/Dropdown/Dropdown';
 
 const ps = {
@@ -25,7 +25,6 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   const sw = new SessionWallet(ps.algod.network);
   const [sessionWallet, setSessionWallet] = useState(sw);
   const [accts, setAccounts] = useState(sw.accountList());
-  const [connected, setConnected] = useState(sw.connected());
 
   const acctsTrunc = accts.map((acc) => acc.substring(0, 8) + '...');
 
@@ -44,7 +43,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
   function updateWallet(sw: SessionWallet) {
     setSessionWallet(sw);
     setAccounts(sw.accountList());
-    setConnected(sw.connected());
+    sw.connected();
     handleContextWalletAcct(sw);
   }
 

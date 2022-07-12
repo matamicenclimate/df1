@@ -15,7 +15,7 @@ export const InputGenerator = ({ inputList, setInputList }: InputGeneratorType) 
   const { t } = useTranslation();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { name, value } = e.target;
-    const list: any = [...inputList];
+    const list: Record<string, unknown> = [...inputList];
     list[index][name] = value;
     setInputList(list);
   };

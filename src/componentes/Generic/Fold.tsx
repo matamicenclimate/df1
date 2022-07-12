@@ -3,7 +3,7 @@
   @octantis/option module.
 */
 import { option } from '@octantis/option';
-import { ReactElement, ReactNode } from 'react';
+import { ReactElement } from 'react';
 
 export interface FoldingProps<A> {
   children?: ReactElement;

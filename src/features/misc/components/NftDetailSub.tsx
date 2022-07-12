@@ -2,7 +2,7 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { useNFTPurchasingActions } from '../lib/detail';
 import { microalgosToAlgos } from '../lib/minting';
 import algoLogo from '../../../assets/algoLogo.svg';
-import { AssetEntity, Nft } from '@common/src/lib/api/entities';
+import { AssetEntity } from '@common/src/lib/api/entities';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
 
 const NoNftApp = () => (

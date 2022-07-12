@@ -8,7 +8,7 @@ type ImageUploaderProps<T = unknown> = {
 };
 
 export const ImageUploader = ({ selectedImage, setSelectedImage }: ImageUploaderProps) => {
-  const imageChange = (e: any) => {
+  const imageChange = (e: Record<string, unknown>) => {
     if (e.target.files && e.target.files.length > 0) {
       if (setSelectedImage) {
         setSelectedImage(e.target.files[0]);

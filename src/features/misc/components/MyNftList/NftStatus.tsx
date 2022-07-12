@@ -36,7 +36,7 @@ export default function NftStatus({
   const [showSellingOptions, setShowSellingOptions] = useState<boolean>(false);
   const [openSpinner, setOpenSpinner] = useState<boolean>(false);
   const [assetInfo, setAssetInfo] = useState<NftAssetInfo>();
-  const [disabled, setDisabled] = useState<any | void | boolean | undefined>();
+  const [disabled, setDisabled] = useState<Record<string, unknown> | void | boolean | undefined>();
   const { wallet } = useWalletContext();
   const algodClient = client();
 
@@ -67,7 +67,10 @@ export default function NftStatus({
 
   const disableButton = () => {
     // TODO El estado debe ser correcto y no mirar el isClosed
-    if ((assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') && !assetInfo?.assetInfo.isClosed) {
+    if (
+      (assetInfo?.assetInfo.type === 'direct-listing' || assetInfo?.assetInfo.type === 'auction') &&
+      !assetInfo?.assetInfo.isClosed
+    ) {
       return setDisabled(true);
     }
     return disabled as boolean;

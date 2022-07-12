@@ -1,4 +1,4 @@
-import { Nft, Listing } from '@common/src/lib/api/entities';
+import { Listing } from '@common/src/lib/api/entities';
 import { AuctionAppState } from '@common/src/lib/types';
 import { option } from '@octantis/option';
 

@@ -5,7 +5,7 @@ import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { ImageUploader } from '@/componentes/ImageUploader/ImageUploader';
 import { Wallet } from 'algorand-session-wallet';
-import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
+import { NFTMetadataBackend } from '@/lib/type';
 import { InputGenerator } from '@/componentes/InputGenerator/InputGenerator';
 import { useCauseContext } from '@/context/CauseContext';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';

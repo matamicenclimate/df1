@@ -17,12 +17,12 @@ import NftDetailPreview from '../components/NftDetailPreview';
 import { useTranslation } from 'react-i18next';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { retrying } from '@common/src/lib/net';
-import { AssetEntity, Nft } from '@common/src/lib/api/entities';
+import { AssetEntity } from '@common/src/lib/api/entities';
 import { Cause, CausePostBody } from '@/lib/api/causes';
 import { useNFTPurchasingActions } from '../lib/detail';
 import { BuyAndBidButtons } from '../components/NftDetailSub';
 
-const getDateObj = (mintingDate: any) => {
+const getDateObj = (mintingDate: string | number) => {
   const date = new Date(mintingDate);
   const day = date.getDate();
   const monthName = date.toLocaleString('default', { month: 'long' });
@@ -78,7 +78,7 @@ export const NftDetail = () => {
   const { causes } = useCauseContext();
   const { ipnft: assetId } = useParams() as { ipnft: string };
   const [nft, setNft] = useOptionalState<CurrentNFTInfo>();
-  const [error, setError, resetError] = useOptionalState<unknown>();
+  const [error, setError] = useOptionalState<unknown>();
   const { wallet } = useWalletContext();
 
   function updateNFTInfo() {

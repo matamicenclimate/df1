@@ -1,6 +1,5 @@
 import algosdk from 'algosdk';
 import * as DigestProvider from '@common/src/services/DigestProvider';
-import { metadataNFTType, NFTMetadataBackend } from './type';
 import { Wallet } from 'algorand-session-wallet';
 import { none, option, some } from '@octantis/option';
 import Container from 'typedi';
@@ -15,15 +14,12 @@ export interface AssetInfo {
   assetID: number;
 }
 
-async function createAsset<A extends Record<string, any> = any>(
-  algodClient: algosdk.Algodv2,
-  account: string,
-  meta: A,
-  wallet: Wallet
-) {
+async function createAsset<
+  A extends Record<string, Record<string, unknown>> = Record<string, unknown>
+>(algodClient: algosdk.Algodv2, account: string, meta: A, wallet: Wallet) {
   dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
-  const status = await algodClient.status().do();
+  await algodClient.status().do();
   //Check account balance
   dialog.message = 'Retrieving account information...';
   const accountInfo = await algodClient.accountInformation(account).do();
@@ -129,7 +125,11 @@ export async function destroyAsset(
 }
 
 // Function used to print created asset for account and assetid
-const printCreatedAsset = async function (algodClient: any, account: any, assetid: any) {
+const printCreatedAsset = async function (
+  algodClient: Record<string, unknown>,
+  account: Record<string, unknown>,
+  assetid: Record<string, unknown>
+) {
   // note: if you have an indexer instance available it is easier to just use this
   //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
@@ -147,7 +147,11 @@ const printCreatedAsset = async function (algodClient: any, account: any, asseti
   }
 };
 // Function used to print asset holding for account and assetid
-const printAssetHolding = async function (algodClient: any, account: any, assetid: any) {
+const printAssetHolding = async function (
+  algodClient: Record<string, unknown>,
+  account: Record<string, unknown>,
+  assetid: Record<string, unknown>
+) {
   // note: if you have an indexer instance available it is easier to just use this
   //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
@@ -176,7 +180,7 @@ export async function createNFT(
   try {
     const info = await createAsset(algodClient, account, metadat, wallet);
     return some(info);
-  } catch (err: any) {
+  } catch (err: Record<string, unknown>) {
     console.log('Failed to process NFT creation!', err);
 
     if (err) {

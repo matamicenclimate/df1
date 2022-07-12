@@ -5,7 +5,7 @@ import { InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator'
 import { client } from '@/lib/algorand';
 import { Cause } from '@/lib/api/causes';
 import { createNFT } from '@/lib/nft';
-import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
+import { NFTMetadataBackend } from '@/lib/type';
 import ProcessDialog from '@/service/ProcessDialog';
 import { DateLike } from '@common/src/lib/dates';
 import NetworkClient from '@common/src/services/NetworkClient';
