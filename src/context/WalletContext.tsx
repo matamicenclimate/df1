@@ -32,7 +32,9 @@ export const UserContextProvider = ({ children }: WalletContextProviderProps) =>
       addr: userWallet.account,
       sk: Uint8Array.from([]),
     };
-  }, [userWallet]);
+  }, [userWallet, setUserWallet]);
+
+  console.log('userWallet', userWallet);
 
   return (
     <WalletContext.Provider value={{ userWallet, setUserWallet }}>

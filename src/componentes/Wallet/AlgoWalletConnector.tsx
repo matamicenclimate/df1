@@ -5,10 +5,10 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { Dialog } from '@/componentes/Dialog/Dialog';
 import { useWalletContext } from '@/context/WalletContext';
 import { Dropdown } from '@/componentes/Dropdown/Dropdown';
+import DialogConnectWallet from './DialogConnectWallet';
 
 const ps = {
   algod: {
-    // server: 'https://testnet.algoexplorerapi.io',
     server: 'https://algoindexer.testnet.algoexplorerapi.io',
     port: 0,
     token: '',
@@ -30,7 +30,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
 
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
-  const { setUserWallet } = useWalletContext();
+  const { userWallet, setUserWallet } = useWalletContext();
 
   function handleContextWalletAcct(sw: SessionWallet) {
     if (!setUserWallet) return;
@@ -58,30 +58,13 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
     updateWallet(sessionWallet);
   };
 
-  const handleSelectedWallet = async (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    const choice = event.currentTarget.id;
-
-    if (!(choice in allowedWallets)) {
-      sessionWallet.disconnect();
-      return setIsOpen(false);
-    }
-    const sw = new SessionWallet(sessionWallet.network, sessionWallet.permissionCallback, choice);
-    if (!(await sw.connect())) {
-      sw.disconnect();
-      // showErrorToaster("Couldn't connect to wallet")
-    }
-    updateWallet(sw);
-    setIsOpen(false);
-  };
-
   const disconnectWallet = () => {
     sessionWallet.disconnect();
     updateWallet(new SessionWallet(sessionWallet.network, sessionWallet.permissionCallback));
   };
 
   return (
-    <div>
+    <>
       {sessionWallet.accountList()[0] && isNavbar ? (
         <div className="flex items-center">
           {accts && (
@@ -109,54 +92,14 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
           </Button>
         </div>
       ) : (
-        <Button variant="login" onClick={() => setIsOpen(!isOpen)}>
-          Login / Connect Wallet
-        </Button>
+        <DialogConnectWallet
+          textButton={
+            <Button variant="login">
+              <p className="">Login / Connect Wallet</p>
+            </Button>
+          }
+        />
       )}
-
-      {isOpen && (
-        <Dialog
-          closeButton
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          title=""
-          subtitle="Connect your wallet"
-          claim="Please select the provider you wish to connect your wallet to."
-        >
-          <div className="flex flex-col space-between m-auto items-center font-inter">
-            <div className="m-5 w-[260px] border border-climate-light-blue rounded-3xl">
-              <button
-                className="p-3 w-full flex justify-center items-center hover:font-bold"
-                id="algo-signer"
-                onClick={(event) => handleSelectedWallet(event)}
-              >
-                <img
-                  className="w-10"
-                  src="https://dartroom.xyz/img/algosigner.69be6245.svg"
-                  alt="algosigner-logo"
-                />
-                <span className="ml-4 text-climate-light-blue font-medium text-base">
-                  AlgoSigner
-                </span>
-              </button>
-            </div>
-            <div className="m-5 w-[260px] border border-climate-light-blue rounded-3xl">
-              <button
-                className="p-3 w-full flex justify-center items-center hover:font-bold"
-                id="my-algo-connect"
-                onClick={(event) => handleSelectedWallet(event)}
-              >
-                <img
-                  className="w-10"
-                  src="https://dartroom.xyz/img/myalgo.b2b6857d.svg"
-                  alt="myalgo-logo"
-                />
-                <span className="ml-4 text-climate-light-blue">MyAlgo</span>
-              </button>
-            </div>
-          </div>
-        </Dialog>
-      )}
-    </div>
+    </>
   );
 };

@@ -4,6 +4,8 @@ import { microalgosToAlgos } from '../lib/minting';
 import algoLogo from '../../../assets/algoLogo.svg';
 import { AssetEntity } from '@common/src/lib/api/entities';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
+import { useWalletContext } from '@/context/WalletContext';
+import DialogConnectWallet from '@/componentes/Wallet/DialogConnectWallet';
 
 const NoNftApp = () => (
   <div>
@@ -21,10 +23,25 @@ export function ButtonsDiscriminator({
   actions: ReturnType<typeof useNFTPurchasingActions>;
   state: CurrentNFTInfo;
 }) {
+  const { userWallet } = useWalletContext();
+
+  if (userWallet?.wallet === undefined && userWallet?.account === '') {
+    return (
+      <DialogConnectWallet
+        textButton={
+          <Button className="w-full flex justify-between" variant="primary">
+            <p>Connect your wallet</p>
+            <span>+</span>
+          </Button>
+        }
+      />
+    );
+  }
+
   if (state.nft.type === 'direct-listing') {
     return (
       <Button onClick={doBuyNFT} className="w-full">
-        Buy
+        Buy now
       </Button>
     );
   } else if (state.nft.type === 'auction') {
