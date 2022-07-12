@@ -7,6 +7,8 @@ const path = require('path');
 const HOOKS = ['pre-commit.js'];
 const HOOK_DIR = path.join(__dirname, '..', '.git', 'hooks');
 
+fs.copyFileSync(path.join(__dirname, 'cmd.js'), path.join(HOOK_DIR, 'cmd.js'));
+
 console.log(`About to install ${HOOKS.length}, make you sure that Node engine is already present.`);
 for (const hook of HOOKS) {
   console.log(`Installing hook for ${hook}...`);

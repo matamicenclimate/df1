@@ -6,7 +6,4 @@
 const $ = require('./cmd');
 
 // Run commands:
-$`echo This is a test hook.`.then(() => $`echo Does nothing by itself.`);
-
-// This aborts the commit
-process.exit(10);
+$`echo This is a test hook.`;

@@ -50,7 +50,8 @@
     "build": "craco build",
     "test": "craco test",
     "test:common:net": "ts-node climate-nft-common/src/spec/net.spec.ts",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "node hooks/install-hooks.js"
   },
   "eslintConfig": {
     "extends": [
