@@ -2,7 +2,6 @@ import { Dialog } from '@/componentes/Dialog/Dialog';
 import { useWalletContext } from '@/context/WalletContext';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
 import React, { useState } from 'react';
-import { Button } from '../Elements/Button/Button';
 
 type DialogConnectWalletProps = {
   textButton: React.ReactElement;

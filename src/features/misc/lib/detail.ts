@@ -51,9 +51,6 @@ export function useNFTPurchasingActions(
 ) {
   const { balanceAlgo } = useWalletFundsContext();
   const goToPage = useNavigate();
-  // if (wallet == null) {
-  //   return voidResult(() => alert(t('NFTDetail.dialog.alertConnectWallet')));
-  // }
 
   const aId = Number(assetId);
   if (Number.isNaN(aId)) {

@@ -2,10 +2,9 @@ import { Button } from '@/componentes/Elements/Button/Button';
 import { useNFTPurchasingActions } from '../lib/detail';
 import { microalgosToAlgos } from '../lib/minting';
 import algoLogo from '../../../assets/algoLogo.svg';
-import { AssetEntity, Nft } from '@common/src/lib/api/entities';
+import { AssetEntity } from '@common/src/lib/api/entities';
 import CurrentNFTInfo from '../state/CurrentNFTInfo';
 import { useWalletContext } from '@/context/WalletContext';
-import { Link } from 'react-router-dom';
 import DialogConnectWallet from '@/componentes/Wallet/DialogConnectWallet';
 
 const NoNftApp = () => (
@@ -42,7 +41,7 @@ export function ButtonsDiscriminator({
   if (state.nft.type === 'direct-listing') {
     return (
       <Button onClick={doBuyNFT} className="w-full">
-        Buy
+        Buy now
       </Button>
     );
   } else if (state.nft.type === 'auction') {
