@@ -118,7 +118,11 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 name="properties.attributes"
                 render={({ field: { value, onChange } }) => (
                   <InputGenerator
-                    inputList={value ?? [{ trait_type: '', value: '' }]}
+                    inputList={
+                      (value as unknown as { trait_type: string; value: string }[]) ?? [
+                        { trait_type: '', value: '' },
+                      ]
+                    }
                     setInputList={onChange}
                   />
                 )}
@@ -148,7 +152,10 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   control={control}
                   name="properties.file"
                   render={({ field: { value, onChange } }) => (
-                    <ImageUploader selectedImage={value ?? null} setSelectedImage={onChange} />
+                    <ImageUploader
+                      selectedImage={(value as unknown as MediaSource) ?? null}
+                      setSelectedImage={onChange}
+                    />
                   )}
                 />
               </div>

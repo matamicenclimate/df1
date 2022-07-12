@@ -6,9 +6,9 @@ export type Endpoints = Record<
   Record<
     string,
     {
-      response: Record<string, unknown>;
-      body?: Record<string, unknown>;
-      headers?: Record<string, Record<string, unknown>>;
+      response: Record<string, unknown> | unknown | string | number;
+      body?: Record<string, unknown | string | number> | string | unknown;
+      headers?: Record<string, Record<string, unknown> | string | number>;
     }
   >
 >;

@@ -3,7 +3,7 @@ import { Spinner } from '@/componentes/Elements/Spinner/Spinner';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { none, option, some } from '@octantis/option';
+import { None, Option, Some } from '@octantis/option';
 import Container from 'typedi';
 import '@common/src/lib/binary/extension';
 import { useWalletContext } from '@/context/WalletContext';
@@ -43,21 +43,21 @@ const getAppId = async (id: string) => {
 
 async function tryGetNFTData(
   id: string,
-  current: option<CurrentNFTInfo>,
+  current: Option<CurrentNFTInfo>,
   setNft: (nft: CurrentNFTInfo) => void,
   setError: (err: unknown) => void
 ) {
   let info = current.flatMap((s) => s.info);
-  let state: CurrentNFTInfo['state'] = none();
+  let state: CurrentNFTInfo['state'] = None();
   try {
     const [nft, appId] = await getAppId(id);
     if (appId != null) {
       const req = await TransactionOperation.do.getApplicationState<AuctionAppState>(appId);
-      state = some(req);
+      state = Some(req);
     }
     if (!info.isDefined()) {
       const res = await Container.get(NetworkClient).core.get('asset-info/:id', { params: { id } });
-      info = some(res.data);
+      info = Some(res.data);
     }
     setNft({ info, state, nft });
   } catch (err) {
