@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface CaseLikeProps<T> {
   of: T;
-  children?: Record<string, unknown>;
+  children?: any;
   then?: (of: T) => React.ReactElement | string;
 }
 
@@ -22,12 +22,6 @@ export const Match = <T, P extends CaseLikeProps<T>>({
   return null;
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-function ignore(..._: unknown[]) {
-  return;
-}
-
 export function Case<T>(_: CaseLikeProps<T>) {
-  ignore(_);
   return <></>;
 }

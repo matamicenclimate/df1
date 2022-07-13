@@ -1,5 +1,4 @@
 import { t } from 'i18next';
-import { ChangeEvent } from 'react';
 
 type ImageUploaderProps<T = unknown> = {
   selectedImage?: File | Blob | undefined | MediaSource;
@@ -9,7 +8,7 @@ type ImageUploaderProps<T = unknown> = {
 };
 
 export const ImageUploader = ({ selectedImage, setSelectedImage }: ImageUploaderProps) => {
-  const imageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const imageChange = (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
       if (setSelectedImage) {
         setSelectedImage(e.target.files[0]);

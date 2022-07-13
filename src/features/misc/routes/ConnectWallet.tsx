@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect, MouseEvent } from 'react';
+import { useState, useEffect, MouseEvent, useContext } from 'react';
 import { SessionWallet, allowedWallets } from 'algorand-session-wallet';
-import { useWalletContext } from '@/context/WalletContext';
+import { useWalletContext, WalletContext } from '@/context/WalletContext';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import algosigner from '../../../assets/algosigner.svg';
 import myalgo from '../../../assets/myalgo.svg';
