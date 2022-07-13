@@ -7,7 +7,7 @@ import { useWalletFundsContext } from '@/context/WalletFundsContext';
 import { Asset, AssetEntity, Nft } from '@common/src/lib/api/entities';
 import { retrying } from '@common/src/lib/net';
 import NetworkClient from '@common/src/services/NetworkClient';
-import { none, option, some } from '@octantis/option';
+import { None, Option, Some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -62,7 +62,7 @@ const net = Container.get(NetworkClient);
  */
 export default function MyNftList({ wallet, account }: MyNftListProps) {
   const { register } = useForm();
-  const [user, setUser] = useState<option<UserState>>(none());
+  const [user, setUser] = useState<Option<UserState>>(None());
   const [nfts, setNfts] = useState<Record<string, AssetEntity | Asset | Nft>>({});
   const { balanceAlgo, balanceAlgoUSD } = useWalletFundsContext();
   const [info, setInfo] = useState('');
@@ -70,7 +70,7 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
   useEffect(() => {
     if (balanceAlgo != null) {
       setUser(
-        some({
+        Some({
           projects: 0,
           balance: balanceAlgoUSD ?? 0,
         })

@@ -1,0 +1,54 @@
+[
+  {
+    "_id": "907e2c42-2537-4ad2-bc65-951f50bdaa98",
+    "colId": "7fa2d797-f5b8-4102-b32c-426960cbfcfa",
+    "containerId": "c03db7f0-8381-4f80-b7a4-501b82c2f62e",
+    "name": "create-listing",
+    "url": "{{host}}/api/{{api-version}}/create-listing",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2022-07-13T11:16:28.556Z",
+    "modified": "2022-07-13T11:28:05.378Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"assetId\": 97627669,\n  \"creatorWallet\": \"WFITYMXLFQ73KIKH67PKGYKUI4NHON5KSM3KJFJM6UCMO6MNDXLOPCD67I\",\n  \"type\": \"auction\",\n  \"causePercentage\": 50,\n  \"startDate\": \"2022-07-14T10:03:43.516Z\",\n  \"endDate\": \"2022-07-15T10:03:43.516Z\"\n}",
+      "form": []
+    },
+    "tests": [
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      },
+      {
+        "type": "res-body",
+        "custom": "",
+        "action": "isjson",
+        "value": "true"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.appIndex",
+        "action": "istype",
+        "value": "number"
+      }
+    ]
+  },
+  {
+    "_id": "0ca480bc-6505-41d0-bc2f-b489ebe688df",
+    "colId": "7fa2d797-f5b8-4102-b32c-426960cbfcfa",
+    "containerId": "c03db7f0-8381-4f80-b7a4-501b82c2f62e",
+    "name": "finish-create-listing",
+    "url": "{{host}}/api/{{api-version}}/finish-create-listing",
+    "method": "POST",
+    "sortNum": 30000,
+    "created": "2022-07-13T11:37:15.192Z",
+    "modified": "2022-07-13T11:37:54.268Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

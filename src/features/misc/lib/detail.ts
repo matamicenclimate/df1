@@ -1,7 +1,7 @@
 import ProcessDialog from '@/service/ProcessDialog';
 import OptInService from '@common/src/services/OptInService';
 import * as WalletAccountProvider from '@common/src/services/WalletAccountProvider';
-import { none, option, some } from '@octantis/option';
+import { None, Option, Some } from '@octantis/option';
 import { Wallet } from 'algorand-session-wallet';
 import { t } from 'i18next';
 import Container from 'typedi';
@@ -46,7 +46,7 @@ function voidResult(of: () => void) {
 export function useNFTPurchasingActions(
   assetId: string,
   wallet: Wallet | undefined,
-  nft: option<CurrentNFTInfo>,
+  nft: Option<CurrentNFTInfo>,
   updateNFTInfo: () => Promise<void>
 ) {
   const { balanceAlgo } = useWalletFundsContext();
@@ -155,7 +155,7 @@ export function useNFTPurchasingActions(
         });
       }
       const appAddr = algosdk.getApplicationAddress(appId);
-      let previousBid: option<string> = none();
+      let previousBid: Option<string> = None();
       if (!nft.value.state.isDefined()) {
         throw new Error('Attemptint to bid when the state is not set. Contact support.');
       }
@@ -165,7 +165,7 @@ export function useNFTPurchasingActions(
       console.log('state', state);
 
       if (state.bid_account != null && !isZeroAccount(state.bid_account)) {
-        previousBid = some(algosdk.encodeAddress(state.bid_account));
+        previousBid = Some(algosdk.encodeAddress(state.bid_account));
       }
       console.info('Previous bidder:', previousBid.getOrElse('<none>'));
       const minRequired = microalgosToAlgos(

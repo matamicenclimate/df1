@@ -1,0 +1,17 @@
+[
+  {
+    "_id": "7fa2d797-f5b8-4102-b32c-426960cbfcfa",
+    "colName": "API",
+    "created": "2022-07-13T11:16:15.293Z",
+    "sortNum": 20000,
+    "folders": [
+      {
+        "_id": "c03db7f0-8381-4f80-b7a4-501b82c2f62e",
+        "name": "listings",
+        "containerId": "",
+        "created": "2022-07-13T11:16:23.469Z",
+        "sortNum": 10000
+      }
+    ]
+  }
+]

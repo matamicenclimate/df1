@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -14,6 +14,8 @@ import NetworkClient from '@common/src/services/NetworkClient';
 import { AuctionLogic } from '@common/src/services/AuctionLogic';
 import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import algosdk from 'algosdk';
+import { WalletContext } from '@/context/WalletContext';
 
 const defaultOffset = 24 * 60 * 60 * 1000;
 
@@ -51,6 +53,7 @@ type SecondTabProps = {
 
 const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: SecondTabProps) => {
   const { t } = useTranslation();
+  const walletCtx = useContext(WalletContext);
   const [dateErrors, setDateErrors] = useState<DateErrors>({});
   const [dates, setDates] = useState<Nullable<Dates>>({
     start: new Date(),
@@ -72,26 +75,57 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
     const net = Container.get(NetworkClient);
     return await dialog.process(async function () {
       this.title = 'Processing auction creation';
-      this.message = 'Opting in...';
-      const optResult = await net.core.post('opt-in', { assetId });
-      console.info('Asset opted-in:', optResult);
-      const transfer = await auctions.makeTransferToAccount(
-        optResult.data.targetAccount,
+      // this.message = 'Opting in...';
+      // const optResult = await net.core.post('opt-in', { assetId });
+      // console.info('Asset opted-in:', optResult);
+      // const transfer = await auctions.makeTransferToAccount(
+      // optResult.data.targetAccount,
+      // assetId,
+      // new Uint8Array()
+      // );
+      // console.info('Asset transfer to app:', transfer);
+      if (dates.start == null || dates.end == null) {
+        throw new Error("Can't start auction creation process: Dates were undefined!");
+      }
+      const {
+        data: {
+          appIndex,
+          unsignedTxnGroup: { encodedOpnInTxn, ...otherTxn },
+        },
+      } = await net.core.post('create-listing', {
         assetId,
-        new Uint8Array()
-      );
-      console.info('Asset transfer to app:', transfer);
-      this.message = 'Creating auction...';
-      const tx = await net.core.post('create-auction', {
-        assetId: assetId,
-        creatorWallet: creatorWallet,
-        causePercentage: causePercentage ?? 50,
-        startDate: dates!.start!.toISOString(),
-        endDate: dates!.end!.toISOString(),
+        creatorWallet,
+        type: 'auction',
+        causePercentage,
+        startDate: dates.start.toISOString(),
+        endDate: dates.end.toISOString(),
       });
-      console.info('Auction program was created:', tx.data);
-      console.info('Auction program was created:', tx);
-      if (tx.data.appIndex) {
+      this.message = 'Creating auction...';
+      const tx = algosdk.decodeUnsignedTransaction(Buffer.from(encodedOpnInTxn, 'base64'));
+      const wallet = walletCtx?.userWallet?.wallet;
+      if (wallet == null) {
+        throw new Error('Invalid app state!');
+      }
+      tx.from = algosdk.decodeAddress(wallet.getDefaultAccount());
+      console.log('Signing transaction of:', tx);
+      const [stx] = await wallet.signTxn([tx]);
+      const res = await net.core.post('finish-create-listing', {
+        appIndex,
+        type: 'auction',
+        signedTxn: {
+          ...otherTxn,
+          signedOpnInTxn: Buffer.from(stx.blob).toString('base64'),
+        },
+      });
+      // const tx = await net.core.post('create-auction', {
+      //   assetId: assetId,
+      //   creatorWallet: creatorWallet,
+      //   causePercentage: causePercentage ?? 50,
+      //   startDate: dates.start.toISOString(),
+      //   endDate: dates.end.toISOString(),
+      // });
+      console.info('Auction program was created:', res.data);
+      if (res.data.appIndex) {
         this.title = t('Minter.dialog.dialogNFTListedSuccess');
         this.message = '';
         goToPage(`/nft/${assetId}`);

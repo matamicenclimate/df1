@@ -29,15 +29,16 @@ const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: F
       this.title = 'Processing NFT';
       this.message = 'Preparing NFT...';
       console.log('working');
-      const optResult = await net.core.post('opt-in', { assetId });
-      console.info('Asset opted-in:', optResult);
-      this.message = 'Opting in...';
-      const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
-        optResult.data.targetAccount,
-        assetId,
-        new Uint8Array()
-      );
-      console.info('Asset transfer to app:', transfer);
+      // const optResult = await net.core.post('opt-in', { assetId });
+      // console.info('Asset opted-in:', optResult);
+      // this.message = 'Opting in...';
+      // const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
+      //   optResult.data.targetAccount,
+      //   assetId,
+      //   new Uint8Array()
+      // );
+      // console.info('Asset transfer to app:', transfer);
+      throw new Error('Must Implement.');
       const body = {
         assetId,
         causePercentage,
