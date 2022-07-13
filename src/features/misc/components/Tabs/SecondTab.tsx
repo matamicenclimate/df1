@@ -82,12 +82,23 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
       );
       console.info('Asset transfer to app:', transfer);
       this.message = 'Creating auction...';
+      // TODO CHECK THIS OUT!!!!!!
+      // We cannot have null assertions on nullables!!!
+      /*
+        // Old code:
+        startDate: dates!.start!.toISOString(),
+        endDate: dates!.end!.toISOString(),
+        // BAD!!!
+      */
+      if (dates.end == null || dates.start == null) {
+        throw new Error(`Cannot continue.`);
+      }
       const tx = await net.core.post('create-auction', {
         assetId: assetId,
         creatorWallet: creatorWallet,
         causePercentage: causePercentage ?? 50,
-        startDate: dates!.start!.toISOString(),
-        endDate: dates!.end!.toISOString(),
+        startDate: dates.start.toISOString(),
+        endDate: dates.end.toISOString(),
       });
       console.info('Auction program was created:', tx.data);
       console.info('Auction program was created:', tx);

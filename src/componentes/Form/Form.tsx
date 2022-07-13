@@ -4,8 +4,7 @@ import { useForm } from 'react-hook-form';
 type MaybeArray<T> = T[] | T;
 
 interface FormProps {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  defaultValues?: Record<string, any>;
+  defaultValues?: Record<string, Record<string, never> | undefined>;
   children: MaybeArray<React.ReactElement>;
   onSubmit: (data: Record<string, unknown>) => Promise<void> | void;
   className?: string;

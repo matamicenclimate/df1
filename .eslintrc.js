@@ -1,4 +1,12 @@
 module.exports = {
+  settings: {
+    react: {
+      createClass: 'createReactClass',
+      pragma: 'React',
+      fragment: 'Fragment',
+      version: 'detect',
+    },
+  },
   env: {
     browser: true,
     es2021: true,
@@ -18,7 +26,19 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: ['react', '@typescript-eslint', 'unused-imports'],
 
-  rules: {},
+  rules: {
+    'no-unused-vars': 'off',
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
+  },
 };

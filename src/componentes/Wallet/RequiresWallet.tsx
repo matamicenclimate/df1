@@ -1,7 +1,6 @@
-import { useWalletContext, WalletContext } from '@/context/WalletContext';
+import { useWalletContext } from '@/context/WalletContext';
 import { ConnectWallet } from '@/features/misc/routes/ConnectWallet';
 import { Wallet } from 'algorand-session-wallet';
-import { useContext } from 'react';
 
 export interface RequiredProps {
   account: string;

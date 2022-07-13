@@ -16,10 +16,10 @@ const variants = {
   login: 'bg-white text-black rounded-3xl hover:bg-white hover:text-black hover:font-bold',
 };
 
-const hover = {
-  primary:
-    'hover:text-gray-300 hover:shadow-inner hover:opacity-75 hover:font-bold hover:text-white',
-};
+// const hover = {
+//   primary:
+//     'hover:text-gray-300 hover:shadow-inner hover:opacity-75 hover:font-bold hover:text-white',
+// };
 
 type ButtonProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;

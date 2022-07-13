@@ -36,7 +36,7 @@ const fetchAlgoUsd = async () => {
 };
 
 export const WalletFundsContextProvider = ({ children }: WalletFundsContextProviderProps) => {
-  const { data, isLoading, error } = useQuery<WalletFundsContextType>('algoBalance', fetchAlgoUsd);
+  const { data } = useQuery<WalletFundsContextType>('algoBalance', fetchAlgoUsd);
   const { walletAccount } = useWalletContext();
 
   const [balanceAlgo, setBalanceAlgo] = useState<number>();

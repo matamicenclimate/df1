@@ -1,9 +1,9 @@
-import { Nft, Listing } from '@common/src/lib/api/entities';
+import { Listing } from '@common/src/lib/api/entities';
 import { AuctionAppState } from '@common/src/lib/types';
-import { option } from '@octantis/option';
+import { Option } from '@octantis/option';
 
 export default interface CurrentNFTInfo {
   nft: Listing;
-  state: option<AuctionAppState>;
-  info: option<Listing>;
+  state: Option<AuctionAppState>;
+  info: Option<Listing>;
 }

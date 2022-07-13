@@ -1,8 +1,7 @@
 import algosdk from 'algosdk';
 import * as DigestProvider from '@common/src/services/DigestProvider';
-import { metadataNFTType, NFTMetadataBackend } from './type';
 import { Wallet } from 'algorand-session-wallet';
-import { none, option, some } from '@octantis/option';
+import { None, Option, Some } from '@octantis/option';
 import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
 import { Nft } from '@common/src/lib/api/entities';
@@ -15,15 +14,16 @@ export interface AssetInfo {
   assetID: number;
 }
 
-async function createAsset<A extends Record<string, any> = any>(
-  algodClient: algosdk.Algodv2,
-  account: string,
-  meta: A,
-  wallet: Wallet
-) {
+// WARNING!!!!!
+// Fields not proper: meta is not asserted.
+// WE SHOULD HANDLE POTENTIAL MISSING FIELDS HERE!!!!!!!!!
+// BEWARE BUGS MAY OCCUR!
+async function createAsset<
+  A extends Record<string, Record<string, unknown>> = Record<string, Record<string, unknown>>
+>(algodClient: algosdk.Algodv2, account: string, meta: A, wallet: Wallet) {
   dialog.message = 'Checking blockchain connection...';
   //Check algorand node status
-  const status = await algodClient.status().do();
+  await algodClient.status().do();
   //Check account balance
   dialog.message = 'Retrieving account information...';
   const accountInfo = await algodClient.accountInformation(account).do();
@@ -33,9 +33,9 @@ async function createAsset<A extends Record<string, any> = any>(
   const params = await algodClient.getTransactionParams().do();
   const defaultFrozen = false;
   // Friendly name of the asset
-  const assetName = meta.title;
+  const assetName = meta.title as unknown as string;
   // Optional string pointing to a URL relating to the asset
-  const url = meta.url;
+  const url = meta.url as unknown as string;
   const managerAddr = account;
   const reserveAddr = account;
   const freezeAddr = undefined;
@@ -129,7 +129,13 @@ export async function destroyAsset(
 }
 
 // Function used to print created asset for account and assetid
-const printCreatedAsset = async function (algodClient: any, account: any, assetid: any) {
+// DO NOT USE ANY!!!!
+// EVEN WITH DEBUG FUNCTIONS!
+const printCreatedAsset = async function (
+  algodClient: algosdk.Algodv2,
+  account: string,
+  assetid: number
+) {
   // note: if you have an indexer instance available it is easier to just use this
   //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
@@ -147,7 +153,11 @@ const printCreatedAsset = async function (algodClient: any, account: any, asseti
   }
 };
 // Function used to print asset holding for account and assetid
-const printAssetHolding = async function (algodClient: any, account: any, assetid: any) {
+const printAssetHolding = async function (
+  algodClient: algosdk.Algodv2,
+  account: string,
+  assetid: number
+) {
   // note: if you have an indexer instance available it is easier to just use this
   //     const accountInfo = await indexerClient.searchAccounts()
   //    .assetID(assetIndex).do();
@@ -172,11 +182,16 @@ export async function createNFT(
   account: string,
   metadat: Nft,
   wallet: Wallet
-): Promise<option<AssetInfo>> {
+): Promise<Option<AssetInfo>> {
   try {
-    const info = await createAsset(algodClient, account, metadat, wallet);
-    return some(info);
-  } catch (err: any) {
+    const info = await createAsset(
+      algodClient,
+      account,
+      metadat as unknown as Record<string, Record<string, unknown>>,
+      wallet
+    );
+    return Some(info);
+  } catch (err: unknown) {
     console.log('Failed to process NFT creation!', err);
 
     if (err) {
@@ -186,6 +201,6 @@ export async function createNFT(
       await dialog.interaction();
     }
 
-    return none();
+    return None();
   }
 }

@@ -3,7 +3,14 @@ import { Cause, CausePostBody } from './causes';
 
 export type Endpoints = Record<
   string,
-  Record<string, { response: any; body?: any; headers?: Record<string, any> }>
+  Record<
+    string,
+    {
+      response: Record<string, unknown> | unknown | string | number;
+      body?: Record<string, unknown | string | number> | string | unknown;
+      headers?: Record<string, Record<string, unknown> | string | number>;
+    }
+  >
 >;
 
 export interface CoreAPI extends Endpoints {
@@ -23,8 +30,8 @@ export interface CoreAPI extends Endpoints {
     };
     'activate-auction': { body: { appId: number; assetId: number }; response: unknown };
     ipfs: { response: IPFSResponse; body: FormData };
-    'direct-listing': { response: any; body: any };
-    '/auth/register': { response: unknown; body: any }; // HEADS UP! Where is this being used?
+    'direct-listing': { response: Record<string, unknown>; body: Record<string, unknown> };
+    '/auth/register': { response: unknown; body: Record<string, unknown> }; // HEADS UP! Where is this being used?
   };
 }
 
