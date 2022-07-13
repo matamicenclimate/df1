@@ -9,7 +9,7 @@ import { Card } from '../Elements/Card/Card';
 type CardSliderProps = {
   nftList: Listing[];
   causes: Cause[];
-  nftListByCause?: any;
+  nftListByCause?: Record<string, unknown>;
 };
 
 export type NftFilteredByIdType = {
