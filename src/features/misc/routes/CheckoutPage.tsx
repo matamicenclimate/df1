@@ -24,7 +24,7 @@ const CheckoutPage = () => {
       <div className="flex justify-center gap-4 items-center">
         {cause && (
           <div
-            className="w-[680px] h-[440px] relative  rounded-md"
+            className="min-w-[660px] h-[330px] relative rounded-md"
             style={{
               backgroundImage: `linear-gradient(to bottom, transparent 0%, black 100%), url(${cause.imageUrl})`,
               backgroundPosition: 'center center',
@@ -32,7 +32,7 @@ const CheckoutPage = () => {
               backgroundRepeat: 'no-repeat',
             }}
           >
-            <div className="absolute h-full top-[20%] left-[20%] text-center text-white">
+            <div className="absolute h-full top-[10%] left-[15%] text-center text-white">
               <span className="checkmark">
                 <div className="checkmark_circle"></div>
                 <div className="absolute top-8 left-10">
@@ -40,7 +40,7 @@ const CheckoutPage = () => {
                   <div className="checkmark_kick"></div>
                 </div>
               </span>
-              <p className="text-2xl font-semibold">Congratulations!</p>
+              <p className="text-2xl font-semibold mt-5">Congratulations!</p>
               <div className="text-base mt-5">
                 <p>You have successfully purchased your NFT</p>
                 <p>
