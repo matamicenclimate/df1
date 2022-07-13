@@ -47,7 +47,6 @@ module.exports = {
     },
     /** @param {import('./webpack.conf')} conf */
     configure: (conf) => {
-      conf.ignoreWarnings = [/node_modules/i];
       conf.resolve.fallback = {
         crypto: require.resolve('crypto-browserify'),
         stream: require.resolve('stream-browserify'),

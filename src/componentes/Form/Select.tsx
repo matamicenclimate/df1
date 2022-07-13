@@ -4,7 +4,7 @@ import ReactSelect from 'react-select';
 
 type SelectProps = {
   name: string;
-  options: { value: Record<string, unknown>; label: string | TFunction }[];
+  options: { value: any; label: string | TFunction }[];
   isMulti?: boolean;
 };
 

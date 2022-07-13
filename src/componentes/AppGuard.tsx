@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ReactElement, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 /**
  * Children will be never missing again!
@@ -9,8 +9,8 @@ import { ReactElement, useEffect, useState } from 'react';
  * screen is displayed in order to make the developer aware that something
  * broke, but no error or excepcional state is found.
  */
-export default function AppGuard({ children }: { children: JSX.Element | ReactElement }) {
-  const [error, setError] = useState<JSX.Element | null>(null);
+export default function AppGuard({ children }: any) {
+  const [error, setError] = useState<any>(null);
   // Check once //
   useEffect(() => {
     const len = document.getElementById('root')?.innerHTML?.trim()?.length ?? 0;

@@ -1,6 +1,6 @@
 import { metadataNFTType } from '../type';
 
-export type IPFSResponse = metadataNFTType;
+export interface IPFSResponse extends metadataNFTType {}
 export interface Arc69 {
   standard: string;
   description: string;

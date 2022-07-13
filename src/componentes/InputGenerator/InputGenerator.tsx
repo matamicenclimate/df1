@@ -15,10 +15,7 @@ export const InputGenerator = ({ inputList, setInputList }: InputGeneratorType) 
   const { t } = useTranslation();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const { name, value } = e.target;
-    if (name !== 'trait_type' && name !== 'value') {
-      throw new Error('Invalid name received on target.');
-    }
-    const list = [...inputList];
+    const list: any = [...inputList];
     list[index][name] = value;
     setInputList(list);
   };

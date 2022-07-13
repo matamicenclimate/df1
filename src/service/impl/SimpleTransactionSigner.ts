@@ -4,7 +4,7 @@ import { Wallet } from 'algorand-session-wallet';
 import { Transaction } from 'algosdk';
 
 function die(): never {
-  throw new Error('Signed transaction result did not contain Record<string, unknown> element!');
+  throw new Error('Signed transaction result did not contain any element!');
 }
 
 @TransactionSigner.declare()
@@ -22,6 +22,6 @@ export default class SimpleTransactionSigner implements TransactionSigner.type {
       }
       return ((await this.wallet.value.signTxn([transaction])).at(0) ?? die()).blob;
     }
-    throw new Error("Didn't set Record<string, unknown> wallet!");
+    throw new Error("Didn't set any wallet!");
   }
 }
