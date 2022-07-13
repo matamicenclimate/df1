@@ -90,7 +90,7 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
       const {
         data: {
           appIndex,
-          unsignedTxnGroup: { encodedOpnInTxn, ...otherTxn },
+          unsignedTxnGroup: { encodedOptInTxn, ...otherTxn },
         },
       } = await net.core.post('create-listing', {
         assetId,
@@ -101,7 +101,7 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
         endDate: dates.end.toISOString(),
       });
       this.message = 'Creating auction...';
-      const tx = algosdk.decodeUnsignedTransaction(Buffer.from(encodedOpnInTxn, 'base64'));
+      const tx = algosdk.decodeUnsignedTransaction(Buffer.from(encodedOptInTxn, 'base64'));
       const wallet = walletCtx?.userWallet?.wallet;
       if (wallet == null) {
         throw new Error('Invalid app state!');
