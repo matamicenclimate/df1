@@ -23,6 +23,8 @@ import { useNFTPurchasingActions } from '../lib/detail';
 import { BuyAndBidButtons } from '../components/NftDetailSub';
 import ChevronDown from '@/componentes/Arrows/ChevronDown';
 import ChevronLeft from '@/componentes/Arrows/ChevronLeft';
+import { microalgosToAlgos } from '../lib/minting';
+import algoLogo from '../../../assets/algoLogo.svg';
 
 const net = Container.get(NetworkClient);
 
@@ -176,7 +178,10 @@ export const NftDetail = () => {
                     <div className="bg-white">
                       <div className="flex justify-between">
                         <span className="text-base text-climate-light-gray">NFT Price</span>
-                        <p> TODO: fetch price</p>
+                        <div className="flex">
+                          <p> {microalgosToAlgos(detail.nft.asset.arc69.properties.price)}</p>
+                          <img className="w-4 h-4 ml-1" src={algoLogo} alt="algoLogo" />
+                        </div>
                       </div>
                       <div className="flex justify-between mt-4">
                         <span className="text-base text-climate-light-gray">Token price (??)</span>

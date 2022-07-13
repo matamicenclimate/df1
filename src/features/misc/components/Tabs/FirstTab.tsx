@@ -27,11 +27,10 @@ const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: F
     setIsOpen(false);
     return await dialog.process(async function () {
       this.title = 'Processing NFT';
-      this.message = 'Preparing NFT...';
+      this.message = 'Preparing NFT to be listed...';
       console.log('working');
       const optResult = await net.core.post('opt-in', { assetId });
       console.info('Asset opted-in:', optResult);
-      this.message = 'Opting in...';
       const transfer = await Container.get(AuctionLogic).makeTransferToAccount(
         optResult.data.targetAccount,
         assetId,

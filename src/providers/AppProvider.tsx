@@ -7,6 +7,7 @@ import { WalletFundsContextProvider } from '@/context/WalletFundsContext';
 import ModalDialogProvider from './ModalDialogProvider';
 import { LanguageContextProvider } from '@/context/LanguageContext';
 import { NftsContextProvider } from '@/context/NftsContext';
+import { CheckoutContextProvider } from '@/context/CheckoutContext';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const providers = [
   (children) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
   (children) => <UserContextProvider>{children}</UserContextProvider>,
   (children) => <NftsContextProvider>{children}</NftsContextProvider>,
+  (children) => <CheckoutContextProvider>{children}</CheckoutContextProvider>,
   (children) => <CauseContextProvider>{children}</CauseContextProvider>,
   (children) => <WalletFundsContextProvider>{children}</WalletFundsContextProvider>,
   (children) => <LanguageContextProvider>{children}</LanguageContextProvider>,

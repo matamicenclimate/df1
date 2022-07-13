@@ -72,7 +72,6 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
     const net = Container.get(NetworkClient);
     return await dialog.process(async function () {
       this.title = 'Processing auction creation';
-      this.message = 'Opting in...';
       const optResult = await net.core.post('opt-in', { assetId });
       console.info('Asset opted-in:', optResult);
       const transfer = await auctions.makeTransferToAccount(

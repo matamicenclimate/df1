@@ -12,7 +12,7 @@ type CardProps = {
   nft: AssetEntity;
 };
 
-const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
+export const getCauseTitle = (causes: Cause[] | undefined, nft: AssetEntity) => {
   const cause: Cause | undefined = causes?.find(
     (cause: Cause) => cause.id === nft.arc69.properties.cause
   );
