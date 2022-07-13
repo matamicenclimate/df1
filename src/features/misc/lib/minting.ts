@@ -5,7 +5,8 @@ import { InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator'
 import { client } from '@/lib/algorand';
 import { Cause } from '@/lib/api/causes';
 import { createNFT } from '@/lib/nft';
-import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
+import {  NFTMetadataBackend } from '@/lib/type';
+import * as type from '@common/src/lib/assertions'
 import ProcessDialog from '@/service/ProcessDialog';
 import { DateLike } from '@common/src/lib/dates';
 import NetworkClient from '@common/src/services/NetworkClient';
@@ -31,7 +32,7 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
         acc[curr.trait_type] = curr.value;
         return acc;
       },
-      {}
+      {} as Record<string, unknown>
     );
     delete data.properties.attributes;
     const dataString = {

@@ -5,13 +5,13 @@ import { Form } from '@/componentes/Form/Form';
 import { MainLayout } from '@/componentes/Layout/MainLayout';
 import { ImageUploader } from '@/componentes/ImageUploader/ImageUploader';
 import { Wallet } from 'algorand-session-wallet';
-import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
+import { NFTMetadataBackend } from '@/lib/type';
 import { InputGenerator } from '@/componentes/InputGenerator/InputGenerator';
 import { useCauseContext } from '@/context/CauseContext';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
 import * as TransactionSigner from '@common/src/services/TransactionSigner';
 import SimpleTransactionSigner from '@/service/impl/SimpleTransactionSigner';
-import { some } from '@octantis/option';
+import { Some } from '@octantis/option';
 import { useTranslation } from 'react-i18next';
 import { getNFTMetadata, useMintAction } from '../lib/minting';
 import TextInput from '../components/MinterTextInput';
@@ -43,7 +43,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
   } = useForm<NFTMetadataBackend>();
 
   const formSubmitHandler: SubmitHandler<NFTMetadataBackend> = async (data: NFTMetadataBackend) => {
-    (TransactionSigner.get() as SimpleTransactionSigner).wallet = some(wallet);
+    (TransactionSigner.get() as SimpleTransactionSigner).wallet = Some(wallet);
 
     if (balanceAlgo != null && balanceAlgo < 1) {
       return await dialog.process(async function () {
@@ -118,7 +118,7 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                 name="properties.attributes"
                 render={({ field: { value, onChange } }) => (
                   <InputGenerator
-                    inputList={value ?? [{ trait_type: '', value: '' }]}
+                    inputList={(value as unknown as []) ?? [{ trait_type: '', value: '' }]}
                     setInputList={onChange}
                   />
                 )}
@@ -148,7 +148,10 @@ export const Minter = ({ wallet, account }: MinterProps) => {
                   control={control}
                   name="properties.file"
                   render={({ field: { value, onChange } }) => (
-                    <ImageUploader selectedImage={value ?? null} setSelectedImage={onChange} />
+                    <ImageUploader
+                      selectedImage={(value as unknown as File) ?? null}
+                      setSelectedImage={onChange}
+                    />
                   )}
                 />
               </div>
