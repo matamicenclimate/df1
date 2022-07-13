@@ -19,7 +19,6 @@ type AlgoWalletConnectorProps = {
 };
 
 export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const sw = new SessionWallet(ps.algod.network);
   const [sessionWallet, setSessionWallet] = useState(sw);
   const [accts, setAccounts] = useState(sw.accountList());
@@ -29,7 +28,7 @@ export const AlgoWalletConnector = ({ isNavbar }: AlgoWalletConnectorProps) => {
 
   const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
-  const { userWallet, setUserWallet } = useWalletContext();
+  const { setUserWallet } = useWalletContext();
 
   function handleContextWalletAcct(sw: SessionWallet) {
     if (!setUserWallet) return;

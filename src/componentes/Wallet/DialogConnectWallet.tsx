@@ -19,10 +19,6 @@ const DialogConnectWallet = ({ textButton }: DialogConnectWalletProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const sw = new SessionWallet(ps.algod.network);
   const [sessionWallet, setSessionWallet] = useState(sw);
-  const [accts, setAccounts] = useState(sw.accountList());
-  const [connected, setConnected] = useState(sw.connected());
-
-  const [optionSelected, setOptionSelected] = useState<string | undefined>();
 
   const { setUserWallet } = useWalletContext();
 
@@ -30,14 +26,14 @@ const DialogConnectWallet = ({ textButton }: DialogConnectWalletProps) => {
     if (!setUserWallet) return;
     return setUserWallet({
       wallet: sw.wallet,
-      account: optionSelected ? optionSelected : sw.getDefaultAccount(),
+      account: sw.getDefaultAccount(),
     });
   }
 
   function updateWallet(sw: SessionWallet) {
     setSessionWallet(sw);
-    setAccounts(sw.accountList());
-    setConnected(sw.connected());
+    sw.accountList();
+    sw.connected();
     handleContextWalletAcct(sw);
   }
 

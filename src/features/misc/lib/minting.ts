@@ -25,9 +25,9 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
   return await dialog.process(async function () {
     this.message = 'Uploading NFT to IPFS...';
     this.title = 'Minting NFT..';
-    const oneFile = data.properties.file;
-    const attribute = data.properties?.attributes?.reduce?.(
-      (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
+    const oneFile = type.cast(type.of(File))(data.properties.file);
+    const attribute = type.cast(type.array<InputGeneratorType['inputList'][0]>)(data.properties.attributes ?? []).reduce(
+      (acc, curr) => {
         acc[curr.trait_type] = curr.value;
         return acc;
       },
