@@ -1,217 +1,200 @@
-/* eslint-disable */
 export declare const target: string[];
 export declare const mode: string;
 export declare const bail: boolean;
 export declare const devtool: string;
 export declare const entry: string;
 export declare namespace output {
-  const path: string;
-  const pathinfo: boolean;
-  const filename: string;
-  const chunkFilename: string;
-  const assetModuleFilename: string;
-  const publicPath: string;
+    const path: string;
+    const pathinfo: boolean;
+    const filename: string;
+    const chunkFilename: string;
+    const assetModuleFilename: string;
+    const publicPath: string;
 }
 export declare namespace cache {
-  const type: string;
-  const version: string;
-  const cacheDirectory: string;
-  const store: string;
-  namespace buildDependencies {
-    const defaultWebpack: string[];
-    const config: string[];
-    const tsconfig: string[];
-  }
+    const type: string;
+    const version: string;
+    const cacheDirectory: string;
+    const store: string;
+    namespace buildDependencies {
+        const defaultWebpack: string[];
+        const config: string[];
+        const tsconfig: string[];
+    }
 }
 export declare namespace infrastructureLogging {
-  const level: string;
+    const level: string;
 }
 export declare namespace optimization {
-  const minimize: boolean;
-  const minimizer: (
-    | {
+    const minimize: boolean;
+    const minimizer: ({
         options: {
-          test: RegExp;
-          extractComments: boolean;
-          parallel: boolean;
-          minimizer: {
-            options: {
-              parse: {
-                ecma: number;
-              };
-              compress: {
-                ecma: number;
-                warnings: boolean;
-                comparisons: boolean;
-                inline: number;
-              };
-              mangle: {
-                safari10: boolean;
-              };
-              keep_classnames: boolean;
-              keep_fnames: boolean;
-              output: {
-                ecma: number;
-                comments: boolean;
-                ascii_only: boolean;
-              };
+            test: RegExp;
+            extractComments: boolean;
+            parallel: boolean;
+            minimizer: {
+                options: {
+                    parse: {
+                        ecma: number;
+                    };
+                    compress: {
+                        ecma: number;
+                        warnings: boolean;
+                        comparisons: boolean;
+                        inline: number;
+                    };
+                    mangle: {
+                        safari10: boolean;
+                    };
+                    keep_classnames: boolean;
+                    keep_fnames: boolean;
+                    output: {
+                        ecma: number;
+                        comments: boolean;
+                        ascii_only: boolean;
+                    };
+                };
             };
-          };
         };
-      }
-    | {
+    } | {
         options: {
-          test: RegExp;
-          parallel: boolean;
-          minimizer: {
-            options: {
-              parse?: undefined;
-              compress?: undefined;
-              mangle?: undefined;
-              keep_classnames?: undefined;
-              keep_fnames?: undefined;
-              output?: undefined;
+            test: RegExp;
+            parallel: boolean;
+            minimizer: {
+                options: {
+                    parse?: undefined;
+                    compress?: undefined;
+                    mangle?: undefined;
+                    keep_classnames?: undefined;
+                    keep_fnames?: undefined;
+                    output?: undefined;
+                };
             };
-          };
-          extractComments?: undefined;
+            extractComments?: undefined;
         };
-      }
-  )[];
+    })[];
 }
 export declare namespace resolve {
-  const modules: string[];
-  const extensions: string[];
-  const alias: {
-    'react-native': string;
-    '@common': string;
-    '@': string;
-  };
-  const plugins: {
-    appSrcs: string[];
-    allowedFiles: {};
-    allowedPaths: string[];
-  }[];
-  namespace fallback {
-    const crypto: string;
-    const stream: string;
-    const buffer: string;
-  }
+    const modules: string[];
+    const extensions: string[];
+    const alias: {
+        "react-native": string;
+        "@common": string;
+        "@": string;
+    };
+    const plugins: {
+        appSrcs: string[];
+        allowedFiles: {};
+        allowedPaths: string[];
+    }[];
+    namespace fallback {
+        const crypto: string;
+        const stream: string;
+        const buffer: string;
+    }
 }
 export declare namespace module {
-  const strictExportPresence: boolean;
-  const rules: (
-    | {
+    const strictExportPresence: boolean;
+    const rules: ({
         enforce: string;
         exclude: RegExp;
         test: RegExp;
         loader: string;
         oneOf?: undefined;
-      }
-    | {
-        oneOf: (
-          | {
-              test: RegExp;
-              use: {
+    } | {
+        oneOf: ({
+            test: RegExp;
+            use: {
                 loader: string;
-              }[];
-              type?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-              exclude?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              test: RegExp[];
-              type: string;
-              mimetype: string;
-              parser: {
+            }[];
+            type?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+            exclude?: undefined;
+            sideEffects?: undefined;
+        } | {
+            test: RegExp[];
+            type: string;
+            mimetype: string;
+            parser: {
                 dataUrlCondition: {
-                  maxSize: number;
+                    maxSize: number;
                 };
-              };
-              use?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-              exclude?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              test: RegExp[];
-              type: string;
-              parser: {
+            };
+            use?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+            exclude?: undefined;
+            sideEffects?: undefined;
+        } | {
+            test: RegExp[];
+            type: string;
+            parser: {
                 dataUrlCondition: {
-                  maxSize: number;
+                    maxSize: number;
                 };
-              };
-              use?: undefined;
-              mimetype?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-              exclude?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              test: RegExp;
-              use: (
-                | {
-                    loader: string;
-                    options: {
-                      prettier: boolean;
-                      svgo: boolean;
-                      svgoConfig: {
+            };
+            use?: undefined;
+            mimetype?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+            exclude?: undefined;
+            sideEffects?: undefined;
+        } | {
+            test: RegExp;
+            use: ({
+                loader: string;
+                options: {
+                    prettier: boolean;
+                    svgo: boolean;
+                    svgoConfig: {
                         plugins: {
-                          removeViewBox: boolean;
+                            removeViewBox: boolean;
                         }[];
-                      };
-                      titleProp: boolean;
-                      ref: boolean;
-                      name?: undefined;
                     };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      name: string;
-                      prettier?: undefined;
-                      svgo?: undefined;
-                      svgoConfig?: undefined;
-                      titleProp?: undefined;
-                      ref?: undefined;
-                    };
-                  }
-              )[];
-              issuer: {
+                    titleProp: boolean;
+                    ref: boolean;
+                    name?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    name: string;
+                    prettier?: undefined;
+                    svgo?: undefined;
+                    svgoConfig?: undefined;
+                    titleProp?: undefined;
+                    ref?: undefined;
+                };
+            })[];
+            issuer: {
                 and: RegExp[];
-              };
-              type?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-              exclude?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              test: RegExp;
-              include: string;
-              loader: string;
-              options: {
+            };
+            type?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+            exclude?: undefined;
+            sideEffects?: undefined;
+        } | {
+            test: RegExp;
+            include: string;
+            loader: string;
+            options: {
                 customize: string;
-                presets: (
-                  | string
-                  | {
-                      runtime: string;
-                    }
-                )[][];
+                presets: (string | {
+                    runtime: string;
+                })[][];
                 babelrc: boolean;
                 configFile: boolean;
                 cacheIdentifier: string;
@@ -221,29 +204,25 @@ export declare namespace module {
                 compact: boolean;
                 sourceMaps?: undefined;
                 inputSourceMap?: undefined;
-              };
-              use?: undefined;
-              type?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              issuer?: undefined;
-              exclude?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              test: RegExp;
-              exclude: RegExp;
-              loader: string;
-              options: {
+            };
+            use?: undefined;
+            type?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            issuer?: undefined;
+            exclude?: undefined;
+            sideEffects?: undefined;
+        } | {
+            test: RegExp;
+            exclude: RegExp;
+            loader: string;
+            options: {
                 babelrc: boolean;
                 configFile: boolean;
                 compact: boolean;
-                presets: (
-                  | string
-                  | {
-                      helpers: boolean;
-                    }
-                )[][];
+                presets: (string | {
+                    helpers: boolean;
+                })[][];
                 cacheDirectory: boolean;
                 cacheCompression: boolean;
                 cacheIdentifier: string;
@@ -251,254 +230,220 @@ export declare namespace module {
                 inputSourceMap: boolean;
                 customize?: undefined;
                 plugins?: undefined;
-              };
-              use?: undefined;
-              type?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              test: RegExp;
-              exclude: RegExp;
-              use: (
-                | string
-                | {
-                    loader: string;
-                    options: {
-                      importLoaders: number;
-                      sourceMap: boolean;
-                      modules: {
+            };
+            use?: undefined;
+            type?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            sideEffects?: undefined;
+        } | {
+            test: RegExp;
+            exclude: RegExp;
+            use: (string | {
+                loader: string;
+                options: {
+                    importLoaders: number;
+                    sourceMap: boolean;
+                    modules: {
                         mode: string;
-                      };
-                      postcssOptions?: undefined;
-                      root?: undefined;
                     };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      postcssOptions: {
+                    postcssOptions?: undefined;
+                    root?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    postcssOptions: {
                         ident: string;
                         config: boolean;
-                        plugins: (
-                          | string
-                          | (
-                              | string
-                              | {
-                                  autoprefixer: {
-                                    flexbox: string;
-                                  };
-                                  stage: number;
-                                }
-                            )[]
-                        )[];
-                      };
-                      sourceMap: boolean;
-                      importLoaders?: undefined;
-                      modules?: undefined;
-                      root?: undefined;
+                        plugins: (string | (string | {
+                            autoprefixer: {
+                                flexbox: string;
+                            };
+                            stage: number;
+                        })[])[];
                     };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      sourceMap: boolean;
-                      root: string;
-                      importLoaders?: undefined;
-                      modules?: undefined;
-                      postcssOptions?: undefined;
-                    };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      sourceMap: boolean;
-                      importLoaders?: undefined;
-                      modules?: undefined;
-                      postcssOptions?: undefined;
-                      root?: undefined;
-                    };
-                  }
-              )[];
-              sideEffects: boolean;
-              type?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-            }
-          | {
-              test: RegExp;
-              use: (
-                | string
-                | {
-                    loader: string;
-                    options: {
-                      importLoaders: number;
-                      sourceMap: boolean;
-                      modules: {
+                    sourceMap: boolean;
+                    importLoaders?: undefined;
+                    modules?: undefined;
+                    root?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    sourceMap: boolean;
+                    root: string;
+                    importLoaders?: undefined;
+                    modules?: undefined;
+                    postcssOptions?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    sourceMap: boolean;
+                    importLoaders?: undefined;
+                    modules?: undefined;
+                    postcssOptions?: undefined;
+                    root?: undefined;
+                };
+            })[];
+            sideEffects: boolean;
+            type?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+        } | {
+            test: RegExp;
+            use: (string | {
+                loader: string;
+                options: {
+                    importLoaders: number;
+                    sourceMap: boolean;
+                    modules: {
                         mode: string;
-                      };
-                      postcssOptions?: undefined;
-                      root?: undefined;
                     };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      postcssOptions: {
+                    postcssOptions?: undefined;
+                    root?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    postcssOptions: {
                         ident: string;
                         config: boolean;
-                        plugins: (
-                          | string
-                          | (
-                              | string
-                              | {
-                                  autoprefixer: {
-                                    flexbox: string;
-                                  };
-                                  stage: number;
-                                }
-                            )[]
-                        )[];
-                      };
-                      sourceMap: boolean;
-                      importLoaders?: undefined;
-                      modules?: undefined;
-                      root?: undefined;
+                        plugins: (string | (string | {
+                            autoprefixer: {
+                                flexbox: string;
+                            };
+                            stage: number;
+                        })[])[];
                     };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      sourceMap: boolean;
-                      root: string;
-                      importLoaders?: undefined;
-                      modules?: undefined;
-                      postcssOptions?: undefined;
-                    };
-                  }
-                | {
-                    loader: string;
-                    options: {
-                      sourceMap: boolean;
-                      importLoaders?: undefined;
-                      modules?: undefined;
-                      postcssOptions?: undefined;
-                      root?: undefined;
-                    };
-                  }
-              )[];
-              type?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-              exclude?: undefined;
-              sideEffects?: undefined;
-            }
-          | {
-              exclude: RegExp[];
-              type: string;
-              test?: undefined;
-              use?: undefined;
-              mimetype?: undefined;
-              parser?: undefined;
-              issuer?: undefined;
-              include?: undefined;
-              loader?: undefined;
-              options?: undefined;
-              sideEffects?: undefined;
-            }
-        )[];
+                    sourceMap: boolean;
+                    importLoaders?: undefined;
+                    modules?: undefined;
+                    root?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    sourceMap: boolean;
+                    root: string;
+                    importLoaders?: undefined;
+                    modules?: undefined;
+                    postcssOptions?: undefined;
+                };
+            } | {
+                loader: string;
+                options: {
+                    sourceMap: boolean;
+                    importLoaders?: undefined;
+                    modules?: undefined;
+                    postcssOptions?: undefined;
+                    root?: undefined;
+                };
+            })[];
+            type?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+            exclude?: undefined;
+            sideEffects?: undefined;
+        } | {
+            exclude: RegExp[];
+            type: string;
+            test?: undefined;
+            use?: undefined;
+            mimetype?: undefined;
+            parser?: undefined;
+            issuer?: undefined;
+            include?: undefined;
+            loader?: undefined;
+            options?: undefined;
+            sideEffects?: undefined;
+        })[];
         enforce?: undefined;
         exclude?: undefined;
         test?: undefined;
         loader?: undefined;
-      }
-  )[];
+    })[];
 }
-declare const plugins_1: (
-  | {
-      userOptions: {
+declare const plugins_1: ({
+    userOptions: {
         inject: boolean;
         template: string;
-      };
-      version: number;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      options?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      replacements: {
+    };
+    version: number;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    options?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    replacements: {
         NODE_ENV: string;
         PUBLIC_URL: string;
         FAST_REFRESH: boolean;
         REACT_APP_MAGICLINK_PUBLIC: string;
         REACT_APP_API_URL: string;
         REACT_APP_API_URL_CAUSES: string;
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      options?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      appPath: string;
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      definitions?: undefined;
-      options?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      definitions: {
-        'process.env': {
-          NODE_ENV: string;
-          PUBLIC_URL: string;
-          FAST_REFRESH: string;
-          REACT_APP_MAGICLINK_PUBLIC: string;
-          REACT_APP_API_URL: string;
-          REACT_APP_API_URL_CAUSES: string;
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    options?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    appPath: string;
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    definitions?: undefined;
+    options?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    definitions: {
+        "process.env": {
+            NODE_ENV: string;
+            PUBLIC_URL: string;
+            FAST_REFRESH: string;
+            REACT_APP_MAGICLINK_PUBLIC: string;
+            REACT_APP_API_URL: string;
+            REACT_APP_API_URL_CAUSES: string;
         };
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      options?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      options: {
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    options?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    options: {
         overlay: boolean;
         exclude: RegExp;
         include: RegExp;
@@ -533,20 +478,19 @@ declare const plugins_1: (
         resolvePluginsRelativeTo?: undefined;
         baseConfig?: undefined;
         ignore?: undefined;
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      options: {
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    options: {
         overlay?: undefined;
         exclude?: undefined;
         include?: undefined;
@@ -581,20 +525,19 @@ declare const plugins_1: (
         resolvePluginsRelativeTo?: undefined;
         baseConfig?: undefined;
         ignore?: undefined;
-      };
-      logger: {};
-      pathCache: {};
-      fsOperations: number;
-      primed: boolean;
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      key?: undefined;
-    }
-  | {
-      options: {
+    };
+    logger: {};
+    pathCache: {};
+    fsOperations: number;
+    primed: boolean;
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    key?: undefined;
+} | {
+    options: {
         assetHookStage: any;
         basePath: string;
         fileName: string;
@@ -629,20 +572,19 @@ declare const plugins_1: (
         resolvePluginsRelativeTo?: undefined;
         baseConfig?: undefined;
         ignore?: undefined;
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      options: {
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    options: {
         resourceRegExp: RegExp;
         contextRegExp: RegExp;
         overlay?: undefined;
@@ -677,50 +619,49 @@ declare const plugins_1: (
         resolvePluginsRelativeTo?: undefined;
         baseConfig?: undefined;
         ignore?: undefined;
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      options: {
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    options: {
         async: boolean;
         typescript: {
-          typescriptPath: string;
-          configOverwrite: {
-            compilerOptions: {
-              sourceMap: boolean;
-              skipLibCheck: boolean;
-              inlineSourceMap: boolean;
-              declarationMap: boolean;
-              noEmit: boolean;
-              incremental: boolean;
-              tsBuildInfoFile: string;
+            typescriptPath: string;
+            configOverwrite: {
+                compilerOptions: {
+                    sourceMap: boolean;
+                    skipLibCheck: boolean;
+                    inlineSourceMap: boolean;
+                    declarationMap: boolean;
+                    noEmit: boolean;
+                    incremental: boolean;
+                    tsBuildInfoFile: string;
+                };
             };
-          };
-          context: string;
-          diagnosticOptions: {
-            syntactic: boolean;
-          };
-          mode: string;
+            context: string;
+            diagnosticOptions: {
+                syntactic: boolean;
+            };
+            mode: string;
         };
         issue: {
-          include: {
-            file: string;
-          }[];
-          exclude: {
-            file: string;
-          }[];
+            include: {
+                file: string;
+            }[];
+            exclude: {
+                file: string;
+            }[];
         };
         logger: {
-          infrastructure: string;
+            infrastructure: string;
         };
         overlay?: undefined;
         exclude?: undefined;
@@ -752,21 +693,20 @@ declare const plugins_1: (
         resolvePluginsRelativeTo?: undefined;
         baseConfig?: undefined;
         ignore?: undefined;
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-      key?: undefined;
-    }
-  | {
-      key: string;
-      options: {
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+    key?: undefined;
+} | {
+    key: string;
+    options: {
         extensions: string[];
         emitError: boolean;
         emitWarning: boolean;
@@ -779,8 +719,8 @@ declare const plugins_1: (
         cwd: string;
         resolvePluginsRelativeTo: string;
         baseConfig: {
-          extends: string[];
-          rules: {};
+            extends: string[];
+            rules: {};
         };
         ignore: boolean;
         overlay?: undefined;
@@ -804,17 +744,16 @@ declare const plugins_1: (
         typescript?: undefined;
         issue?: undefined;
         logger?: undefined;
-      };
-      userOptions?: undefined;
-      version?: undefined;
-      replacements?: undefined;
-      appPath?: undefined;
-      definitions?: undefined;
-      logger?: undefined;
-      pathCache?: undefined;
-      fsOperations?: undefined;
-      primed?: undefined;
-    }
-)[];
+    };
+    userOptions?: undefined;
+    version?: undefined;
+    replacements?: undefined;
+    appPath?: undefined;
+    definitions?: undefined;
+    logger?: undefined;
+    pathCache?: undefined;
+    fsOperations?: undefined;
+    primed?: undefined;
+})[];
 export { plugins_1 as plugins };
 export declare const performance: boolean;

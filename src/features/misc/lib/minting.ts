@@ -5,7 +5,7 @@ import { InputGeneratorType } from '@/componentes/InputGenerator/InputGenerator'
 import { client } from '@/lib/algorand';
 import { Cause } from '@/lib/api/causes';
 import { createNFT } from '@/lib/nft';
-import { NFTMetadataBackend } from '@/lib/type';
+import { metadataNFTType, NFTMetadataBackend } from '@/lib/type';
 import ProcessDialog from '@/service/ProcessDialog';
 import { DateLike } from '@common/src/lib/dates';
 import NetworkClient from '@common/src/services/NetworkClient';
@@ -14,7 +14,6 @@ import { useTranslation } from 'react-i18next';
 import Container from 'typedi';
 import { useNavigate } from 'react-router-dom';
 import { Nft } from '@common/src/lib/api/entities';
-import * as type from '@common/src/lib/assertions';
 
 const dialog = Container.get(ProcessDialog);
 const net = Container.get(NetworkClient);
@@ -26,13 +25,13 @@ export async function getNFTMetadata(data: NFTMetadataBackend) {
   return await dialog.process(async function () {
     this.message = 'Uploading NFT to IPFS...';
     this.title = 'Minting NFT..';
-    const oneFile = type.cast(type.of(File))(data.properties.file);
-    const attribute = type.cast(type.array<InputGeneratorType['inputList'][0]>)(data.properties?.attributes).reduce?.(
-      (acc, curr) => {
+    const oneFile = data.properties.file;
+    const attribute = data.properties?.attributes?.reduce?.(
+      (acc: Record<string, unknown>, curr: InputGeneratorType['inputList'][0]) => {
         acc[curr.trait_type] = curr.value;
         return acc;
       },
-      {} as Record<string, unknown>
+      {}
     );
     delete data.properties.attributes;
     const dataString = {

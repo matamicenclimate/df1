@@ -7,7 +7,7 @@ export interface ErrorHintPorps {
 
 /**
  * A simple error hint used on input forms.
- * Place underneath Record<string, unknown> input to display a nice error, in
+ * Place underneath any input to display a nice error, in
  * case needed.
  */
 export default function ErrorHint({ text, on }: ErrorHintPorps) {

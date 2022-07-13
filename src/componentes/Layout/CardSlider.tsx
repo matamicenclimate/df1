@@ -19,6 +19,7 @@ export type NftFilteredByIdType = {
 
 const CardSlider = ({ nftList, causes }: CardSliderProps) => {
   const { t } = useTranslation();
+  const [filteredList, setFilteredList] = useState<Listing[]>();
   const [nftFilteredByCauseId, setNftFilteredByCauseId] = useState<
     Record<string, NftFilteredByIdType>
   >({});
@@ -47,7 +48,7 @@ const CardSlider = ({ nftList, causes }: CardSliderProps) => {
 
   return (
     <div>
-      {Object.keys(nftFilteredByCauseId).length === 0 ? (
+      {filteredList?.length === 0 ? (
         <div>{t('misc.Landing.no-nft-message')}</div>
       ) : (
         Object.entries(nftFilteredByCauseId).map(([key, value]) => (

@@ -31,6 +31,6 @@ export interface NftDetailPreviewProps {
  * A simple component that maps an optional NFT state to
  * a thumbnail depending on the underlying type of asset.
  */
-export default function NftDetailPreview({ nft }: NftDetailPreviewProps) {
+export default function NftDetailPreview({ nft, className }: NftDetailPreviewProps) {
   return nft.fold(<Spinner />, mapToDisplay);
 }
