@@ -95,7 +95,7 @@ const AuctionTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Seco
       const {
         data: {
           appIndex,
-          unsignedTxnGroup: { encodedOptInTxn, ...otherTxn },
+          unsignedTxnGroup: { encodedTransferTxn, ...otherTxn },
         },
       } = await net.core.post('create-listing', {
         assetId,
@@ -106,7 +106,7 @@ const AuctionTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Seco
         endDate: dates.end.toISOString(),
       });
       this.message = 'Creating auction...';
-      const tx = algosdk.decodeUnsignedTransaction(Buffer.from(encodedOptInTxn, 'base64'));
+      const tx = algosdk.decodeUnsignedTransaction(Buffer.from(encodedTransferTxn, 'base64'));
       const wallet = walletCtx?.userWallet?.wallet;
       if (wallet == null) {
         throw new Error('Invalid app state!');
@@ -119,7 +119,7 @@ const AuctionTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Seco
         type: 'auction',
         signedTxn: {
           ...otherTxn,
-          signedOpnInTxn: Buffer.from(stx.blob).toString('base64'),
+          signedTransferTxn: Buffer.from(stx.blob).toString('base64'),
         },
       });
       // const tx = await net.core.post('create-auction', {
