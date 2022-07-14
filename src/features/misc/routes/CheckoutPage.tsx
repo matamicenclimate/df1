@@ -19,55 +19,57 @@ const CheckoutPage = () => {
   }, [nftPurchased]);
 
   return (
-    <div className="w-2/3 h-screen m-auto flex flex-col justify-center">
-      <h2 className="ml-10 text-[32px] font-semibold">My order</h2>
-      <div className="flex justify-center gap-4 items-center">
-        {cause && (
-          <div
-            className="min-w-[660px] h-[330px] relative rounded-md"
-            style={{
-              backgroundImage: `linear-gradient(to bottom, transparent 0%, black 100%), url(${cause.imageUrl})`,
-              backgroundPosition: 'center center',
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat',
-            }}
-          >
-            <div className="absolute h-full top-[10%] left-[15%] text-center text-white">
-              <span className="checkmark">
-                <div className="checkmark_circle"></div>
-                <div className="absolute top-8 left-10">
-                  <div className="checkmark_stem"></div>
-                  <div className="checkmark_kick"></div>
-                </div>
-              </span>
-              <p className="text-2xl font-semibold mt-5">Congratulations!</p>
-              <div className="text-base mt-5">
-                <p>You have successfully purchased your NFT</p>
-                <p>
-                  You have contributed to{' '}
-                  <span className="text-climate-yellow font-bold">320€</span> the cause &quot;
-                  {cause.title}&quot;.
-                </p>
-              </div>
-              <div className="flex gap-3 justify-center mt-10">
-                <Button variant="login">
-                  <Link className="font-semibold" to="/my-nfts">
-                    {' '}
-                    Go to &quot;My NFTs &quot;{' '}
-                  </Link>
-                </Button>
-                <Link to="">
-                  <p className="flex items-center rounded-3xl border border-white p-3 hover:font-bold">
-                    Download Certificate
+    <>
+      <div className="w-2/3 h-screen m-auto flex flex-col justify-center">
+        <h2 className="ml-10 text-[32px] font-semibold">My order</h2>
+        <div className="flex justify-center gap-4 items-center">
+          {cause && (
+            <div
+              className="min-w-[660px] h-[330px] relative rounded-md"
+              style={{
+                backgroundImage: `linear-gradient(to bottom, transparent 0%, black 100%), url(${cause.imageUrl})`,
+                backgroundPosition: 'center center',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+              }}
+            >
+              <div className="absolute h-full top-[10%] left-[15%] text-center text-white">
+                <span className="checkmark">
+                  <div className="checkmark_circle"></div>
+                  <div className="absolute top-8 left-10">
+                    <div className="checkmark_stem"></div>
+                    <div className="checkmark_kick"></div>
+                  </div>
+                </span>
+                <p className="text-2xl font-semibold mt-5">Congratulations!</p>
+                <div className="text-base mt-5">
+                  <p>You have successfully purchased your NFT</p>
+                  <p>
+                    You have contributed to{' '}
+                    <span className="text-climate-yellow font-bold">320€</span> the cause &quot;
+                    {cause.title}&quot;.
                   </p>
-                </Link>
+                </div>
+                <div className="flex gap-3 justify-center mt-10">
+                  <Button variant="login">
+                    <Link className="font-semibold" to="/my-nfts">
+                      {' '}
+                      Go to &quot;My NFTs &quot;{' '}
+                    </Link>
+                  </Button>
+                  <Link to="">
+                    <p className="flex items-center rounded-3xl border border-white p-3 hover:font-bold">
+                      Download Certificate
+                    </p>
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div>{nftPurchased && <Card nft={nftPurchased.asset} />}</div>
+          )}
+          <div>{nftPurchased && <Card nft={nftPurchased.asset} />}</div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -14,23 +14,16 @@ export function RichTable<T extends Dict[]>({ rows, header, order }: RichTablePr
   const [[, first], ...center] = entries;
   const [, last] = center.pop() as [string, JSX.Element | string];
   return (
-    <table className="mt-8 border-collapse table-auto w-full text-sm">
-      <thead className="text-left">
-        <tr>
-          <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray rounded-l-xl">
-            {first}
-          </th>
+    <table className="mt-3 table-auto w-full text-sm">
+      <thead className="text-left text-climate-light-gray font-normal">
+        <tr className="mb-2 font-inter font-normal text-[13px]">
+          <th className="p-2 pl-6 pr-6 text-[13px] text-climate-light-gray">{first}</th>
           {center.map(([key, value]) => (
-            <th
-              key={`${String(key)}`}
-              className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray"
-            >
-              {value}
+            <th key={`${String(key)}`} className="p-2 pl-6 pr-6">
+              <p>{value}</p>
             </th>
           ))}
-          <th className="p-2 pl-6 pr-6 bg-climate-action-light text-climate-gray rounded-r-xl">
-            {last}
-          </th>
+          <th className="p-2 pl-6 pr-6">{last}</th>
         </tr>
       </thead>
       <tbody>

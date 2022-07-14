@@ -17,10 +17,8 @@ import NftCause from '../components/MyNftList/NftCause';
 import NftName from '../components/MyNftList/NftName';
 import NftPrice from '../components/MyNftList/NftPrice';
 import NftStatus from '../components/MyNftList/NftStatus';
-import { ProfileColumn } from '../components/MyNftList/ProfileColumn';
-import { ProfileLoading } from '../components/MyNftList/ProfileLoading';
-import { CreateProfile } from './CreateProfile';
 import { TransactionFrame } from '../components/MyNftList/TransactionFrame';
+import Sidebar from '@/componentes/Sidebar/Sidebar';
 
 export interface MyNftListProps {
   wallet: Wallet;
@@ -60,7 +58,7 @@ const net = Container.get(NetworkClient);
  * A root component that shows a panel with information about the
  * minted user's NFTs, ongoing bids, sales...
  */
-export default function MyNftList({ wallet, account }: MyNftListProps) {
+export default function MyNftList({ account }: MyNftListProps) {
   const { register } = useForm();
   const [user, setUser] = useState<option<UserState>>(none());
   const [nfts, setNfts] = useState<Record<string, AssetEntity | Asset | Nft>>({});
@@ -133,23 +131,17 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
       })();
     }
   }, [nfts]);
+
   return (
     <MainLayout>
-      <div className="flex flex-row w-full">
-        <ProfileColumn className="flex">
-          <div className="basis-1/2">&nbsp;</div>
-          <div className="basis-1/2">
-            {user.fold(<ProfileLoading />, (state) => CreateProfile(account, wallet, state))}
-          </div>
-        </ProfileColumn>
+      <div className="flex w-full">
+        <Sidebar />
         <TransactionFrame className="flex">
-          <div className="bg-climate-informative-yellow text-climate-informative-yellow"></div>
-          <div className="bg-climate-informative-green text-climate-informative-green"></div>
-          <div className="flex flex-col basis-3/4">
-            <h2 className="text-4xl font-normal font-dinpro text-climate-black-title">My NFTs</h2>
-            <div className="p-3 rounded-3xl bg-white shadow-lg mt-7">
-              <Form onSubmit={async () => void 0}>
-                <div className="flex justify-between">
+          <div className="flex flex-col w-[90%]">
+            <div className="bg-white shadow-lg mt-7 border border-neutral-200">
+              <Form className="border-b border-neutral-200 pt-4 px-4" onSubmit={async () => void 0}>
+                <div className="flex justify-between items-center mb-3">
+                  <p>My NFTs</p>
                   <Input
                     className="basis-2/4"
                     register={register}
@@ -157,23 +149,38 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
                     type="search"
                     placeholder="Search"
                   />
+                  <div className="flex items-center">
+                    <p className="text-climate-light-gray">Filters</p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 ml-1 text-climate-light-gray"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
                   <Link to="/mint">
                     <Button
-                      className="basis-1/3 hover:text-climate-blue"
+                      className="basis-1/3 bg-climate-light-blue font-normal text-sm rounded-3xl px-5"
                       size="sm"
-                      variant="inverted"
                     >
-                      + Mint new NFT
+                      Create NFT
                     </Button>
                   </Link>
                 </div>
               </Form>
-              <div
-                className="text-climate-black-title font-thin font-dinpro text-xs ml-4 mt-2"
-                style={{ marginBottom: '-2rem' }}
-              >
-                &nbsp;{info}
-              </div>
               <RichTable
                 order={['name', 'price', 'cause', 'status']}
                 header={{
@@ -237,7 +244,6 @@ export default function MyNftList({ wallet, account }: MyNftListProps) {
               />
             </div>
           </div>
-          <div className="basis-1/4">&nbsp;</div>
         </TransactionFrame>
       </div>
     </MainLayout>
