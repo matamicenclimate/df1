@@ -51,7 +51,12 @@ type SecondTabProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: SecondTabProps) => {
+/**
+ * # Place Auction
+ *
+ * This tab displays a **place auction** dialog.
+ */
+const AuctionTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: SecondTabProps) => {
   const { t } = useTranslation();
   const walletCtx = useContext(WalletContext);
   const [dateErrors, setDateErrors] = useState<DateErrors>({});
@@ -184,4 +189,4 @@ const SecondTab = ({ creatorWallet, causePercentage, assetId, setIsOpen }: Secon
     </div>
   );
 };
-export default SecondTab;
+export default AuctionTab;

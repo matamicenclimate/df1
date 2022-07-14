@@ -19,7 +19,18 @@ type FirstTabProps = {
 const net = Container.get(NetworkClient);
 const dialog = Container.get(ProcessDialog);
 
-const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: FirstTabProps) => {
+/**
+ * # Direct Sell
+ *
+ * Displays a **direct sell** action dialog.
+ */
+const DirectSellTab = ({
+  nft,
+  assetId,
+  causePercentage,
+  creatorWallet,
+  setIsOpen,
+}: FirstTabProps) => {
   const goToPage = useNavigate();
   const { t } = useTranslation();
 
@@ -70,4 +81,4 @@ const FirstTab = ({ nft, assetId, causePercentage, creatorWallet, setIsOpen }: F
     </div>
   );
 };
-export default FirstTab;
+export default DirectSellTab;

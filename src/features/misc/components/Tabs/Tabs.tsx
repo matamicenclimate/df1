@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import FirstTab from './FirstTab';
+import DirectSellTab from './DirectSellTab';
 import './mycssfile.css';
-import SecondTab from './SecondTab';
+import AuctionTab from './AuctionTab';
 import clsx from 'clsx';
 import { AssetEntity, Nft } from '@common/src/lib/api/entities';
 
@@ -47,7 +47,7 @@ const Tabs = ({ assetId, causePercentage, creatorWallet, nft, setIsOpen }: TabsP
       </ul>
       <div className="text-center">
         {activeTab === 'tab1' ? (
-          <FirstTab
+          <DirectSellTab
             nft={nft}
             assetId={assetId}
             causePercentage={causePercentage}
@@ -55,7 +55,7 @@ const Tabs = ({ assetId, causePercentage, creatorWallet, nft, setIsOpen }: TabsP
             setIsOpen={setIsOpen}
           />
         ) : (
-          <SecondTab
+          <AuctionTab
             nft={nft}
             assetId={assetId}
             causePercentage={causePercentage}
