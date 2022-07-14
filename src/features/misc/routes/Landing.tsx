@@ -27,7 +27,7 @@ export const Landing = () => {
   return (
     <MainLayout>
       <div className="flex">
-        <Sidebar />
+        <Sidebar isLanding />
         <div className="w-[70%] p-4">{causes && <CardSlider nftList={list} causes={causes} />}</div>
       </div>
     </MainLayout>

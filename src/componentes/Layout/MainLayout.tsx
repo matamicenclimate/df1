@@ -12,7 +12,7 @@ export const MainLayout = ({ children, nft }: MainLayoutProps) => {
   return (
     <div className="mx-auto flex flex-col font-inter">
       <Navbar nft={nft} />
-      <div className="pt-12 bg-climate-action-light flex-1 pb-80">{children}</div>
+      <div className="pt-12 flex-1 pb-80">{children}</div>
       <Footer />
     </div>
   );

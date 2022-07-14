@@ -40,8 +40,8 @@ export function ButtonsDiscriminator({
 
   if (state.nft.type === 'direct-listing') {
     return (
-      <Button onClick={doBuyNFT} className="w-full">
-        Buy now
+      <Button onClick={doBuyNFT} className="w-full flex justify-between">
+        <p>Buy now</p> <span>{microalgosToAlgos(nft.arc69.properties.price)}</span>
       </Button>
     );
   } else if (state.nft.type === 'auction') {

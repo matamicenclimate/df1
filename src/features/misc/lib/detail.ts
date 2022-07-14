@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import directListingAbi from '@common/src/abi/direct-listing.abi';
 import { algosToMicroalgos, microalgosToAlgos } from './minting';
 import { useWalletFundsContext } from '@/context/WalletFundsContext';
+import { useCheckoutContext } from '@/context/CheckoutContext';
 
 /** The deposit fee value. */
 export const depositTxCount = 7;
@@ -50,6 +51,7 @@ export function useNFTPurchasingActions(
   updateNFTInfo: () => Promise<void>
 ) {
   const { balanceAlgo } = useWalletFundsContext();
+  const { setNftPurchased } = useCheckoutContext();
   const goToPage = useNavigate();
 
   const aId = Number(assetId);
@@ -133,8 +135,9 @@ export function useNFTPurchasingActions(
           await updateNFTInfo();
           this.title = t('Minter.dialog.dialogNFTBuySuccess');
           this.message = '';
-
-          goToPage(`/my-nfts`);
+          if (!setNftPurchased) return;
+          setNftPurchased(nft.value.nft);
+          goToPage(`/checkout`);
         } catch {
           this.message = t('NFTDetail.dialog.bidFinishedFail');
           await new Promise((r) => setTimeout(r, 1000));
@@ -159,8 +162,6 @@ export function useNFTPurchasingActions(
       if (!nft.value.state.isDefined()) {
         throw new Error('Attemptint to bid when the state is not set. Contact support.');
       }
-      // const state = await this.transactionOperation.getApplicationState(appId) as AuctionAppState
-
       const state = nft.value.state.get();
       console.log('state', state);
 

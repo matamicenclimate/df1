@@ -11,6 +11,7 @@ module.exports = {
         'climate-light-gray': '#777E8B',
         'climate-white-gray': '#FAFAFA',
         'climate-black': '#021120',
+        'climate-yellow': '#E4C931',
 
         'climate-white': '#FAFAFB',
         'climate-green': '#52662A',
