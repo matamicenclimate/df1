@@ -6,8 +6,10 @@ import Container from 'typedi';
 import ProcessDialog from '@/service/ProcessDialog';
 import NetworkClient from '@common/src/services/NetworkClient';
 import { useNavigate } from 'react-router-dom';
-import { AuctionLogic } from '@common/src/services/AuctionLogic';
+import algosdk from 'algosdk';
 import { useTranslation } from 'react-i18next';
+import { WalletContext } from '@/context/WalletContext';
+import { useContext } from 'react';
 
 type FirstTabProps = {
   nft: Nft | AssetEntity;
@@ -31,6 +33,7 @@ const DirectSellTab = ({
   creatorWallet,
   setIsOpen,
 }: FirstTabProps) => {
+  const walletCtx = useContext(WalletContext);
   const goToPage = useNavigate();
   const { t } = useTranslation();
 
@@ -39,7 +42,7 @@ const DirectSellTab = ({
     return await dialog.process(async function () {
       this.title = 'Processing NFT';
       this.message = 'Preparing NFT...';
-      console.log('working');
+      // console.log('working');
       // const optResult = await net.core.post('opt-in', { assetId });
       // console.info('Asset opted-in:', optResult);
       // this.message = 'Opting in...';
@@ -49,16 +52,34 @@ const DirectSellTab = ({
       //   new Uint8Array()
       // );
       // console.info('Asset transfer to app:', transfer);
-      throw new Error('Must Implement.');
-      const body = {
+      this.message = 'Listing NFT...';
+      const {
+        data: {
+          appIndex,
+          unsignedTxnGroup: { encodedTransferTxn, ...otherTxn },
+        },
+      } = await net.core.post('create-listing', {
         assetId,
         causePercentage,
         creatorWallet,
-      };
-      console.log('body', body);
-      this.message = 'Listing NFT...';
-      const res = await net.core.post('direct-listing', body);
-      console.log('res.data', res.data);
+        type: 'direct-listing',
+      });
+      const tx = algosdk.decodeUnsignedTransaction(Buffer.from(encodedTransferTxn, 'base64'));
+      const wallet = walletCtx?.userWallet?.wallet;
+      if (wallet == null) {
+        throw new Error('Invalid app state!');
+      }
+      tx.from = algosdk.decodeAddress(wallet.getDefaultAccount());
+      console.log('Signing transaction of:', tx);
+      const [stx] = await wallet.signTxn([tx]);
+      const res = await net.core.post('finish-create-listing', {
+        appIndex,
+        type: 'direct-listing',
+        signedTxn: {
+          ...otherTxn,
+          signedTransferTxn: Buffer.from(stx.blob).toString('base64'),
+        },
+      });
       if (res) {
         this.title = t('Minter.dialog.dialogNFTListedSuccess');
         this.message = '';
